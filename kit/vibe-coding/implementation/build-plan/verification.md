@@ -7,11 +7,11 @@ Run after the first implementation slice:
 ```bash
 npm test
 npm run build
+npm run check:skills
+npm run test:e2e
 node dist/cli.js --help
-node dist/cli.js doctor
-node dist/cli.js init --dry-run
-node dist/cli.js migrate --dry-run
-node dist/cli.js doctor --self
+node dist/cli.js install --dry-run
+node dist/cli.js doctor --self --strict
 ```
 
 ## Required Fixtures

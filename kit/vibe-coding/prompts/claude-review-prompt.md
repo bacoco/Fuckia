@@ -12,7 +12,8 @@ Review focus:
 1. Installation simplicity:
    - Claude plugin path;
    - Codex install path;
-   - universal `npx fuckia init`;
+   - one prompt that points the agent to root `INSTALL.md`;
+   - CLI engine behind the agent procedure;
    - audit-first migration for existing projects.
 
 2. Existing project safety:

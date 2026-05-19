@@ -3,10 +3,9 @@
 Required validators:
 
 ```text
-validate-constitution
-validate-agent-law-coverage
-validate-role-addenda
-validate-evidence-language
+fuckia doctor --strict
+fuckia generate-skills --check
+fuckia strict --dry-run --strict
 ```
 
 Checks:
@@ -16,4 +15,3 @@ Checks:
 - role addenda do not contradict the constitution;
 - `AGENTS.md` and `CLAUDE.md` include the constitution entry;
 - PR and Linear templates include the constitution reference.
-

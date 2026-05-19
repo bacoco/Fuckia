@@ -15,8 +15,12 @@ const forbiddenPatterns: Array<{ phrase: string; pattern: RegExp }> = [
   { phrase: "likely", pattern: /\blikely\b/i },
   { phrase: "maybe", pattern: /\bmaybe\b/i },
   { phrase: "might", pattern: /\bmight\b/i },
+  { phrase: "could be", pattern: /\bcould be\b/i },
   { phrase: "appears to", pattern: /\bappears to\b/i },
-  { phrase: "I think", pattern: /\bI think\b/i }
+  { phrase: "I think", pattern: /\bI think\b/i },
+  { phrase: "I suspect", pattern: /\bI suspect\b/i },
+  { phrase: "I assume", pattern: /\bI assume\b/i },
+  { phrase: "should be", pattern: /\bshould be\b/i }
 ];
 
 const allowedFiles = new Set([

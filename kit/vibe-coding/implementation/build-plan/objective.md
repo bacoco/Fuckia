@@ -2,17 +2,16 @@
 
 Implement Fuckia as an installable governance kit for vibe coding collaboration.
 
-The implementation must make the common path simple:
+The common path is the agent prompt:
 
-```bash
-npx fuckia init
+```text
+Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-For existing projects, implementation must start audit-only:
+For existing projects, the underlying CLI starts audit-only:
 
 ```bash
-npx fuckia migrate --dry-run
+fuckia install --dry-run
 ```
 
-The project must eventually support Claude plugin distribution and Codex installation, but the first coding slice starts with the universal CLI because it is the common engine behind both.
-
+Claude and Codex both use the same root install procedure. The CLI is the shared execution engine behind both agents.

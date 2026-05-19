@@ -35,6 +35,7 @@ const templateFiles: Array<{ templatePath: string; outputPath: string }> = [
   { templatePath: "project/AGENTS.md", outputPath: "AGENTS.md" },
   { templatePath: "project/CLAUDE.md", outputPath: "CLAUDE.md" },
   { templatePath: "project/fuckia.config.yaml", outputPath: "fuckia.config.yaml" },
+  { templatePath: "github/README.md", outputPath: ".github/README.md" },
   { templatePath: "github/pull_request_template.md", outputPath: ".github/PULL_REQUEST_TEMPLATE.md" },
   { templatePath: "github/workflows/collab-contract.yml", outputPath: ".github/workflows/collab-contract.yml" },
   { templatePath: "github/workflows/generated-skills.yml", outputPath: ".github/workflows/generated-skills.yml" },
@@ -53,6 +54,10 @@ const templateFiles: Array<{ templatePath: string; outputPath: string }> = [
   { templatePath: "linear/templates/code-review.md", outputPath: "docs/fuckia/linear/templates/code-review.md" },
   { templatePath: "linear/templates/verify.md", outputPath: "docs/fuckia/linear/templates/verify.md" },
   { templatePath: "docs/fuckia/merge-proposals/README.md", outputPath: "docs/fuckia/merge-proposals/README.md" }
+];
+
+const optionalTemplateFiles: Array<{ templatePath: string; outputPath: string }> = [
+  { templatePath: "project/root-readme.md", outputPath: "README.md" }
 ];
 
 export async function applyInit(options: InitApplyOptions): Promise<InitApplyResult> {
@@ -100,6 +105,19 @@ export async function buildInstallFiles(options: InitApplyOptions): Promise<Inst
   for (const template of templateFiles) {
     files.push({
       relativePath: normalizePath(template.outputPath),
+      source: normalizePath(path.join("kit", "templates", template.templatePath)),
+      content: await readTemplate(options.packageRoot, template.templatePath)
+    });
+  }
+
+  for (const template of optionalTemplateFiles) {
+    const outputPath = normalizePath(template.outputPath);
+    if (await fileExists(path.join(options.targetRoot, outputPath))) {
+      continue;
+    }
+
+    files.push({
+      relativePath: outputPath,
       source: normalizePath(path.join("kit", "templates", template.templatePath)),
       content: await readTemplate(options.packageRoot, template.templatePath)
     });

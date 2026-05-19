@@ -1,4 +1,5 @@
 import path from "node:path";
+import { fileExists } from "../fs/readTree";
 import { buildGeneratedSkillFiles } from "../skills/generateSharedSkills";
 
 export interface PlannedFile {
@@ -21,6 +22,7 @@ export async function buildInitPlan(targetRoot: string, packageRoot = targetRoot
     sourceRootDir: packageRoot,
     outputKind: "install"
   });
+  const includeRootReadme = !(await fileExists(path.join(targetRoot, "README.md")));
 
   return {
     mode: "dry-run",
@@ -33,12 +35,16 @@ export async function buildInitPlan(targetRoot: string, packageRoot = targetRoot
       "docs/fuckia/archive"
     ],
     files: [
+      ...(includeRootReadme
+        ? [{ path: "README.md", source: "template", purpose: "Minimal README for empty target repositories." }]
+        : []),
       { path: ".agents/README.md", source: "template", purpose: "Codex agent directory map." },
       { path: ".agents/skills/README.md", source: "template", purpose: "Codex generated skills directory map." },
       { path: ".claude/README.md", source: "template", purpose: "Claude directory map." },
       { path: ".claude/skills/README.md", source: "template", purpose: "Claude generated skills directory map." },
       { path: "AGENTS.md", source: "template", purpose: "Codex entry rules." },
       { path: "CLAUDE.md", source: "template", purpose: "Claude entry rules." },
+      { path: ".github/README.md", source: "template", purpose: "GitHub directory map." },
       { path: ".github/PULL_REQUEST_TEMPLATE.md", source: "template", purpose: "PR collaboration contract." },
       { path: ".github/workflows/collab-contract.yml", source: "template", purpose: "Collaboration gate checks." },
       { path: ".github/workflows/generated-skills.yml", source: "template", purpose: "Generated skill drift checks." },

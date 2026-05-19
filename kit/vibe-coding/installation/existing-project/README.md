@@ -2,39 +2,36 @@
 
 Existing project migration is audit-first.
 
-First command:
+The agent starts with:
 
 ```bash
-npx fuckia migrate --dry-run
+fuckia install --dry-run
 ```
 
-This command must not modify code.
+For an existing project, the install flow creates or uses a migration plan before writing governance files.
 
-It audits:
+Manual CLI sequence:
+
+```bash
+fuckia migrate --dry-run
+fuckia migrate --plan
+fuckia migrate --apply
+```
+
+Migration audits:
 
 - existing `AGENTS.md`;
 - existing `CLAUDE.md`;
 - existing `.agents/skills`;
 - existing `.claude/skills`;
-- scattered specs and docs;
-- GitHub workflows;
-- PR templates;
-- conflicting rules;
-- large flat documentation areas.
+- existing GitHub workflows;
+- existing PR template;
+- existing `docs/fuckia`;
+- existing `fuckia.config.yaml`.
 
-Second command:
+Apply behavior:
 
-```bash
-npx fuckia migrate --plan
-```
-
-This writes a migration plan only.
-
-Apply command:
-
-```bash
-npx fuckia migrate --apply
-```
-
-Apply is limited to governance files unless the user explicitly authorizes a broader change.
-
+- writes missing governance files;
+- preserves existing governance files;
+- writes merge proposals under `docs/fuckia/merge-proposals/`;
+- does not modify product code.

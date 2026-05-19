@@ -1,35 +1,31 @@
 # Install Fuckia
 
-This file is for Claude Code, Codex, or another AI coding agent.
+This file is an agent procedure for Claude Code, Codex, or another AI coding agent.
 
-The human asked you to install Fuckia in the repository where you are currently running.
+The human is inside the target repository and asked you to install Fuckia.
 
-## Goal
-
-Install governance for Claude and Codex collaboration without changing product code.
-
-The first pass is audit only. Do not write files until the human approves the exact file list.
-
-## Required Behavior
+## Non-Negotiable Contract
 
 - Treat the current working directory as the target repository.
-- Read this file from the Fuckia repository.
-- Use the Fuckia CLI from a clone of the Fuckia repository.
-- Run audit commands.
-- Report what would change.
-- Stop before writes.
+- Do not copy this file into the target repository.
+- Do not modify product code.
+- Start with audit only.
+- Ask before writing files.
+- Report exact files before writes.
+- Preserve existing `AGENTS.md`, `CLAUDE.md`, skills, workflows, docs, and config.
+- If evidence is missing, write `Unknown`, verify, ask the human, or stop.
 
-## Get Fuckia
-
-Save the target repository path:
+## Save The Target Path
 
 ```bash
 target_dir="$(pwd)"
 ```
 
-If the Fuckia repository is already available locally, use that path.
+## Get Fuckia
 
-If it is not available locally, clone it into a temporary directory:
+If the Fuckia repository already exists locally, use its absolute path.
+
+If it does not exist locally, clone it into a temporary directory:
 
 ```bash
 tmp_dir="$(mktemp -d)"
@@ -39,13 +35,13 @@ FUCKIA_DIR="$tmp_dir/Fuckia"
 
 If clone fails, stop and ask the human for access or a local path.
 
-If you use an existing local clone, set:
+For an existing local clone:
 
 ```bash
 FUCKIA_DIR="/absolute/path/to/Fuckia"
 ```
 
-## Build The CLI
+## Build The CLI Engine
 
 Run inside the Fuckia repository:
 
@@ -55,131 +51,113 @@ npm install
 npm run build
 ```
 
-If build fails, stop and report the failing command.
+If build fails, report the failing command and stop.
 
 ## Audit The Target Repository
 
-Return to the target repository.
-
-Run:
+Return to the target repository:
 
 ```bash
 cd "$target_dir"
 node "$FUCKIA_DIR/dist/cli.js" install --dry-run
-node "$FUCKIA_DIR/dist/cli.js" github --dry-run
+node "$FUCKIA_DIR/dist/cli.js" github --dry-run --strict
 node "$FUCKIA_DIR/dist/cli.js" linear --dry-run
 ```
 
-For a new or empty repository, also run:
+If the repository has no existing governance files, also run:
 
 ```bash
 node "$FUCKIA_DIR/dist/cli.js" init --dry-run
 ```
 
-Replace `$FUCKIA_DIR` with the actual Fuckia repository path.
+## Report Before Writes
 
-## Report To The Human
-
-Report:
+Report these facts to the human:
 
 - target repository path;
-- whether this is a new project or existing project;
+- new project or existing project;
 - existing `AGENTS.md`;
 - existing `CLAUDE.md`;
-- existing Claude skills;
-- existing Codex skills;
+- existing `.agents/skills`;
+- existing `.claude/skills`;
 - existing GitHub workflows;
 - existing PR template;
-- existing Linear references;
+- existing `docs/fuckia`;
+- existing `fuckia.config.yaml`;
 - files Fuckia wants to create;
-- existing files that need merge review;
-- GitHub permissions needed;
-- Linear permissions needed;
-- exact approval needed before writing.
+- files Fuckia will preserve;
+- merge proposals Fuckia will create;
+- GitHub permissions required;
+- Linear permissions required;
+- exact command you want to run next.
 
-## Stop Point
+Stop after this report.
 
-Stop after the report.
+## Apply After Human Approval
 
-Do not write files until the human approves the exact write list.
-
-## After Human Approval
-
-For a new repository with no conflicting governance files, run:
+Run this only after the human approves the write list:
 
 ```bash
 node "$FUCKIA_DIR/dist/cli.js" install --apply --yes
 ```
 
-After `init --apply`, commit and push the installed `.github` files before treating GitHub remote checks as enforceable.
+For an existing project, this command preserves conflicting governance files and writes merge proposals under:
 
-For an existing repository with conflicts, do not force init. Report that migration planning is required.
-
-For an existing repository after approval, run:
-
-```bash
-node "$FUCKIA_DIR/dist/cli.js" install --apply --yes
+```text
+docs/fuckia/merge-proposals/
 ```
 
-`migrate --apply` preserves existing governance files and writes merge proposals under `docs/fuckia/merge-proposals/`.
+It must not modify product code.
 
-After approved migration writes, commit and push the installed `.github` files before treating GitHub remote checks as enforceable.
-
-## Verify GitHub Remote Readiness
+## Verify Local Installation
 
 Run:
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" doctor
+node "$FUCKIA_DIR/dist/cli.js" strict --dry-run
+```
+
+Do not enable strict mode until the human approves it.
+
+After approval:
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" strict --apply
+node "$FUCKIA_DIR/dist/cli.js" strict --dry-run --strict
+```
+
+## GitHub Remote Setup
+
+Run this read-only check after the installed `.github` files are committed and pushed to the default branch:
 
 ```bash
 node "$FUCKIA_DIR/dist/cli.js" github --dry-run --strict
 ```
 
-This command verifies:
-
-- local Fuckia workflow files;
-- GitHub `origin` remote;
-- GitHub CLI availability;
-- GitHub CLI authentication;
-- repository readability;
-- admin or push permission signal;
-- GitHub Actions permissions;
-- repository ruleset visibility;
-- required status checks for the current Fuckia warning workflows.
-
-This command does not write to GitHub.
-
-If it fails, report the failing checks and stop before remote platform setup.
-
-## Apply GitHub Remote Protection
-
-Run this only after:
-
-- the installed workflow files are committed and pushed to the default branch;
-- `github --dry-run --strict` shows the local files, remote, authentication, repository, permissions, and Actions checks as ready;
-- the human explicitly approves remote GitHub writes.
+Apply remote GitHub protection only after explicit human approval:
 
 ```bash
 node "$FUCKIA_DIR/dist/cli.js" github --apply --yes
 ```
 
-This command creates status-check branch protection only for an unprotected repository without existing rulesets.
+GitHub approval rules require a real GitHub reviewer account, team, or GitHub App accepted by branch protection. AI identity alone cannot satisfy GitHub platform review gates.
 
-It blocks instead of overwriting existing rulesets or branch protection.
+## Linear Setup
 
-It does not enable required GitHub approving reviews by default. A repository should enable that GitHub platform gate only when it has a known reviewer account, team, or GitHub App accepted by branch protection.
+Run this only when `LINEAR_API_KEY` is set and the human gives the team key:
 
-## Apply Linear Issue Chain
+```bash
+node "$FUCKIA_DIR/dist/cli.js" linear --dry-run --team <TEAM_KEY>
+```
 
-Run this only after:
-
-- `LINEAR_API_KEY` is set;
-- `linear --dry-run --team <TEAM_KEY>` resolves the correct team;
-- the human explicitly approves remote Linear writes.
+Apply only after explicit human approval:
 
 ```bash
 node "$FUCKIA_DIR/dist/cli.js" linear --apply --yes --team <TEAM_KEY>
 ```
 
-This creates the active Linear issue chain:
+This creates the issue chain:
 
 - spec;
 - plan;
@@ -188,80 +166,21 @@ This creates the active Linear issue chain:
 - code-review;
 - verify.
 
-It writes a local receipt at `docs/fuckia/archive/linear-issue-chain.json`.
-
-## Enable Strict Mode
-
-After GitHub and Linear setup:
-
-```bash
-node "$FUCKIA_DIR/dist/cli.js" strict --apply
-node "$FUCKIA_DIR/dist/cli.js" strict --dry-run --strict
-```
-
-## Review And Merge PRs
-
-When the human asks the agent to handle PR review or merge, read:
+The receipt is written to:
 
 ```text
-kit/agent-runbooks/review-and-merge.md
+docs/fuckia/archive/linear-issue-chain.json
 ```
 
-The agent must:
+## End Of Work
 
-- prepare a review packet;
-- ask the human to approve all or selected fixes in chat;
-- apply approved fixes;
-- verify;
-- submit approval only from an AI or human reviewer independent from the implementation agent;
-- record author AI, validator AI, and GitHub reviewer account or platform result in the PR or review receipt;
-- submit approval or merge only when GitHub accepts the operation.
+End with this checkpoint:
 
-If the current agent cannot access the other AI directly, give the human a copy-paste prompt for that AI.
-
-GitHub account identity is transport for the Fuckia process. GitHub branch protection still enforces by account identity.
-
-Do not switch accounts to pretend that the same AI became an independent reviewer.
-
-If GitHub rejects the review because of account-level branch protection, stop and report that platform blocker with the exact GitHub error.
-
-## Allowed Future Writes After Approval
-
-- `AGENTS.md`
-- `CLAUDE.md`
-- `.agents/skills/...`
-- `.claude/skills/...`
-- `.github/pull_request_template.md`
-- `.github/workflows/...`
-- `fuckia.config.yaml`
-- `docs/fuckia/...`
-
-## Forbidden Writes
-
-- product code;
-- app routes;
-- hooks;
-- stores;
-- engines;
-- pipelines;
-- unrelated docs cleanup;
-- deletion of existing agent rules.
-
-## Platform Setup
-
-Read these only when the human approves platform setup:
-
-- `kit/vibe-coding/installation/platforms/github.md`
-- `kit/vibe-coding/installation/platforms/linear.md`
-
-Platform automation must verify permissions before configuration.
-
-## If Installation Fails
-
-If the failure is reproducible and not caused by missing private access, open a public issue using:
-
-- `Failure report` when a guardrail failed;
-- `Install problem` when the install flow failed;
-- `Process improvement` when the workflow needs a better rule, template, skill, or validator.
-
-Include commands, output, target repository context, and the real workflow affected.
+```text
+Current state:
+Done:
+Verification:
+Corrections:
+Remaining:
+Next:
+```

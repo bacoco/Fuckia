@@ -96,11 +96,13 @@ test("install --dry-run detects new project and writes nothing", async () => {
 test("install --apply --yes installs new project governance", async () => {
   await withTempProject(async (directory) => {
     const result = await capture(["install", "--apply", "--yes"], directory);
+    const readme = await readFile(path.join(directory, "README.md"), "utf8");
     const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
 
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /"targetKind": "new"/);
     assert.match(result.stdout, /"status": "applied"/);
+    assert.match(readme, /Fuckia governance is installed/);
     assert.match(agents, /Codex must follow Fuckia governance/);
   });
 });
@@ -108,12 +110,14 @@ test("install --apply --yes installs new project governance", async () => {
 test("init --apply installs governance files and generated skills", async () => {
   await withTempProject(async (directory) => {
     const result = await capture(["init", "--apply"], directory);
+    const readme = await readFile(path.join(directory, "README.md"), "utf8");
     const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
     const claude = await readFile(path.join(directory, "CLAUDE.md"), "utf8");
     const codexSkill = await readFile(
       path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
       "utf8"
     );
+    const githubReadme = await readFile(path.join(directory, ".github", "README.md"), "utf8");
     const claudeSkill = await readFile(
       path.join(directory, ".claude", "skills", "adversarial-implementer-guard", "SKILL.md"),
       "utf8"
@@ -127,10 +131,12 @@ test("init --apply installs governance files and generated skills", async () => 
 
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /"status": "applied"/);
+    assert.match(readme, /Fuckia governance is installed/);
     assert.match(agents, /Codex must follow Fuckia governance/);
     assert.match(claude, /Claude Code must follow Fuckia governance/);
     assert.match(codexSkill, /target: codex/);
     assert.match(claudeSkill, /target: claude/);
+    assert.match(githubReadme, /GitHub Templates/);
     assert.match(workflow, /Fuckia Collaboration Contract/);
     assert.match(checkpoint, /Current state:/);
     assert.match(linearTemplate, /Adversarial Implementer Pass/);

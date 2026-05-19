@@ -65,6 +65,7 @@ const requiredSkillNames = [
   "delegated-review-and-merge",
   "destructive-change-guard",
   "end-of-work-checkpoint",
+  "evidence-language-guard",
   "plan-review-gate",
   "platform-permission-gate",
   "real-verification-gate",

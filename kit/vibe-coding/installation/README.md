@@ -1,75 +1,72 @@
 # Installation
 
-Installation must be simple and transparent.
+The primary installation path is agent-first.
 
-The target experience is:
-
-```bash
-npx --yes github:bacoco/Fuckia install --dry-run
-```
-
-Current implemented install and audit commands:
-
-```bash
-fuckia install --dry-run
-fuckia install --apply --yes
-fuckia init --apply
-fuckia migrate --plan
-fuckia migrate --apply
-fuckia github --dry-run
-fuckia github --apply --yes
-fuckia linear --dry-run
-fuckia linear --apply --yes --team <TEAM_KEY>
-fuckia strict --dry-run
-fuckia strict --apply
-```
-
-`init --apply` is only for conflict-free governance installation. Existing projects with `AGENTS.md`, `CLAUDE.md`, GitHub workflows, or skills must use migration.
-`migrate --plan` writes `docs/fuckia/migration-plan.md` only.
-`migrate --apply` preserves existing governance files and writes merge proposals under `docs/fuckia/merge-proposals/`.
-`github --dry-run` verifies the real GitHub repository without local or remote writes.
-`github --apply --yes` creates remote branch protection only for an unprotected GitHub repository without existing rulesets.
-`linear --apply --yes --team <TEAM_KEY>` creates the active Linear issue chain and archives a local receipt.
-`strict --apply` enables strict local mode after governance files are installed.
-
-Agent bootstrap experience:
+The human opens Claude Code or Codex inside the target repository and pastes:
 
 ```text
 Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-The install file is followed from the Fuckia repository. It is not copied into the target repository by default.
+The agent follows `INSTALL.md` from the Fuckia repository. It does not copy that file into the target repository.
 
-For existing projects:
+## CLI Engine
 
-```bash
-npx fuckia migrate --dry-run
-npx fuckia migrate --plan
-npx fuckia migrate --apply
-```
-
-Claude users should get a plugin path. Codex users should get generated skills and project instructions through the same one-command installer.
-
-## Platform State
-
-GitHub local workflow installation is implemented through `init --apply` and `migrate --apply`.
-
-GitHub remote readiness audit is implemented through:
+The CLI is the deterministic engine used by the agent:
 
 ```bash
-npx fuckia github --dry-run --strict
+fuckia install --dry-run
+fuckia install --apply --yes
+fuckia migrate --plan
+fuckia migrate --apply
+fuckia github --dry-run --strict
+fuckia github --apply --yes
+fuckia linear --dry-run --team <TEAM_KEY>
+fuckia linear --apply --yes --team <TEAM_KEY>
+fuckia strict --dry-run --strict
+fuckia strict --apply
 ```
 
-GitHub remote apply is implemented for unprotected repositories and for repositories with existing branch protection that need missing Fuckia status checks.
+Direct terminal use is supported through:
 
-Existing GitHub rulesets are preserved. Fuckia does not rewrite rulesets.
+```bash
+npx --yes github:bacoco/Fuckia install --dry-run
+```
 
-## Read Order
+This direct path is for maintainers and users who want to run the CLI without an agent.
 
-1. `distribution/README.md`
-2. `new-project/README.md`
-3. `existing-project/README.md`
-4. `platforms/README.md`
+## Existing Projects
+
+Existing projects are migration-first:
+
+1. audit;
+2. migration plan;
+3. approved install;
+4. merge proposals for conflicting governance files.
+
+Product code is outside the installation scope.
+
+## GitHub
+
+Fuckia installs GitHub workflow files locally.
+
+Remote GitHub protection is a separate step after the workflow files are committed and pushed:
+
+```bash
+fuckia github --dry-run --strict
+fuckia github --apply --yes
+```
+
+GitHub review gates require a real GitHub reviewer account, team, or GitHub App accepted by GitHub branch protection.
+
+## Linear
+
+Fuckia creates the Linear issue chain only when credentials and a team key are provided:
+
+```bash
+LINEAR_API_KEY=<token> fuckia linear --dry-run --team <TEAM_KEY>
+LINEAR_API_KEY=<token> fuckia linear --apply --yes --team <TEAM_KEY>
+```
 
 ## Product Rule
 

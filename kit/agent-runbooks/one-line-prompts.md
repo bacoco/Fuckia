@@ -2,11 +2,13 @@
 
 These prompts are pasted inside Claude Code or Codex while the agent is located in the target repository.
 
-## Claude Code Or Codex
+## Primary Prompt
 
 ```text
 Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
+
+The agent follows the remote procedure. It does not copy the procedure file into the target repository.
 
 ## Platform-Specific Wrappers
 

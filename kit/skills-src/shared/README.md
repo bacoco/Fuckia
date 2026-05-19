@@ -9,6 +9,7 @@ Initial source files:
 - `delegated-review-and-merge.skill.md` - lets agents prepare review packets and perform approved GitHub review or merge operations.
 - `destructive-change-guard.skill.md` - blocks risky deletion and replacement work without explicit evidence.
 - `end-of-work-checkpoint.skill.md` - forces a concise final state receipt.
+- `evidence-language-guard.skill.md` - blocks unsupported causal language and requires Unknown, a question, or verification.
 - `plan-review-gate.skill.md` - blocks risky implementation without independent review.
 - `platform-permission-gate.skill.md` - checks GitHub and Linear permission boundaries before remote writes.
 - `real-verification-gate.skill.md` - requires proof through real workflows, not isolated tests alone.

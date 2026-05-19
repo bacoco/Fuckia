@@ -39,8 +39,7 @@ Use directories, indexes, and focused files before adding large detailed files.
 The future kit must include validators for:
 
 - missing directory `README.md`;
-- overlarge files that should be split;
+- overlarge files that need splitting;
 - root-level spec sprawl;
 - implementation files with mixed responsibilities;
 - generated artifacts written outside the expected directory structure.
-

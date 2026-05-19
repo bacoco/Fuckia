@@ -20,12 +20,19 @@ Build from this plan, the constitution, the installation docs, and the CLI bluep
 
 Fuckia must apply its own laws to its own implementation. Source files, generated files, examples, and local outputs must be clearly separated.
 
-## First Implementation Slice
+## Implemented CLI Slice
 
-The first code slice must create a working CLI skeleton with:
+The CLI slice exposes:
 
-- `npx fuckia --help`;
-- `npx fuckia doctor`;
-- `npx fuckia init --dry-run`;
-- `npx fuckia migrate --dry-run`;
-- test fixtures for safe no-write behavior.
+- `fuckia --help`;
+- `fuckia doctor`;
+- `fuckia install --dry-run`;
+- `fuckia install --apply --yes`;
+- `fuckia migrate --dry-run`;
+- `fuckia migrate --plan`;
+- `fuckia migrate --apply`;
+- `fuckia github --dry-run --strict`;
+- `fuckia linear --dry-run --team <TEAM_KEY>`;
+- `fuckia strict --dry-run --strict`.
+
+The primary product install path is the agent prompt in the root README. The CLI remains the deterministic engine behind that prompt.

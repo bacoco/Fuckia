@@ -77,7 +77,7 @@ Fuckia installs a project governance layer:
 
 It does not replace GitHub, Linear, Claude, or Codex. It connects them into one workflow.
 
-## Install Flow
+## Install With Claude Or Codex
 
 Open Claude Code or Codex inside the repository you want to protect.
 
@@ -87,9 +87,25 @@ Paste this:
 Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-The agent reads `INSTALL.md`, audits the repository, and reports exactly what it wants to create or merge.
+The agent reads the Fuckia install procedure from GitHub, audits the target repository, and reports exactly what it wants to create or merge.
 
 Nothing is written until you approve the exact file list.
+
+## What The Agent Installs
+
+After approval, Fuckia installs:
+
+- `AGENTS.md` for Codex;
+- `CLAUDE.md` for Claude Code;
+- a minimal `README.md` when the target repository has no README;
+- generated Codex skills in `.agents/skills`;
+- generated Claude skills in `.claude/skills`;
+- GitHub PR template and workflow checks in `.github`;
+- Linear issue templates under `docs/fuckia/linear/templates`;
+- migration receipts and merge proposals under `docs/fuckia`;
+- `fuckia.config.yaml`.
+
+For an existing project, Fuckia preserves existing governance files and writes merge proposals instead of overwriting them.
 
 ## Safety Contract
 
@@ -103,24 +119,31 @@ It must not:
 - mark Done from typecheck or unit tests alone;
 - let an agent self-review risky implementation.
 
-## Current Status
+## Advanced CLI
 
-Working now:
+The CLI is the deterministic engine used by the agent. Humans do not need it for the normal install path.
 
-- install and migration audit;
-- write-mode installer;
-- generated Claude and Codex skills;
-- GitHub workflow automation;
-- Linear issue-chain automation;
-- strict CI gates.
-
-## For Maintainers
+Maintainer commands:
 
 ```bash
 npm install
 npm test
-npm run build
-node dist/cli.js doctor --self
+npm run test:e2e
+node dist/cli.js doctor --self --strict
 ```
+
+Direct CLI install is also supported:
+
+```bash
+npx --yes github:bacoco/Fuckia install --dry-run
+```
+
+Use this direct CLI path only when you want terminal-driven installation without asking Claude or Codex to run the procedure.
+
+## Platform Boundaries
+
+Fuckia installs GitHub workflow files into the target repository. Remote GitHub branch protection requires repository permissions and explicit approval.
+
+Fuckia can create the Linear issue chain when `LINEAR_API_KEY` and a team key are provided. Linear account creation, workspace selection, and permission grants are human-controlled steps.
 
 Technical detail starts in `kit/vibe-coding/README.md`.

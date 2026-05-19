@@ -26,7 +26,7 @@ Verify from official docs or live product:
 
 - whether Linear Documents are available and how they are linked to Projects/issues;
 - whether Linear issue kit/templates/custom fields can enforce required fields;
-- whether file locks should be represented as custom fields, issue sections, labels, or comments;
+- how file locks are represented: custom fields, issue sections, labels, or comments;
 - exact Linear API/MCP/auth method to read issue contract from CI;
 - exact GitHub integration behavior for PR status automation;
 - exact Claude skill file format;

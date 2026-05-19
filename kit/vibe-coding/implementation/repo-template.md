@@ -88,24 +88,24 @@ docs/linear-archive/<LINEAR-ID>/
 
 The archive is immutable evidence for the code history. It is not the active spec after merge.
 
-## Project bootstrap command
+## Project bootstrap
 
-The kit must provide one command for new projects:
+The primary install path is one agent prompt:
 
-```bash
-npx fuckia init
+```text
+Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-The command installs rules, generated skills, GitHub gates, project config, and docs, then runs `doctor`.
+The agent uses the CLI engine to install rules, generated skills, GitHub gates, project config, and docs, then runs verification.
 
 ## Existing project migration
 
 Migration must be audit-first:
 
 ```bash
-npx fuckia migrate --dry-run
-npx fuckia migrate --plan
-npx fuckia migrate --apply
+fuckia migrate --dry-run
+fuckia migrate --plan
+fuckia migrate --apply
 ```
 
 `--dry-run` audits only. It must not modify code.

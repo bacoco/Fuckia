@@ -24,12 +24,12 @@ kit/vibe-coding/
 - The system must cover the 8 failure classes in `kit/vibe-coding/operating-model/failure-catalog-cross-review.md`.
 - The system must deliver the initial skill set and additional mitigations in `kit/vibe-coding/skills/initial-skills-and-risk-map.md`.
 - The system must enforce `kit/vibe-coding/constitution/evidence-language-guard.md`: no uncertain causality without evidence.
-- Installation must be simple: Claude plugin path, Codex install path, and universal one-command CLI.
+- Installation must be simple: one prompt in Claude or Codex, one shared install procedure, and a CLI engine behind the procedure.
 
 ## Expected Deliverables
 
-1. One-command install for a new project: `npx fuckia init`.
-2. Audit-first migration for an existing project: `npx fuckia migrate --dry-run`, `--plan`, then `--apply`.
+1. Agent-first install prompt that tells Claude or Codex to read the root `INSTALL.md`.
+2. CLI engine commands: `fuckia install --dry-run`, `fuckia install --apply --yes`, `fuckia migrate --dry-run`, `--plan`, then `--apply`.
 3. Linear templates: Project, issue contract, statuses, verification receipt.
    - Include issue types or templates: spec, plan, plan-review, implement, code-review, verify.
    - `plan-review` must block `implement` for risky work.
@@ -109,7 +109,7 @@ Pilot plan:
 - Self-review attempt blocked or escalated.
 - Pilot Linear issue with verification receipt.
 - GitHub archive of a Linear snapshot.
-- Short docs for installing on a new project and migrating an existing project.
+- Short docs for agent-first install on a new project and migration on an existing project.
 - `existing-project-governance-auditor` skill implemented for safe migration audits.
 
 ## Important Context

@@ -58,10 +58,10 @@ Do not commit:
 When the CLI exists, Fuckia must run against itself in check mode:
 
 ```bash
-npx fuckia doctor --self
-npx fuckia validate-constitution
-npx fuckia validate-agent-law-coverage
-npx fuckia validate-evidence-language
+node dist/cli.js doctor --self --strict
+npm run check:skills
+npm test
+npm run test:e2e
 ```
 
 Self-check mode must report issues. It must not rewrite the repository unless an explicit `--apply` command is used.
@@ -87,4 +87,3 @@ After the generator exists:
 - Existing behavior that must be preserved: source-of-truth files stay editable and generated files stay reproducible.
 - Forbidden implementation shortcuts: committing random local install output, machine-specific generated paths, or generated target-project files outside examples/fixtures.
 - Regression proof required: validators must fail manual edits to committed generated artifacts and must ignore untracked local cache output.
-

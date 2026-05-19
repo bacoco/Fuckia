@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, "../../..");
+const cliPath = path.join(repoRoot, "dist", "cli.js");
+
+function run(command, args, cwd, options = {}) {
+  const result = spawnSync(command, args, {
+    cwd,
+    encoding: "utf8",
+    env: { ...process.env, ...options.env }
+  });
+
+  if (result.status !== 0) {
+    throw new Error([
+      `Command failed: ${command} ${args.join(" ")}`,
+      `cwd: ${cwd}`,
+      `exit: ${result.status}`,
+      "stdout:",
+      result.stdout.trim(),
+      "stderr:",
+      result.stderr.trim()
+    ].join("\n"));
+  }
+
+  return result;
+}
+
+function assertFile(directory, relativePath, expectedText = null) {
+  const absolutePath = path.join(directory, relativePath);
+  if (!existsSync(absolutePath)) {
+    throw new Error(`Missing expected file: ${relativePath}`);
+  }
+
+  if (expectedText !== null) {
+    const content = readFileSync(absolutePath, "utf8");
+    if (!content.includes(expectedText)) {
+      throw new Error(`Expected ${relativePath} to contain: ${expectedText}`);
+    }
+  }
+}
+
+function withTempDirectory(prefix, callback) {
+  const directory = mkdtempSync(path.join(tmpdir(), prefix));
+  try {
+    callback(directory);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+}
+
+if (!existsSync(cliPath)) {
+  throw new Error("dist/cli.js is missing. Run `npm run build` before this script.");
+}
+
+run("node", [cliPath, "--help"], repoRoot);
+
+withTempDirectory("fuckia-empty-", (directory) => {
+  run("git", ["init"], directory);
+  run("node", [cliPath, "install", "--dry-run"], directory);
+  run("node", [cliPath, "install", "--apply", "--yes"], directory);
+  run("node", [cliPath, "strict", "--apply"], directory);
+  run("node", [cliPath, "strict", "--dry-run", "--strict"], directory);
+  run("node", [cliPath, "doctor", "--strict"], directory);
+
+  assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
+  assertFile(directory, "CLAUDE.md", "Claude Code must follow Fuckia governance");
+  assertFile(directory, ".github/README.md", "GitHub Templates");
+  assertFile(directory, ".github/workflows/collab-contract.yml", "Fuckia Collaboration Contract");
+  assertFile(directory, ".agents/skills/adversarial-implementer-guard/SKILL.md", "target: codex");
+  assertFile(directory, ".claude/skills/adversarial-implementer-guard/SKILL.md", "target: claude");
+});
+
+withTempDirectory("fuckia-existing-", (directory) => {
+  run("git", ["init"], directory);
+  writeFileSync(path.join(directory, "AGENTS.md"), "# Existing Codex Rules\n", "utf8");
+  writeFileSync(path.join(directory, "README.md"), "# Existing Project\n", "utf8");
+
+  run("node", [cliPath, "install", "--dry-run"], directory);
+  run("node", [cliPath, "install", "--apply", "--yes"], directory);
+
+  const agents = readFileSync(path.join(directory, "AGENTS.md"), "utf8");
+  if (agents !== "# Existing Codex Rules\n") {
+    throw new Error("Existing AGENTS.md was modified during migration.");
+  }
+
+  assertFile(directory, "docs/fuckia/migration-plan.md", "Existing Governance Inventory");
+  assertFile(directory, "docs/fuckia/merge-proposals/AGENTS.md.md", "Merge Proposal: AGENTS.md");
+  assertFile(directory, ".agents/skills/adversarial-implementer-guard/SKILL.md", "target: codex");
+  assertFile(directory, ".claude/skills/adversarial-implementer-guard/SKILL.md", "target: claude");
+});
+
+withTempDirectory("fuckia-pack-", (directory) => {
+  const pack = run("npm", ["pack", "--pack-destination", directory], repoRoot);
+  const tarballName = pack.stdout.trim().split(/\r?\n/).filter(Boolean).at(-1);
+  if (!tarballName) {
+    throw new Error("npm pack did not return a tarball name.");
+  }
+
+  const tarballPath = path.join(directory, tarballName);
+  run("npx", ["--yes", "--package", tarballPath, "fuckia", "--help"], directory, {
+    env: { npm_config_cache: path.join(directory, ".npm-cache") }
+  });
+});
+
+console.log("Fuckia installer E2E passed.");

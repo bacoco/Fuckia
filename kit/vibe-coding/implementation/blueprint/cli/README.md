@@ -1,29 +1,28 @@
 # CLI
 
-The CLI is the deterministic enforcement surface.
+The CLI is the deterministic enforcement surface used by the agent install procedure.
 
-Commands:
+Implemented commands:
 
 ```text
-npx fuckia init
-npx fuckia migrate --dry-run
-npx fuckia migrate --plan
-npx fuckia migrate --apply
-npx fuckia install-claude
-npx fuckia install-codex
-npx fuckia generate-skills
-npx fuckia validate-constitution
-npx fuckia validate-agent-law-coverage
-npx fuckia validate-role-addenda
-npx fuckia validate-skills
-npx fuckia validate-pr-contract
-npx fuckia validate-pr-scope
-npx fuckia validate-linear-gates
-npx fuckia validate-verification-receipt
-npx fuckia validate-archive-snapshot
-npx fuckia validate-evidence-language
-npx fuckia export-linear-snapshot
-npx fuckia doctor
+fuckia --help
+fuckia doctor [--self] [--strict]
+fuckia install --dry-run
+fuckia install --apply --yes
+fuckia init --dry-run
+fuckia init --apply
+fuckia migrate --dry-run
+fuckia migrate --plan
+fuckia migrate --apply
+fuckia generate-skills --check
+fuckia generate-skills --write --examples
+fuckia generate-skills --write --install
+fuckia github --dry-run [--strict]
+fuckia github --apply --yes
+fuckia linear --dry-run [--strict] [--team <TEAM_KEY>]
+fuckia linear --apply --yes --team <TEAM_KEY>
+fuckia strict --dry-run [--strict]
+fuckia strict --apply
 ```
 
 Validators own gate results. AI reviews are evidence or advisory input.

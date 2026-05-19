@@ -2,14 +2,19 @@
 
 Distribution supports:
 
-- direct GitHub clone;
-- GitHub-backed `npx`;
 - Claude agent bootstrap prompt;
 - Codex agent bootstrap prompt;
-- generated Claude and Codex skills;
-- one-line audit for new and existing projects.
+- direct GitHub clone by the agent;
+- GitHub-backed `npx` for advanced terminal users;
+- generated Claude and Codex skills.
 
-## Current One-Line Commands
+## Primary Install Prompt
+
+```text
+Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
+```
+
+## Direct CLI Path
 
 Audit:
 
@@ -46,4 +51,4 @@ npx --yes github:bacoco/Fuckia strict --dry-run --strict
 
 ## Future Distribution
 
-NPM package publishing and Claude marketplace packaging remain separate release steps.
+NPM registry publishing and Claude marketplace packaging are separate release steps.
