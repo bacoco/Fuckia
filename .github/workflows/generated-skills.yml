@@ -1,0 +1,17 @@
+name: Fuckia Generated Skills
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  generated-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check generated skill headers
+        run: |
+          test -f .claude/skills/adversarial-implementer-guard/SKILL.md
+          test -f .agents/skills/adversarial-implementer-guard/SKILL.md
+          grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .claude/skills .agents/skills
+          grep -R "source_hash:" .claude/skills .agents/skills
