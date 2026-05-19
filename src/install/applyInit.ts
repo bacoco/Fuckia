@@ -35,7 +35,8 @@ const templateFiles: Array<{ templatePath: string; outputPath: string }> = [
   { templatePath: "github/workflows/collab-contract.yml", outputPath: ".github/workflows/collab-contract.yml" },
   { templatePath: "github/workflows/generated-skills.yml", outputPath: ".github/workflows/generated-skills.yml" },
   { templatePath: "github/workflows/pr-scope.yml", outputPath: ".github/workflows/pr-scope.yml" },
-  { templatePath: "docs/fuckia/README.md", outputPath: "docs/fuckia/README.md" }
+  { templatePath: "docs/fuckia/README.md", outputPath: "docs/fuckia/README.md" },
+  { templatePath: "docs/fuckia/end-of-work-checkpoint.md", outputPath: "docs/fuckia/end-of-work-checkpoint.md" }
 ];
 
 export async function applyInit(options: InitApplyOptions): Promise<InitApplyResult> {

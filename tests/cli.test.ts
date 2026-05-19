@@ -75,6 +75,7 @@ test("init --apply installs governance files and generated skills", async () => 
       "utf8"
     );
     const workflow = await readFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "utf8");
+    const checkpoint = await readFile(path.join(directory, "docs", "fuckia", "end-of-work-checkpoint.md"), "utf8");
 
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /"status": "applied"/);
@@ -83,6 +84,7 @@ test("init --apply installs governance files and generated skills", async () => 
     assert.match(codexSkill, /target: codex/);
     assert.match(claudeSkill, /target: claude/);
     assert.match(workflow, /Fuckia Collaboration Contract/);
+    assert.match(checkpoint, /Current state:/);
   });
 });
 

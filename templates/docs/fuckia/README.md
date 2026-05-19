@@ -18,6 +18,7 @@ This repository uses Fuckia governance for Claude Code and Codex collaboration.
 5. Use code review by a different agent or human for risky work.
 6. Verify the real workflow before Done.
 7. Archive receipts in GitHub or `docs/fuckia/`.
+8. End with the checkpoint format in `docs/fuckia/end-of-work-checkpoint.md`.
 
 ## Installed Mode
 

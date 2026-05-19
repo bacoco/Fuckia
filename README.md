@@ -62,6 +62,7 @@ Every risky change gets:
 - no self-review for risky work;
 - real workflow verification;
 - an archived receipt for the next agent.
+- a short end-of-work checkpoint.
 
 Every accepted public failure report can become:
 

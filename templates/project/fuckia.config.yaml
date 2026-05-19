@@ -21,6 +21,7 @@ linear:
 verification:
   real_workflow_required_for_done: true
   typecheck_alone_is_done: false
+  end_of_work_checkpoint_required: true
 
 safety:
   block_self_review_for_risky_work: true

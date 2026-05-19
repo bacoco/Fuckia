@@ -41,6 +41,7 @@ export async function buildInitPlan(targetRoot: string, packageRoot = targetRoot
       { path: ".github/workflows/pr-scope.yml", source: "template", purpose: "PR scope and destructive-change guard." },
       { path: "fuckia.config.yaml", source: "template", purpose: "Project-local Fuckia configuration." },
       { path: "docs/fuckia/README.md", source: "template", purpose: "Installed governance map." },
+      { path: "docs/fuckia/end-of-work-checkpoint.md", source: "template", purpose: "Required end-of-work checkpoint." },
       ...generatedSkills.map((skill) => ({
         path: skill.output,
         source: skill.source,

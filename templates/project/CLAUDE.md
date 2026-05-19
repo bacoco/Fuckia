@@ -17,6 +17,7 @@ Claude Code must follow Fuckia governance in this repository.
 - Do not self-review risky work.
 - Do not mark Done from typecheck or unit tests alone.
 - Use real workflow verification before Done.
+- End meaningful work with the six-field checkpoint in `docs/fuckia/end-of-work-checkpoint.md`.
 
 ## Evidence Rule
 
