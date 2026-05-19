@@ -4,11 +4,6 @@
 
 Linear issue:
 
-## Plan Review
-
-- [ ] Plan reviewed by another agent or human.
-- [ ] Risky work does not use self-review.
-
 ## Scope
 
 Allowed files:

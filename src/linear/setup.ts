@@ -99,30 +99,37 @@ export async function applyLinear(options: LinearApplyOptions): Promise<LinearAp
 
   const apiKey = options.apiKey ?? process.env.LINEAR_API_KEY ?? "";
   if (blockers.length > 0 || !dryRun.selectedTeam) {
-    return blocked(targetRoot, dryRun, blockers);
+    return blocked(targetRoot, dryRun, blockers, [], [], []);
   }
 
   const client = getClient(apiKey, options.client);
   const issues: LinearIssue[] = [];
-  for (const template of linearIssueTemplates) {
-    const previous = issues.at(-1);
-    const description = previous
-      ? `${template.description}\n\n## Previous Fuckia Issue\n\n${previous.identifier}: ${previous.url}\n`
-      : template.description;
-    issues.push(await client.createIssue({
-      teamId: dryRun.selectedTeam.id,
-      title: template.title,
-      description
-    }));
-  }
-
   const archivePath = path.join("docs", "fuckia", "archive", "linear-issue-chain.json");
-  await mkdir(path.dirname(path.join(targetRoot, archivePath)), { recursive: true });
-  await writeFile(path.join(targetRoot, archivePath), `${JSON.stringify({
-    generatedBy: "fuckia linear --apply --yes",
-    team: dryRun.selectedTeam,
-    issues
-  }, null, 2)}\n`, { encoding: "utf8", flag: "w" });
+  try {
+    for (const template of linearIssueTemplates) {
+      const previous = issues.at(-1);
+      const description = previous
+        ? `${template.description}\n\n## Previous Fuckia Issue\n\n${previous.identifier}: ${previous.url}\n`
+        : template.description;
+      issues.push(await client.createIssue({
+        teamId: dryRun.selectedTeam.id,
+        title: template.title,
+        description
+      }));
+    }
+
+    await writeLinearIssueChainReceipt(targetRoot, archivePath, dryRun.selectedTeam, issues);
+  } catch (error) {
+    const failureReceiptWritten = await writeFailureReceipt(targetRoot, archivePath, dryRun.selectedTeam, issues, error);
+    return blocked(
+      targetRoot,
+      dryRun,
+      [`Linear setup failed after ${issues.length} created issues: ${errorMessage(error)}`],
+      issues.map(() => "Linear GraphQL issueCreate"),
+      failureReceiptWritten ? [archivePath] : [],
+      issues
+    );
+  }
 
   return {
     status: "applied",
@@ -135,14 +142,21 @@ export async function applyLinear(options: LinearApplyOptions): Promise<LinearAp
   };
 }
 
-function blocked(targetRoot: string, dryRun: LinearDryRunReport, blockers: string[]): LinearApplyResult {
+function blocked(
+  targetRoot: string,
+  dryRun: LinearDryRunReport,
+  blockers: string[],
+  remoteWrites: string[],
+  localWrites: string[],
+  issues: LinearIssue[]
+): LinearApplyResult {
   return {
     status: "blocked",
     targetRoot,
-    remoteWrites: [],
-    localWrites: [],
+    remoteWrites,
+    localWrites,
     blockers,
-    issues: [],
+    issues,
     dryRun
   };
 }
@@ -172,3 +186,37 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+async function writeLinearIssueChainReceipt(
+  targetRoot: string,
+  archivePath: string,
+  team: LinearTeam,
+  issues: LinearIssue[]
+): Promise<void> {
+  await mkdir(path.dirname(path.join(targetRoot, archivePath)), { recursive: true });
+  await writeFile(path.join(targetRoot, archivePath), `${JSON.stringify({
+    generatedBy: "fuckia linear --apply --yes",
+    team,
+    issues
+  }, null, 2)}\n`, { encoding: "utf8", flag: "w" });
+}
+
+async function writeFailureReceipt(
+  targetRoot: string,
+  archivePath: string,
+  team: LinearTeam,
+  issues: LinearIssue[],
+  error: unknown
+): Promise<boolean> {
+  try {
+    await mkdir(path.dirname(path.join(targetRoot, archivePath)), { recursive: true });
+    await writeFile(path.join(targetRoot, archivePath), `${JSON.stringify({
+      generatedBy: "fuckia linear --apply --yes",
+      team,
+      issues,
+      error: errorMessage(error)
+    }, null, 2)}\n`, { encoding: "utf8", flag: "w" });
+    return true;
+  } catch {
+    return false;
+  }
+}

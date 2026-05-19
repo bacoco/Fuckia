@@ -363,11 +363,11 @@ test("github audit is read-only and reports remote readiness", async () => {
           allowed_actions: "all"
         })),
         "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([{ id: 1, name: "Fuckia" }])),
-        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": ok(JSON.stringify([
-          "contract",
-          "generated-skills",
-          "scope"
-        ]))
+        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks": ok(JSON.stringify({
+          strict: true,
+          contexts: ["contract", "generated-skills", "scope"],
+          checks: []
+        }))
       })
     });
     const after = await snapshotTree(directory);
@@ -399,9 +399,11 @@ test("github audit reports missing required checks without writing", async () =>
           allowed_actions: "all"
         })),
         "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([])),
-        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": ok(JSON.stringify([
-          "contract"
-        ]))
+        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks": ok(JSON.stringify({
+          strict: true,
+          contexts: ["contract"],
+          checks: []
+        }))
       })
     });
     const after = await snapshotTree(directory);
@@ -436,7 +438,7 @@ test("github apply requires explicit remote write approval", async () => {
           allowed_actions: "all"
         })),
         "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([])),
-        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": fail("gh: Branch not protected (HTTP 404)")
+        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks": fail("gh: Branch not protected (HTTP 404)")
       })
     });
     const after = await snapshotTree(directory);
@@ -466,9 +468,13 @@ test("github apply creates branch protection for an unprotected repository", asy
         allowed_actions: "all"
       })),
       "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([])),
-      "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": [
+      "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks": [
         fail("gh: Branch not protected (HTTP 404)"),
-        ok(JSON.stringify(["contract", "generated-skills", "scope"]))
+        ok(JSON.stringify({
+          strict: true,
+          contexts: ["contract", "generated-skills", "scope"],
+          checks: []
+        }))
       ],
       "gh api repos/bacoco/Fuckia/contents/.github/workflows/collab-contract.yml?ref=main": ok("{}"),
       "gh api repos/bacoco/Fuckia/contents/.github/workflows/generated-skills.yml?ref=main": ok("{}"),
@@ -512,9 +518,17 @@ test("github apply merges required checks into existing branch protection", asyn
         allowed_actions: "all"
       })),
       "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([{ id: 99, name: "Existing ruleset" }])),
-      "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": [
-        ok(JSON.stringify(["contract", "existing-ci"])),
-        ok(JSON.stringify(["contract", "existing-ci", "generated-skills", "scope"]))
+      "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks": [
+        ok(JSON.stringify({
+          strict: false,
+          contexts: ["contract", "existing-ci"],
+          checks: []
+        })),
+        ok(JSON.stringify({
+          strict: true,
+          contexts: ["contract", "existing-ci", "generated-skills", "scope"],
+          checks: []
+        }))
       ],
       "gh api repos/bacoco/Fuckia/contents/.github/workflows/collab-contract.yml?ref=main": ok("{}"),
       "gh api repos/bacoco/Fuckia/contents/.github/workflows/generated-skills.yml?ref=main": ok("{}"),
@@ -542,6 +556,77 @@ test("github apply merges required checks into existing branch protection", asyn
     assert.match(write?.stdin ?? "", /"existing-ci"/);
     assert.match(write?.stdin ?? "", /"generated-skills"/);
     assert.match(write?.stdin ?? "", /"strict": true/);
+  });
+});
+
+test("github apply preserves app-bound required checks", async () => {
+  await withTempProject(async (directory) => {
+    await createInstalledGithubFiles(directory);
+    const writes: Array<{ key: string; stdin?: string }> = [];
+    const runner = recordingRunner({
+      "git remote get-url origin": ok("https://github.com/bacoco/Fuckia.git\n"),
+      "gh --version": ok("gh version 2.0.0\n"),
+      "gh auth status": ok("Logged in\n"),
+      "gh api repos/bacoco/Fuckia": ok(JSON.stringify({
+        default_branch: "main",
+        permissions: { admin: true, push: true, pull: true }
+      })),
+      "gh api repos/bacoco/Fuckia/actions/permissions": ok(JSON.stringify({
+        enabled: true,
+        allowed_actions: "all"
+      })),
+      "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([{ id: 99, name: "Existing ruleset" }])),
+      "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks": [
+        ok(JSON.stringify({
+          strict: false,
+          contexts: ["contract"],
+          checks: [{ context: "app-ci", app_id: 12345 }]
+        })),
+        ok(JSON.stringify({
+          strict: true,
+          contexts: ["contract"],
+          checks: [
+            { context: "app-ci", app_id: 12345 },
+            { context: "generated-skills" },
+            { context: "scope" }
+          ]
+        }))
+      ],
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/collab-contract.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/generated-skills.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/pr-scope.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/branches/main/protection": ok(JSON.stringify({
+        required_status_checks: {
+          strict: false,
+          contexts: ["contract"],
+          checks: [{ context: "app-ci", app_id: 12345 }]
+        }
+      })),
+      "gh api --method PATCH repos/bacoco/Fuckia/branches/main/protection/required_status_checks --input -": ok("{}")
+    }, writes);
+
+    const result = await applyGitHubRemote({
+      targetRoot: directory,
+      approveRemoteWrites: true,
+      runner
+    });
+    const write = writes.find((entry) => entry.key === "gh api --method PATCH repos/bacoco/Fuckia/branches/main/protection/required_status_checks --input -");
+
+    assert.equal(result.status, "applied");
+    assert.match(write?.stdin ?? "", /"checks": \[/);
+    assert.match(write?.stdin ?? "", /"context": "app-ci"/);
+    assert.match(write?.stdin ?? "", /"app_id": 12345/);
+    assert.match(write?.stdin ?? "", /"context": "generated-skills"/);
+    assert.match(write?.stdin ?? "", /"context": "scope"/);
+  });
+});
+
+test("linear apply command requires an explicit team", async () => {
+  await withTempProject(async (directory) => {
+    const result = await capture(["linear", "--apply", "--yes"], directory);
+
+    assert.equal(result.exitCode, 1);
+    assert.match(result.stderr, /--team <TEAM_KEY>/);
   });
 });
 
@@ -583,6 +668,25 @@ test("linear apply creates issue chain and archive receipt", async () => {
   });
 });
 
+test("linear apply writes a failure receipt after partial issue creation", async () => {
+  await withTempProject(async (directory) => {
+    const result = await applyLinear({
+      targetRoot: directory,
+      apiKey: "lin_api_key",
+      teamKey: "ENG",
+      approveRemoteWrites: true,
+      client: failingLinearClient([{ id: "team-1", key: "ENG", name: "Engineering" }], 2)
+    });
+    const receipt = await readFile(path.join(directory, "docs", "fuckia", "archive", "linear-issue-chain.json"), "utf8");
+
+    assert.equal(result.status, "blocked");
+    assert.equal(result.issues.length, 2);
+    assert.equal(result.remoteWrites.length, 2);
+    assert.match(receipt, /"identifier": "ENG-2"/);
+    assert.match(receipt, /"error": "Linear fixture failure"/);
+  });
+});
+
 test("strict apply enables strict mode after init install", async () => {
   await withTempProject(async (directory) => {
     await capture(["init", "--apply"], directory);
@@ -598,6 +702,18 @@ test("strict apply enables strict mode after init install", async () => {
     assert.match(config, /strict_checks_enabled: true/);
     assert.match(receipt, /Strict mode is enabled/);
     assert.equal(after.findings.filter((finding) => finding.level === "fail").length, 0);
+  });
+});
+
+test("strict apply is idempotent on an already strict project", async () => {
+  await withTempProject(async (directory) => {
+    await capture(["init", "--apply"], directory);
+    await applyStrictMode(directory);
+    const result = await applyStrictMode(directory);
+
+    assert.equal(result.status, "unchanged");
+    assert.deepEqual(result.written, []);
+    assert.deepEqual(result.blockers, []);
   });
 });
 
@@ -672,6 +788,30 @@ function fakeLinearClient(teams: LinearTeam[]): LinearClient {
       return teams;
     },
     async createIssue(input: { title: string }): Promise<LinearIssue> {
+      const team = teams[0];
+      const issue: LinearIssue = {
+        id: `issue-${created.length + 1}`,
+        identifier: `${team.key}-${created.length + 1}`,
+        title: input.title,
+        url: `https://linear.app/fuckia/issue/${team.key}-${created.length + 1}`
+      };
+      created.push(issue);
+      return issue;
+    }
+  };
+}
+
+function failingLinearClient(teams: LinearTeam[], failAfter: number): LinearClient {
+  const created: LinearIssue[] = [];
+  return {
+    async listTeams(): Promise<LinearTeam[]> {
+      return teams;
+    },
+    async createIssue(input: { title: string }): Promise<LinearIssue> {
+      if (created.length >= failAfter) {
+        throw new Error("Linear fixture failure");
+      }
+
       const team = teams[0];
       const issue: LinearIssue = {
         id: `issue-${created.length + 1}`,

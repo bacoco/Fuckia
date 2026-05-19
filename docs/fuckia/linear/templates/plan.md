@@ -1,5 +1,9 @@
 # Plan
 
+## Source of Truth Used
+
+-
+
 ## Implementation Plan
 
 List ordered tasks.
@@ -9,6 +13,10 @@ List ordered tasks.
 -
 
 ## Forbidden Files
+
+-
+
+## Workflow to Preserve
 
 -
 

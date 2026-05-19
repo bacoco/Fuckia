@@ -21,7 +21,7 @@ export interface StrictReport {
 }
 
 export interface StrictApplyResult {
-  status: "applied" | "blocked";
+  status: "applied" | "blocked" | "unchanged";
   targetRoot: string;
   written: string[];
   blockers: string[];
@@ -160,12 +160,29 @@ export async function applyStrictMode(targetRoot: string): Promise<StrictApplyRe
 
   const config = await readFile(configPath, "utf8");
   const strictConfig = config
-  const strictConfig = config
-    .replace(/(^|\n)mode:\s*warning(\s*#.*)?(\n|$)/, "$1mode: strict$2$3")
-    .replace(/strict_checks_enabled:\s*false/g, "strict_checks_enabled: true")
-    .replace(/pr_template:\s*['"]?\.github\/pull_request_template\.md['"]?/g, "pr_template: .github/PULL_REQUEST_TEMPLATE.md");
+    .replace(/(^|\n)(\s*)mode:\s*["']?warning["']?(\s*(?:#.*)?)(\n|$)/, "$1$2mode: strict$3$4")
+    .replace(/(^|\n)(\s*)strict_checks_enabled:\s*false(\s*(?:#.*)?)(\n|$)/g, "$1$2strict_checks_enabled: true$3$4")
+    .replace(
+      /(^|\n)(\s*)pr_template:\s*["']?\.github\/pull_request_template\.md["']?(\s*(?:#.*)?)(\n|$)/g,
+      "$1$2pr_template: .github/PULL_REQUEST_TEMPLATE.md$3$4"
+    );
 
   if (strictConfig === config) {
+    const alreadyStrict =
+      /(^|\n)\s*mode:\s*["']?strict["']?(\s*(?:#.*)?)(\n|$)/.test(config) &&
+      /(^|\n)\s*strict_checks_enabled:\s*true(\s*(?:#.*)?)(\n|$)/.test(config) &&
+      /(^|\n)\s*pr_template:\s*["']?\.github\/PULL_REQUEST_TEMPLATE\.md["']?(\s*(?:#.*)?)(\n|$)/.test(config);
+
+    if (alreadyStrict) {
+      return {
+        status: "unchanged",
+        targetRoot: root,
+        written: [],
+        blockers: [],
+        reportBefore
+      };
+    }
+
     return {
       status: "blocked",
       targetRoot: root,

@@ -46,6 +46,11 @@ interface ActionsPermissionsPayload {
   allowed_actions?: unknown;
 }
 
+interface StatusCheckProtectionPayload {
+  contexts?: unknown;
+  checks?: unknown;
+}
+
 const requiredLocalFiles = [
   ".github/PULL_REQUEST_TEMPLATE.md",
   ".github/workflows/collab-contract.yml",
@@ -179,15 +184,15 @@ export async function auditGitHubRemote(options: GitHubAuditOptions): Promise<Gi
   }
 
   if (defaultBranch) {
-    const requiredContexts = await runGhJson<string[]>(
+    const requiredChecks = await runGhJson<StatusCheckProtectionPayload>(
       runner,
       targetRoot,
-      ["api", `repos/${remote.fullName}/branches/${encodeURIComponent(defaultBranch)}/protection/required_status_checks/contexts`]
+      ["api", `repos/${remote.fullName}/branches/${encodeURIComponent(defaultBranch)}/protection/required_status_checks`]
     );
 
-    if (requiredContexts.ok) {
-      requiredCheckContexts = requiredContexts.value;
-      const missing = expectedRequiredChecks.filter((check) => !requiredContexts.value.includes(check));
+    if (requiredChecks.ok) {
+      requiredCheckContexts = readStatusCheckContexts(requiredChecks.value);
+      const missing = expectedRequiredChecks.filter((check) => !requiredCheckContexts?.includes(check));
       checks.push({
         id: "github:required-checks",
         status: missing.length === 0 ? "pass" : "fail",
@@ -199,7 +204,7 @@ export async function auditGitHubRemote(options: GitHubAuditOptions): Promise<Gi
       checks.push({
         id: "github:required-checks",
         status: "fail",
-        message: `Required checks are not verified: ${requiredContexts.message}`
+        message: `Required checks are not verified: ${requiredChecks.message}`
       });
     }
   }
@@ -230,10 +235,23 @@ function buildReport(
       "GET /repos/{owner}/{repo}",
       "GET /repos/{owner}/{repo}/actions/permissions",
       "GET /repos/{owner}/{repo}/rulesets",
-      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts"
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
     ],
     nextSteps: buildNextSteps(checks)
   };
+}
+
+export function readStatusCheckContexts(payload: StatusCheckProtectionPayload): string[] {
+  const contexts = Array.isArray(payload.contexts)
+    ? payload.contexts.filter((context): context is string => typeof context === "string")
+    : [];
+  const checkContexts = Array.isArray(payload.checks)
+    ? payload.checks
+      .map((check) => check && typeof check === "object" && "context" in check ? (check as { context?: unknown }).context : null)
+      .filter((context): context is string => typeof context === "string")
+    : [];
+
+  return Array.from(new Set([...contexts, ...checkContexts])).sort((a, b) => a.localeCompare(b));
 }
 
 function buildNextSteps(checks: GitHubAuditCheck[]): string[] {

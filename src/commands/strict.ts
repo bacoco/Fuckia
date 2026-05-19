@@ -16,10 +16,9 @@ export async function runStrict(args: ParsedArgs, context: CommandContext): Prom
     const result = await applyStrictMode(context.cwd);
     context.stdout(formatHeading("Fuckia Strict Apply"));
     context.stdout(formatJson(result));
-    return result.status === "applied" ? 0 : 1;
+    return result.status === "applied" || result.status === "unchanged" ? 0 : 1;
   }
 
   context.stderr("Error: use `fuckia strict --dry-run [--strict]` or `fuckia strict --apply`.\n");
   return 1;
 }
-

@@ -20,6 +20,11 @@ export async function runLinear(args: ParsedArgs, context: CommandContext): Prom
   }
 
   if (args.flags.has("apply")) {
+    if (!teamKey) {
+      context.stderr("Error: `--team <TEAM_KEY>` is required when using `fuckia linear --apply`.\n");
+      return 1;
+    }
+
     const result = await applyLinear({
       targetRoot: context.cwd,
       teamKey,
@@ -33,4 +38,3 @@ export async function runLinear(args: ParsedArgs, context: CommandContext): Prom
   context.stderr("Error: use `fuckia linear --dry-run [--team <TEAM_KEY>]` or `fuckia linear --apply --yes --team <TEAM_KEY>`.\n");
   return 1;
 }
-

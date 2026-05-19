@@ -16,6 +16,8 @@ export interface LinearClient {
   createIssue(input: { teamId: string; title: string; description: string }): Promise<LinearIssue>;
 }
 
+const linearRequestTimeoutMs = 15_000;
+
 interface GraphQLResponse<T> {
   data?: T;
   errors?: Array<{ message?: string }>;
@@ -58,14 +60,28 @@ export class LinearGraphQLClient implements LinearClient {
   }
 
   private async request<T>(query: string, variables: Record<string, unknown>): Promise<T> {
-    const response = await fetch(this.endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: this.apiKey
-      },
-      body: JSON.stringify({ query, variables })
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), linearRequestTimeoutMs);
+    let response: Response;
+
+    try {
+      response = await fetch(this.endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.apiKey
+        },
+        body: JSON.stringify({ query, variables }),
+        signal: controller.signal
+      });
+    } catch (error) {
+      if (isAbortError(error)) {
+        throw new Error(`Linear GraphQL request timed out after ${linearRequestTimeoutMs}ms.`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!response.ok) {
       throw new Error(`Linear GraphQL HTTP ${response.status}.`);
@@ -84,3 +100,6 @@ export class LinearGraphQLClient implements LinearClient {
   }
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
+}
