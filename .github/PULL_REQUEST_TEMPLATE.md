@@ -16,6 +16,15 @@ Fixes:
 - [ ] Validation rule
 - [ ] Installation or migration behavior
 
+## AI Identity
+
+Author AI:
+
+Validator AI:
+
+- [ ] Validator AI is different from Author AI when independent review is required.
+- [ ] GitHub account identity is used only as transport, not as proof of AI independence.
+
 ## Plan Review
 
 - [ ] Plan reviewed by another agent or human.

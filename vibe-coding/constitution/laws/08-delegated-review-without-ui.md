@@ -22,18 +22,30 @@ The agent must not fake independence.
 
 The implementation AI must not approve its own PR.
 
+Review independence is the identity of the AI reviewer, not the GitHub account used to submit the review.
+
 A review is valid only when it comes from:
 
 - a human reviewer with write access;
 - another AI agent;
-- a separate review-only context with no implementation ownership;
+- a different AI identity with review-only ownership;
 - an approved GitHub App reviewer that actually reviewed the change.
 
-GitHub account identity is an enforcement mechanism, not the source of truth for independence.
+Every PR must trace:
 
-If GitHub requires approval from someone other than the latest pusher, the approval must also be submitted through a GitHub account that branch protection accepts.
+- author AI;
+- validator AI;
+- whether validator AI is different from author AI.
 
-If the current agent cannot access the other AI or eligible GitHub account, it must give the human a copy-paste prompt for the other AI.
+GitHub account identity is transport only.
+
+If a different AI reviewer uses the same GitHub account and GitHub accepts the review, the AI-independence rule is satisfied.
+
+Do not switch GitHub accounts to simulate independent AI review.
+
+If GitHub rejects the review because of account-level branch protection, the agent must report that platform blocker.
+
+If the current agent cannot access the other AI, it must give the human a copy-paste prompt for the other AI.
 
 ## Forbidden Shortcut
 

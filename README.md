@@ -10,6 +10,21 @@ Use it when you want multiple agents to work fast without losing the real produc
 
 Fuckia also improves from public failure reports: when users hit a new Claude/Codex collaboration failure, the report can become a reviewed pull request that strengthens the rules, skills, templates, or checks.
 
+## Loic's Laws Of Vibe Coding
+
+Like Asimov-style robotics laws for AI coding sessions, these laws come first:
+
+1. One source of truth before work.
+2. Progressive disclosure before detail: small files, clear directories, local READMEs.
+3. Evidence before claim: if a fact is not verified, write `Unknown`, verify, ask, or stop.
+4. Preserve working systems: no parallel engine, store, router, hook, workflow, or pipeline without an explicit contract.
+5. Separate authority: the AI that implements risky work must not validate its own work.
+6. Done means the real workflow is verified, required checks pass, independent review is complete when required, and evidence is recorded.
+7. Review independence is AI identity, not GitHub account identity.
+8. Every PR must trace the author AI and validator AI.
+9. Never switch GitHub accounts to simulate independent review.
+10. End every substantial task with current state, done, verification, corrections, remaining work, and next action.
+
 ## The Problem
 
 Claude and Codex do not automatically share a cockpit.
@@ -126,11 +141,13 @@ Review and merge this PR using Fuckia. Read `https://github.com/bacoco/Fuckia/bl
 
 The agent must do the comment triage, propose fixes, run verification, and report exact merge blockers.
 
-The policy is AI-level independence: the AI that implemented the PR must not approve it.
+The rule is AI identity independence: the AI that implemented the PR must not approve it.
 
-GitHub account identity is the enforcement mechanism. If GitHub requires approval from someone other than the latest pusher, the agent needs an eligible write-access account to submit the independent review.
+GitHub account identity is only transport. The same GitHub account may be used by a different AI reviewer when GitHub accepts the review, but the PR must record both identities: author AI and validator AI.
 
-If the current agent cannot access the other AI or eligible GitHub account, it must give you a copy-paste prompt for the other AI.
+If GitHub branch protection rejects the review because of account-level rules, report that exact platform blocker. Do not switch GitHub accounts to simulate AI independence.
+
+If the current agent cannot access the other AI, it must give you a copy-paste prompt for the other AI.
 
 ## Safety Contract
 

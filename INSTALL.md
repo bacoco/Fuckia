@@ -212,11 +212,14 @@ The agent must:
 - apply approved fixes;
 - verify;
 - submit approval only from an AI or human reviewer independent from the implementation agent;
-- submit approval or merge only through a GitHub account accepted by branch protection.
+- record the author AI and validator AI identities in the PR or review receipt;
+- submit approval or merge only when GitHub accepts the operation.
 
 If the current agent cannot access the other AI directly, give the human a copy-paste prompt for that AI.
 
-If GitHub requires approval from someone other than the latest pusher and no separate write-access account exists, stop and report that blocker.
+GitHub account identity is transport only. Do not switch GitHub accounts to simulate independent AI review.
+
+If GitHub rejects the review because of account-level branch protection, stop and report that platform blocker.
 
 ## Allowed Future Writes After Approval
 

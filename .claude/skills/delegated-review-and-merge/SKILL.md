@@ -6,7 +6,7 @@ description: Use when a PR needs review handling, user approval, GitHub approval
 <!--
 GENERATED FILE - DO NOT EDIT DIRECTLY
 source: skills-src/shared/delegated-review-and-merge.skill.md
-source_hash: 2d12e52a3c7d8b8e342072a2aafa7beb85d9ae747efc6756a34827a42ebfda9a
+source_hash: 3a9fe75d3f497370106981dc392f710aa17c4062e3668fa2adce5eb1f0b996aa
 generated_by: fuckia generate-skills
 target: claude
 -->
@@ -40,8 +40,9 @@ Before merge or approval, produce:
 - exact fixes proposed;
 - files that will be changed;
 - verification commands to run;
-- implementation agent identity when known;
-- required independent reviewer agent;
+- author AI identity;
+- validator AI identity;
+- explicit statement that validator AI is different from author AI;
 - merge blockers that require GitHub permission.
 
 ## Human Decision Modes
@@ -64,18 +65,28 @@ The AI that implemented the PR must not approve the PR.
 The approving review must come from:
 
 - a different AI agent;
-- a different agent context with explicit review-only ownership;
+- a different AI identity with explicit review-only ownership;
 - a human acting as reviewer.
 
-GitHub account identity is only the execution mechanism. It is not the definition of review independence.
+GitHub account identity is transport only. It is not the definition of review independence.
+
+Every PR or review receipt must trace:
+
+- author AI;
+- validator AI;
+- whether validator AI is different from author AI.
+
+Never switch GitHub accounts to simulate independent AI review.
 
 ## GitHub Execution Rule
 
-Submit the GitHub approval only through an account that GitHub branch protection accepts.
+Submit the GitHub approval only when GitHub accepts the operation.
 
-If GitHub requires approval from a user other than the latest pusher, use an eligible account with write access.
+If a different AI reviewer uses the same GitHub account and GitHub accepts the review, the Fuckia AI-independence rule is satisfied.
 
-If the current agent cannot access an eligible reviewer or account, give the human a copy-paste prompt for the other AI.
+If GitHub rejects the review because of account-level branch protection, report that platform blocker.
+
+If the current agent cannot access a different AI reviewer, give the human a copy-paste prompt for the other AI.
 
 ## Merge Rule
 
@@ -94,7 +105,8 @@ When stopping for external review, provide a complete prompt for the other AI.
 The prompt must include:
 
 - PR URL;
-- implementation agent identity when known;
+- author AI identity;
+- validator AI identity field for the other AI to fill;
 - required review stance;
 - checks to verify;
 - comments to inspect;

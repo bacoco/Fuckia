@@ -15,8 +15,9 @@ The agent must prepare a review packet before merge:
 - proposed fixes;
 - verification commands;
 - required human decisions;
-- implementation agent identity when known;
-- required independent reviewer agent;
+- author AI identity;
+- validator AI identity;
+- explicit statement that validator AI is different from author AI;
 - GitHub permission blockers.
 
 ## Human Decision
@@ -32,15 +33,21 @@ The human may answer:
 
 The implementing AI must not approve its own work.
 
-Approval must come from another AI, a review-only agent context, or a human reviewer.
+Approval must come from another AI identity, a review-only AI identity, or a human reviewer.
 
-GitHub identity only executes the approval. It does not prove AI independence by itself.
+GitHub identity only transports the approval. It does not prove AI independence by itself.
+
+Every approval must record author AI and validator AI.
+
+Never switch GitHub accounts to simulate independent AI review.
 
 ## GitHub Boundary
 
-The agent may submit reviews or merge only through a GitHub identity that satisfies branch protection.
+The agent may submit reviews or merge only when GitHub accepts the operation.
 
-If GitHub requires approval from someone other than the latest pusher and no eligible account is available, the agent must report that exact blocker.
+If a different AI reviewer uses the same GitHub account and GitHub accepts the review, this gate is satisfied.
+
+If GitHub rejects the review because of account-level branch protection, the agent must report that exact blocker.
 
 If the agent cannot access the other AI directly, it must output a copy-paste prompt for that AI.
 
