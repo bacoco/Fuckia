@@ -1,9 +1,9 @@
-# GitHub
+# Not The Product README
 
-This directory contains repository GitHub metadata for Fuckia itself.
-
-Target-project GitHub templates live in:
+Read the product page at the repository root:
 
 ```text
-kit/templates/github/
+README.md
 ```
+
+This directory contains GitHub issue templates, pull request templates, and workflows for Fuckia itself.
