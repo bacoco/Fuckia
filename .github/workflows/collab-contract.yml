@@ -1,0 +1,17 @@
+name: Fuckia Collaboration Contract
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check governance files
+        run: |
+          test -f AGENTS.md
+          test -f CLAUDE.md
+          test -f fuckia.config.yaml
+          test -f docs/fuckia/README.md
