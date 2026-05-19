@@ -4,6 +4,11 @@
 
 Linear issue:
 
+## Plan Review
+
+- [ ] Plan reviewed by another agent or human.
+- [ ] Risky work does not use self-review.
+
 ## Scope
 
 Allowed files:
@@ -29,3 +34,11 @@ Commands and workflow tested:
 - [ ] Working behavior was preserved.
 - [ ] Generated skills were not edited by hand.
 - [ ] Verification receipt is included for product-visible behavior.
+
+## Adversarial Implementer Pass
+
+- Bad implementation path:
+- Guardrail added:
+- Existing behavior that must be preserved:
+- Forbidden implementation shortcuts:
+- Regression proof required:

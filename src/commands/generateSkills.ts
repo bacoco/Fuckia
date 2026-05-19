@@ -7,9 +7,10 @@ export async function runGenerateSkills(args: ParsedArgs, context: CommandContex
   const write = args.flags.has("write");
   const check = args.flags.has("check") || !write;
   const examples = args.flags.has("examples");
+  const install = args.flags.has("install");
 
-  if (write && !examples) {
-    context.stderr("Error: generated skill writes are limited to `--write --examples`.\n");
+  if (write && examples === install) {
+    context.stderr("Error: use exactly one generated skill write target: `--write --examples` or `--write --install`.\n");
     return 1;
   }
 
@@ -19,7 +20,8 @@ export async function runGenerateSkills(args: ParsedArgs, context: CommandContex
 
   const result = await generateSharedSkills({
     rootDir: context.cwd,
-    mode: write ? "write" : "check"
+    mode: write ? "write" : "check",
+    outputKind: install ? "install" : "examples"
   });
 
   context.stdout(formatHeading(write ? "Fuckia Generate Skills" : "Fuckia Skill Check"));

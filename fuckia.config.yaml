@@ -1,5 +1,5 @@
 version: 1
-mode: warning
+mode: strict
 
 agents:
   claude:
@@ -11,8 +11,8 @@ agents:
 
 github:
   workflows_dir: .github/workflows
-  pr_template: .github/pull_request_template.md
-  strict_checks_enabled: false
+  pr_template: .github/PULL_REQUEST_TEMPLATE.md
+  strict_checks_enabled: true
 
 linear:
   required: false

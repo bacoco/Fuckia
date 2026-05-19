@@ -102,6 +102,18 @@ The agent reads `INSTALL.md`, audits the repository, and reports exactly what it
 
 Nothing is written until you approve the exact file list.
 
+Without an agent, run:
+
+```bash
+npx --yes github:bacoco/Fuckia install --dry-run
+```
+
+After reviewing the file list:
+
+```bash
+npx --yes github:bacoco/Fuckia install --apply --yes
+```
+
 ## Safety Contract
 
 Fuckia installation starts with audit only.
@@ -119,6 +131,8 @@ It must not:
 Working now:
 
 - `doctor`;
+- `install --dry-run`;
+- `install --apply --yes`;
 - `init --dry-run`;
 - `init --apply` for conflict-free governance install;
 - `migrate --dry-run`;
@@ -127,21 +141,24 @@ Working now:
 - `github --dry-run` for read-only GitHub remote readiness audit;
 - `github --dry-run --strict` for blocking GitHub remote readiness verification;
 - `github --apply --yes` for conservative remote branch protection on unprotected repositories;
+- merge-preserving GitHub status check apply for repositories with existing branch protection;
+- `linear --dry-run`;
+- `linear --apply --yes --team <TEAM_KEY>` for Linear issue-chain creation;
+- `strict --dry-run`;
+- `strict --apply`;
 - no-write tests;
 - agent install entrypoint: `INSTALL.md`;
 - public issue templates;
 - PR template for governed improvements;
-- first shared skill source: `adversarial-implementer-guard`;
+- shared skill sources for source-of-truth, plan review, real verification, destructive changes, handoff, platform permissions, end checkpoint, and adversarial implementation;
 - deterministic Claude/Codex skill generator for examples;
 - skill drift check: `fuckia generate-skills --check`;
 - conflict-free `init --apply` writes Claude and Codex skills into target repositories.
 
 Next:
 
-- remaining shared skill catalog;
-- merge-preserving GitHub remote apply for repositories with existing rulesets or branch protection;
-- Linear template automation;
-- strict CI gates;
+- package or plugin publishing;
+- Linear native issue-template API support when official template mutation support is available;
 - automated issue clustering and improvement proposals.
 
 ## For Maintainers

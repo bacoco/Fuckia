@@ -14,4 +14,9 @@ jobs:
       - name: Report changed files
         run: |
           git diff --name-only origin/${{ github.base_ref }}...HEAD | tee changed-files.txt
-          echo "Fuckia warning mode: review changed-files.txt against the PR allowed and forbidden file lists."
+          echo "Fuckia strict mode: review changed-files.txt against the PR allowed and forbidden file lists."
+      - name: Enforce destructive change guard
+        run: |
+          deleted_lines="$(git diff --numstat origin/${{ github.base_ref }}...HEAD | awk '{sum += $2} END {print sum + 0}')"
+          echo "Deleted lines: $deleted_lines"
+          test "$deleted_lines" -le 400

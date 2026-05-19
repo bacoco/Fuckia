@@ -9,6 +9,9 @@ import { applyGitHubRemote } from "../src/github/apply";
 import { auditGitHubRemote } from "../src/github/audit";
 import { parseGitHubRemote } from "../src/github/remote";
 import type { CommandResult, CommandRunner } from "../src/github/runner";
+import { applyLinear, dryRunLinear } from "../src/linear/setup";
+import type { LinearClient, LinearIssue, LinearTeam } from "../src/linear/client";
+import { applyStrictMode, checkStrictMode } from "../src/strict/check";
 
 async function withTempProject(run: (directory: string) => Promise<void>): Promise<void> {
   const directory = await mkdtemp(path.join(tmpdir(), "fuckia-test-"));
@@ -57,6 +60,8 @@ test("--help prints usage", async () => {
     assert.match(result.stdout, /fuckia doctor/);
     assert.match(result.stdout, /fuckia github --dry-run/);
     assert.match(result.stdout, /fuckia github --apply --yes/);
+    assert.match(result.stdout, /fuckia linear --dry-run/);
+    assert.match(result.stdout, /fuckia strict --dry-run/);
     assert.equal(result.stderr, "");
   });
 });
@@ -75,6 +80,31 @@ test("init --dry-run writes nothing", async () => {
   });
 });
 
+test("install --dry-run detects new project and writes nothing", async () => {
+  await withTempProject(async (directory) => {
+    const before = await snapshotTree(directory);
+    const result = await capture(["install", "--dry-run"], directory);
+    const after = await snapshotTree(directory);
+
+    assert.equal(result.exitCode, 0);
+    assert.deepEqual(after, before);
+    assert.match(result.stdout, /"targetKind": "new"/);
+    assert.match(result.stdout, /AGENTS.md/);
+  });
+});
+
+test("install --apply --yes installs new project governance", async () => {
+  await withTempProject(async (directory) => {
+    const result = await capture(["install", "--apply", "--yes"], directory);
+    const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"targetKind": "new"/);
+    assert.match(result.stdout, /"status": "applied"/);
+    assert.match(agents, /Codex must follow Fuckia governance/);
+  });
+});
+
 test("init --apply installs governance files and generated skills", async () => {
   await withTempProject(async (directory) => {
     const result = await capture(["init", "--apply"], directory);
@@ -90,6 +120,10 @@ test("init --apply installs governance files and generated skills", async () => 
     );
     const workflow = await readFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "utf8");
     const checkpoint = await readFile(path.join(directory, "docs", "fuckia", "end-of-work-checkpoint.md"), "utf8");
+    const linearTemplate = await readFile(
+      path.join(directory, "docs", "fuckia", "linear", "templates", "plan-review.md"),
+      "utf8"
+    );
 
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /"status": "applied"/);
@@ -99,6 +133,7 @@ test("init --apply installs governance files and generated skills", async () => 
     assert.match(claudeSkill, /target: claude/);
     assert.match(workflow, /Fuckia Collaboration Contract/);
     assert.match(checkpoint, /Current state:/);
+    assert.match(linearTemplate, /Adversarial Implementer Pass/);
   });
 });
 
@@ -244,6 +279,27 @@ test("generate-skills --write --examples creates Claude and Codex outputs", asyn
     assert.match(claudeSkill, /## Claude Mechanics/);
     assert.match(codexSkill, /target: codex/);
     assert.match(codexSkill, /## Codex Mechanics/);
+  });
+});
+
+test("generate-skills --write --install creates installed Claude and Codex outputs", async () => {
+  await withTempProject(async (directory) => {
+    await createSkillSource(directory);
+
+    const result = await capture(["generate-skills", "--write", "--install"], directory);
+    const claudeSkill = await readFile(
+      path.join(directory, ".claude", "skills", "demo-guard", "SKILL.md"),
+      "utf8"
+    );
+    const codexSkill = await readFile(
+      path.join(directory, ".agents", "skills", "demo-guard", "SKILL.md"),
+      "utf8"
+    );
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"status": "written"/);
+    assert.match(claudeSkill, /target: claude/);
+    assert.match(codexSkill, /target: codex/);
   });
 });
 
@@ -438,6 +494,113 @@ test("github apply creates branch protection for an unprotected repository", asy
   });
 });
 
+test("github apply merges required checks into existing branch protection", async () => {
+  await withTempProject(async (directory) => {
+    await createInstalledGithubFiles(directory);
+    const writes: Array<{ key: string; stdin?: string }> = [];
+    const before = await snapshotTree(directory);
+    const runner = recordingRunner({
+      "git remote get-url origin": ok("https://github.com/bacoco/Fuckia.git\n"),
+      "gh --version": ok("gh version 2.0.0\n"),
+      "gh auth status": ok("Logged in\n"),
+      "gh api repos/bacoco/Fuckia": ok(JSON.stringify({
+        default_branch: "main",
+        permissions: { admin: true, push: true, pull: true }
+      })),
+      "gh api repos/bacoco/Fuckia/actions/permissions": ok(JSON.stringify({
+        enabled: true,
+        allowed_actions: "all"
+      })),
+      "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([{ id: 99, name: "Existing ruleset" }])),
+      "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": [
+        ok(JSON.stringify(["contract", "existing-ci"])),
+        ok(JSON.stringify(["contract", "existing-ci", "generated-skills", "scope"]))
+      ],
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/collab-contract.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/generated-skills.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/pr-scope.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/branches/main/protection": ok(JSON.stringify({
+        required_status_checks: {
+          strict: false,
+          contexts: ["contract", "existing-ci"]
+        }
+      })),
+      "gh api --method PATCH repos/bacoco/Fuckia/branches/main/protection/required_status_checks --input -": ok("{}")
+    }, writes);
+
+    const result = await applyGitHubRemote({
+      targetRoot: directory,
+      approveRemoteWrites: true,
+      runner
+    });
+    const after = await snapshotTree(directory);
+    const write = writes.find((entry) => entry.key === "gh api --method PATCH repos/bacoco/Fuckia/branches/main/protection/required_status_checks --input -");
+
+    assert.deepEqual(after, before);
+    assert.equal(result.status, "applied");
+    assert.deepEqual(result.remoteWrites, ["PATCH /repos/bacoco/Fuckia/branches/main/protection/required_status_checks"]);
+    assert.match(write?.stdin ?? "", /"existing-ci"/);
+    assert.match(write?.stdin ?? "", /"generated-skills"/);
+    assert.match(write?.stdin ?? "", /"strict": true/);
+  });
+});
+
+test("linear dry-run reports missing API key without writing", async () => {
+  await withTempProject(async (directory) => {
+    const before = await snapshotTree(directory);
+    const report = await dryRunLinear({
+      targetRoot: directory,
+      apiKey: ""
+    });
+    const after = await snapshotTree(directory);
+
+    assert.deepEqual(after, before);
+    assert.equal(report.apiKey, "missing");
+    assert.equal(report.blockers.includes("LINEAR_API_KEY is missing."), true);
+    assert.equal(report.templates.length, 6);
+  });
+});
+
+test("linear apply creates issue chain and archive receipt", async () => {
+  await withTempProject(async (directory) => {
+    const client = fakeLinearClient([
+      { id: "team-1", key: "ENG", name: "Engineering" }
+    ]);
+    const result = await applyLinear({
+      targetRoot: directory,
+      apiKey: "lin_api_key",
+      teamKey: "ENG",
+      approveRemoteWrites: true,
+      client
+    });
+    const receipt = await readFile(path.join(directory, "docs", "fuckia", "archive", "linear-issue-chain.json"), "utf8");
+
+    assert.equal(result.status, "applied");
+    assert.equal(result.issues.length, 6);
+    assert.equal(result.remoteWrites.length, 6);
+    assert.match(receipt, /"identifier": "ENG-1"/);
+    assert.match(receipt, /"identifier": "ENG-6"/);
+  });
+});
+
+test("strict apply enables strict mode after init install", async () => {
+  await withTempProject(async (directory) => {
+    await capture(["init", "--apply"], directory);
+    const before = await checkStrictMode(directory);
+    const result = await applyStrictMode(directory);
+    const after = await checkStrictMode(directory);
+    const config = await readFile(path.join(directory, "fuckia.config.yaml"), "utf8");
+    const receipt = await readFile(path.join(directory, "docs", "fuckia", "strict-mode.md"), "utf8");
+
+    assert.equal(before.findings.some((finding) => finding.id === "config:mode" && finding.level === "fail"), true);
+    assert.equal(result.status, "applied");
+    assert.match(config, /mode: strict/);
+    assert.match(config, /strict_checks_enabled: true/);
+    assert.match(receipt, /Strict mode is enabled/);
+    assert.equal(after.findings.filter((finding) => finding.level === "fail").length, 0);
+  });
+});
+
 async function createSkillSource(directory: string): Promise<void> {
   const sourceDir = path.join(directory, "skills-src", "shared");
   await mkdir(sourceDir, { recursive: true });
@@ -498,6 +661,26 @@ function recordingRunner(results: Record<string, FakeResult>, writes: Array<{ ke
       }
 
       return result ?? fail(`Unexpected command: ${key}`);
+    }
+  };
+}
+
+function fakeLinearClient(teams: LinearTeam[]): LinearClient {
+  const created: LinearIssue[] = [];
+  return {
+    async listTeams(): Promise<LinearTeam[]> {
+      return teams;
+    },
+    async createIssue(input: { title: string }): Promise<LinearIssue> {
+      const team = teams[0];
+      const issue: LinearIssue = {
+        id: `issue-${created.length + 1}`,
+        identifier: `${team.key}-${created.length + 1}`,
+        title: input.title,
+        url: `https://linear.app/fuckia/issue/${team.key}-${created.length + 1}`
+      };
+      created.push(issue);
+      return issue;
     }
   };
 }

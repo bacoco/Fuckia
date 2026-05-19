@@ -1,6 +1,6 @@
 # Remaining Work
 
-This directory tracks what is required before Fuckia is a complete installable product.
+This directory tracks what remains after the implemented installable product slice.
 
 ## Primary Goal
 
@@ -8,41 +8,37 @@ Make Claude Code and Codex collaborate safely on one repository through installe
 
 Self-improvement from public issues is secondary.
 
-## Remaining Product Work
+## Implemented Product Work
 
-1. GitHub merge-preserving remote apply.
-   - Extend `github --apply --yes` for repositories that already have branch protection or rulesets.
-   - Preserve existing branch protection and rulesets.
-   - Verify the final remote state after writes.
+- GitHub dry-run audit.
+- GitHub remote apply for unprotected repositories.
+- GitHub merge-preserving status check apply for existing branch protection.
+- Linear GraphQL issue-chain creation.
+- Local Linear template installation.
+- Strict local mode.
+- Shared Claude and Codex skill catalog.
+- GitHub-backed one-line install commands.
 
-2. Linear automation.
-   - Verify official Linear capabilities.
-   - Generate or install issue templates for spec, plan, plan-review, implementation, code-review, and verification.
-   - Record the Linear issue chain in `docs/fuckia/archive`.
+## Remaining Release Work
 
-3. Strict mode.
-   - Turn warning checks into blocking checks.
-   - Block missing plan review, self-review on risky work, missing verification receipt, and generated skill drift.
+1. Package and plugin publishing.
+   - Publish NPM package or another package-manager entrypoint.
+   - Package Claude plugin or marketplace path.
+   - Keep GitHub-backed `npx` as the current direct install path.
 
-4. Shared skill catalog.
-   - Add initial shared skills beyond `adversarial-implementer-guard`.
-   - Generate Claude and Codex outputs from one neutral source.
-   - Verify generated output drift in CI.
+2. Linear native template mutation.
+   - Add native Linear issue-template creation only when official template mutation support is verified.
+   - Keep current GraphQL issue-chain creation as the implemented remote Linear setup.
 
-5. One-command distribution.
-   - Publish the package or plugin path.
-   - Keep the human install entrypoint to one prompt.
-   - Keep the agent execution path audit-first for existing repositories.
-
-6. Public improvement loop.
+3. Public improvement loop.
    - Convert real failure reports into issues.
    - Require pull requests for rule, skill, template, and validator changes.
    - Keep this secondary to the Claude/Codex collaboration goal.
 
 ## Adversarial Implementer Pass
 
-- Bad interpretation to block: GitHub workflow files in the target repository mean GitHub is fully configured.
-- Guardrail added: remote readiness has a separate `github --dry-run` command and remote apply is still listed as remaining work.
-- Existing behavior that must be preserved: `init --apply` and `migrate --apply` install local files only and must not write product code.
-- Forbidden implementation shortcuts: do not overwrite existing branch protection, rulesets, or required checks.
-- Regression proof required: tests must prove read-only audit behavior and remote state checks before any future remote write command is accepted.
+- Bad implementation path: treat release publishing as required for local GitHub-backed usage.
+- Guardrail added: current one-line GitHub-backed `npx` path is documented separately from package publishing.
+- Existing behavior that must be preserved: `install --dry-run` is read-only and `install --apply --yes` does not modify product code.
+- Forbidden implementation shortcuts: do not claim native Linear issue-template mutation until official API support is verified.
+- Regression proof required: tests must cover install, GitHub, Linear, strict mode, and generated skills.

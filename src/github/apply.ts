@@ -53,10 +53,6 @@ export async function applyGitHubRemote(options: GitHubApplyOptions): Promise<Gi
     blockers.push("Default branch is required for remote apply.");
   }
 
-  if (auditBefore.rulesetCount !== null && auditBefore.rulesetCount > 0) {
-    blockers.push("Repository rulesets already exist; merge-preserving ruleset apply is not implemented.");
-  }
-
   const requiredChecks = auditBefore.checks.find((check) => check.id === "github:required-checks");
   if (requiredChecks?.status === "pass") {
     return {
@@ -94,10 +90,20 @@ export async function applyGitHubRemote(options: GitHubApplyOptions): Promise<Gi
   );
 
   if (protection.exitCode === 0) {
-    return blocked(targetRoot, auditBefore, [
-      ...blockers,
-      "Branch protection already exists; merge-preserving branch protection apply is not implemented."
-    ]);
+    const existingContexts = readExistingStatusCheckContexts(protection.stdout, auditBefore.requiredCheckContexts);
+    const contexts = mergeContexts(existingContexts, auditBefore.expectedRequiredChecks);
+    const endpoint = `repos/${auditBefore.remote.fullName}/branches/${encodeURIComponent(auditBefore.defaultBranch)}/protection/required_status_checks`;
+    const payload = JSON.stringify(buildStatusCheckPayload(contexts), null, 2);
+    const apply = await runner.run("gh", ["api", "--method", "PATCH", endpoint, "--input", "-"], targetRoot, payload);
+
+    if (apply.exitCode !== 0) {
+      return blocked(targetRoot, auditBefore, [
+        ...blockers,
+        `Status check merge failed: ${formatCommandFailure(apply)}`
+      ]);
+    }
+
+    return verifyStatusChecks(runner, targetRoot, auditBefore, endpoint.replace("/required_status_checks", ""), `PATCH /${endpoint}`);
   }
 
   const protectionMessage = formatCommandFailure(protection);
@@ -119,10 +125,20 @@ export async function applyGitHubRemote(options: GitHubApplyOptions): Promise<Gi
     ]);
   }
 
+  return verifyStatusChecks(runner, targetRoot, auditBefore, endpoint, `PUT /${endpoint}`);
+}
+
+async function verifyStatusChecks(
+  runner: CommandRunner,
+  targetRoot: string,
+  auditBefore: GitHubAuditReport,
+  protectionEndpoint: string,
+  remoteWrite: string
+): Promise<GitHubApplyResult> {
   const verification = await runGhJson<string[]>(
     runner,
     targetRoot,
-    ["api", `${endpoint}/required_status_checks/contexts`]
+    ["api", `${protectionEndpoint}/required_status_checks/contexts`]
   );
 
   if (!verification.ok) {
@@ -141,7 +157,7 @@ export async function applyGitHubRemote(options: GitHubApplyOptions): Promise<Gi
   return {
     status: "applied",
     targetRoot,
-    remoteWrites: [`PUT /${endpoint}`],
+    remoteWrites: [remoteWrite],
     blockers: [],
     auditBefore,
     verification: [`Required checks verified: ${verification.value.join(", ")}`]
@@ -197,4 +213,36 @@ function buildBranchProtectionPayload(): unknown {
     allow_force_pushes: false,
     allow_deletions: false
   };
+}
+
+function buildStatusCheckPayload(contexts: string[]): unknown {
+  return {
+    strict: true,
+    contexts
+  };
+}
+
+function mergeContexts(existing: string[], required: string[]): string[] {
+  return Array.from(new Set([...existing, ...required])).sort((a, b) => a.localeCompare(b));
+}
+
+function readExistingStatusCheckContexts(stdout: string, requiredCheckContexts: string[] | null): string[] {
+  if (requiredCheckContexts) {
+    return requiredCheckContexts;
+  }
+
+  try {
+    const parsed = JSON.parse(stdout) as {
+      required_status_checks?: {
+        contexts?: unknown;
+      };
+    };
+    if (Array.isArray(parsed.required_status_checks?.contexts)) {
+      return parsed.required_status_checks.contexts.filter((context): context is string => typeof context === "string");
+    }
+  } catch {
+    return [];
+  }
+
+  return [];
 }

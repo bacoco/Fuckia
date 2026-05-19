@@ -42,17 +42,20 @@ The dry-run command is read-only. It verifies:
 
 It does not create remote rulesets, branch protection, or required checks.
 
-The apply command creates branch protection only when:
+The apply command writes remote GitHub protection only when:
 
 - the workflow files exist on the remote default branch;
 - GitHub admin permission is verified;
-- no repository rulesets exist;
-- branch protection does not already exist;
 - `--yes` is present.
 
-## Remote Apply Requirement
+It handles:
 
-Any future merge-preserving remote apply command must:
+- unprotected repositories by creating branch protection;
+- repositories with existing branch protection by adding only missing Fuckia status checks.
+
+Existing rulesets are read and preserved. Fuckia does not rewrite rulesets.
+
+## Remote Apply Requirement
 
 - read existing branch protection and rulesets first;
 - preserve existing required checks;
