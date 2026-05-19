@@ -15,3 +15,19 @@ jobs:
           test -f CLAUDE.md
           test -f fuckia.config.yaml
           test -f docs/fuckia/README.md
+      - name: Check pull request contract
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" --jq '.body // ""' > pr-body.md
+          body_trimmed="$(tr -d '[:space:]' < pr-body.md)"
+          test -n "$body_trimmed" || { echo "PR body is empty"; exit 1; }
+          test "$body_trimmed" != "null" || { echo "PR body is null"; exit 1; }
+          grep -q "## AI Identity" pr-body.md
+          grep -q "Author AI:" pr-body.md
+          grep -q "Validator AI:" pr-body.md
+          grep -q "GitHub reviewer account or platform blocker:" pr-body.md
+          grep -q "## Plan Review" pr-body.md
+          grep -q "## Real Workflow Verification" pr-body.md
+          grep -q "## Adversarial Implementer Pass" pr-body.md

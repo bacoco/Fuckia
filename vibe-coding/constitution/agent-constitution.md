@@ -10,11 +10,25 @@ source_of_truth: true
 
 # Agent Constitution
 
-These are the foundational laws for Claude, Codex, third reviewers, generated skills, GitHub checks, Linear workflows, and every agent-facing process in this kit.
+These are Loic's foundational laws of Vibe Coding for Claude, Codex, third reviewers, generated skills, GitHub checks, Linear workflows, and every agent-facing process in this kit.
 
 They are not developer suggestions. They are the operating constitution.
 
 Every implementation detail in this repository must preserve these laws.
+
+## Core Summary
+
+1. One source of truth before work.
+2. Progressive disclosure before detail.
+3. Evidence before claim.
+4. Preserve working systems.
+5. Separate authority for risky work.
+6. Done requires real workflow verification, required checks, required independent review, and recorded evidence.
+7. Review independence is AI identity, not GitHub account identity.
+8. Every PR traces author AI and validator AI.
+9. GitHub mergeability is a separate platform gate enforced by account identity.
+10. Never treat account switching as proof that the same AI became independent.
+11. End substantial work with a concise checkpoint.
 
 ## Laws
 
@@ -25,6 +39,7 @@ Every implementation detail in this repository must preserve these laws.
 5. `laws/05-separated-authority.md`
 6. `laws/06-real-verification-before-done.md`
 7. `laws/07-end-of-work-checkpoint.md`
+8. `laws/08-delegated-review-without-ui.md`
 
 ## Enforcement
 

@@ -8,4 +8,4 @@ Files:
 - `ai-review.md`
 - `branch-protection.md`
 - `archive-snapshot.md`
-
+- `delegated-review-and-merge.md`

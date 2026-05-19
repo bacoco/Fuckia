@@ -42,7 +42,16 @@ const templateFiles: Array<{ templatePath: string; outputPath: string }> = [
   { templatePath: "github/workflows/README.md", outputPath: ".github/workflows/README.md" },
   { templatePath: "docs/README.md", outputPath: "docs/README.md" },
   { templatePath: "docs/fuckia/README.md", outputPath: "docs/fuckia/README.md" },
+  { templatePath: "docs/fuckia/archive/README.md", outputPath: "docs/fuckia/archive/README.md" },
   { templatePath: "docs/fuckia/end-of-work-checkpoint.md", outputPath: "docs/fuckia/end-of-work-checkpoint.md" },
+  { templatePath: "docs/fuckia/linear/README.md", outputPath: "docs/fuckia/linear/README.md" },
+  { templatePath: "docs/fuckia/linear/templates/README.md", outputPath: "docs/fuckia/linear/templates/README.md" },
+  { templatePath: "linear/templates/spec.md", outputPath: "docs/fuckia/linear/templates/spec.md" },
+  { templatePath: "linear/templates/plan.md", outputPath: "docs/fuckia/linear/templates/plan.md" },
+  { templatePath: "linear/templates/plan-review.md", outputPath: "docs/fuckia/linear/templates/plan-review.md" },
+  { templatePath: "linear/templates/implement.md", outputPath: "docs/fuckia/linear/templates/implement.md" },
+  { templatePath: "linear/templates/code-review.md", outputPath: "docs/fuckia/linear/templates/code-review.md" },
+  { templatePath: "linear/templates/verify.md", outputPath: "docs/fuckia/linear/templates/verify.md" },
   { templatePath: "docs/fuckia/merge-proposals/README.md", outputPath: "docs/fuckia/merge-proposals/README.md" }
 ];
 

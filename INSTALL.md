@@ -65,9 +65,9 @@ Run:
 
 ```bash
 cd "$target_dir"
-node "$FUCKIA_DIR/dist/cli.js" doctor
-node "$FUCKIA_DIR/dist/cli.js" migrate --dry-run
+node "$FUCKIA_DIR/dist/cli.js" install --dry-run
 node "$FUCKIA_DIR/dist/cli.js" github --dry-run
+node "$FUCKIA_DIR/dist/cli.js" linear --dry-run
 ```
 
 For a new or empty repository, also run:
@@ -108,7 +108,7 @@ Do not write files until the human approves the exact write list.
 For a new repository with no conflicting governance files, run:
 
 ```bash
-node "$FUCKIA_DIR/dist/cli.js" init --apply
+node "$FUCKIA_DIR/dist/cli.js" install --apply --yes
 ```
 
 After `init --apply`, commit and push the installed `.github` files before treating GitHub remote checks as enforceable.
@@ -118,8 +118,7 @@ For an existing repository with conflicts, do not force init. Report that migrat
 For an existing repository after approval, run:
 
 ```bash
-node "$FUCKIA_DIR/dist/cli.js" migrate --plan
-node "$FUCKIA_DIR/dist/cli.js" migrate --apply
+node "$FUCKIA_DIR/dist/cli.js" install --apply --yes
 ```
 
 `migrate --apply` preserves existing governance files and writes merge proposals under `docs/fuckia/merge-proposals/`.
@@ -162,9 +161,69 @@ Run this only after:
 node "$FUCKIA_DIR/dist/cli.js" github --apply --yes
 ```
 
-This command creates branch protection only for an unprotected repository without existing rulesets.
+This command creates status-check branch protection only for an unprotected repository without existing rulesets.
 
 It blocks instead of overwriting existing rulesets or branch protection.
+
+It does not enable required GitHub approving reviews by default. A repository should enable that GitHub platform gate only when it has a known reviewer account, team, or GitHub App accepted by branch protection.
+
+## Apply Linear Issue Chain
+
+Run this only after:
+
+- `LINEAR_API_KEY` is set;
+- `linear --dry-run --team <TEAM_KEY>` resolves the correct team;
+- the human explicitly approves remote Linear writes.
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" linear --apply --yes --team <TEAM_KEY>
+```
+
+This creates the active Linear issue chain:
+
+- spec;
+- plan;
+- plan-review;
+- implement;
+- code-review;
+- verify.
+
+It writes a local receipt at `docs/fuckia/archive/linear-issue-chain.json`.
+
+## Enable Strict Mode
+
+After GitHub and Linear setup:
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" strict --apply
+node "$FUCKIA_DIR/dist/cli.js" strict --dry-run --strict
+```
+
+## Review And Merge PRs
+
+When the human asks the agent to handle PR review or merge, read:
+
+```text
+agent-runbooks/review-and-merge.md
+```
+
+The agent must:
+
+- prepare a review packet;
+- ask the human to approve all or selected fixes in chat;
+- apply approved fixes;
+- verify;
+- submit approval only from an AI or human reviewer independent from the implementation agent;
+- record author AI, validator AI, and GitHub reviewer account or platform result in the PR or review receipt;
+- submit approval or merge only when GitHub accepts the operation.
+
+If the current agent cannot access the other AI directly, give the human a copy-paste prompt for that AI.
+
+GitHub account identity is transport for the Fuckia process. GitHub branch protection still enforces by account identity.
+
+Do not switch accounts to pretend that the same AI became an independent reviewer.
+
+If GitHub rejects the review because of account-level branch protection, stop and report that platform blocker with the exact GitHub error.
 
 ## Allowed Future Writes After Approval
 

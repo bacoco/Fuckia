@@ -1,150 +1,163 @@
 # Fuckia
 
-**Stop Claude and Codex from breaking the same codebase in different ways.**
+**Make Claude and Codex work on the same repo without destroying the product path.**
 
-Fuckia is a control layer for teams that use Claude Code, Codex, GitHub, and Linear on the same project.
+Fuckia installs a collaboration layer for projects that use Claude Code, Codex, GitHub, and Linear.
 
-It gives AI coding agents one shared operating system: same rules, same review gates, same GitHub checks, same Linear workflow, same verification standard.
-
-Use it when you want multiple agents to work fast without losing the real product contract.
-
-Fuckia also improves from public failure reports: when users hit a new Claude/Codex collaboration failure, the report can become a reviewed pull request that strengthens the rules, skills, templates, or checks.
+It gives every AI agent the same rules, the same skills, the same PR checks, and the same definition of Done.
 
 ## The Problem
 
-Claude and Codex do not automatically share a cockpit.
+Claude and Codex do not share memory, authority, or context by default.
 
 Without a control layer, agents can:
 
-- work from stale chat context;
-- create a second implementation beside the real one;
-- delete working code during a vague refactor;
-- pass isolated tests while the real product path is broken;
-- review their own risky work;
-- mark Done without end-to-end verification;
-- leave the next agent without a reliable source of truth.
+- build a second implementation beside the real one;
+- delete working code during a vague cleanup;
+- pass isolated tests while the real workflow is broken;
+- approve their own risky work;
+- leave the next agent without a reliable handoff;
+- block a mono-account GitHub repo with impossible approval rules.
 
-That is how multi-agent coding turns into days of cleanup.
+Fuckia exists to stop that class of failure.
 
-## Use Fuckia When
-
-- you switch between Claude and Codex on the same repository;
-- you run parallel AI coding sessions;
-- agents keep creating duplicate implementations;
-- reviews approve words instead of behavior;
-- Done gets declared from typecheck or unit tests alone;
-- existing working flows must not be broken while agents move fast.
-
-## What Fuckia Changes
-
-Fuckia turns AI coding from chat-driven improvisation into a governed workflow.
-
-Before an agent touches code, Fuckia makes it answer:
-
-- What is the source of truth?
-- What files are allowed?
-- What files are forbidden?
-- Who reviewed the plan?
-- Which existing workflow must keep working?
-- Which real user path proves Done?
-- What evidence is archived for the next agent?
-
-The goal is simple: Claude and Codex can both work, but neither can silently drift away from the product contract.
-
-## The Outcome
-
-Every risky change gets:
-
-- one source of truth;
-- explicit allowed and forbidden files;
-- independent plan review;
-- PR scope checks;
-- no self-review for risky work;
-- real workflow verification;
-- an archived receipt for the next agent.
-- a short end-of-work checkpoint.
-
-Every accepted public failure report can become:
-
-- a new guardrail;
-- a stronger validator;
-- a clearer install rule;
-- a better Claude/Codex skill;
-- a regression fixture.
-
-## What You Get
-
-Fuckia installs a project governance layer:
-
-- `AGENTS.md` for Codex;
-- `CLAUDE.md` for Claude Code;
-- shared Claude and Codex skills generated from one source;
-- GitHub PR templates and CI checks;
-- Linear templates for spec, plan, plan-review, implementation, review, and verification;
-- destructive-change guards;
-- self-review blocks for risky work;
-- verification receipts;
-- archived snapshots for future agents.
-
-It does not replace GitHub, Linear, Claude, or Codex. It connects them into one workflow.
-
-## Install Flow
+## Install With One Prompt
 
 Open Claude Code or Codex inside the repository you want to protect.
 
-Paste this:
+Paste:
 
 ```text
 Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-The agent reads `INSTALL.md`, audits the repository, and reports exactly what it wants to create or merge.
+The agent must:
 
-Nothing is written until you approve the exact file list.
+1. audit the target repository;
+2. list the exact files it wants to create or merge;
+3. stop before writes;
+4. continue only after human approval.
 
-## Safety Contract
+No product code is modified by the install flow.
 
-Fuckia installation starts with audit only.
+## Command Line Install
 
-It must not:
+Audit first:
 
-- modify product code;
-- delete existing agent rules;
-- create a parallel engine, store, router, hook, workflow, or pipeline;
-- mark Done from typecheck or unit tests alone;
-- let an agent self-review risky implementation.
+```bash
+npx --yes github:bacoco/Fuckia install --dry-run
+```
 
-## Current Status
+Apply after reviewing the file list:
 
-Working now:
+```bash
+npx --yes github:bacoco/Fuckia install --apply --yes
+```
 
-- `doctor`;
-- `init --dry-run`;
-- `init --apply` for conflict-free governance install;
-- `migrate --dry-run`;
-- `migrate --plan`;
-- `migrate --apply` for governance-only existing-project migration;
-- `github --dry-run` for read-only GitHub remote readiness audit;
-- `github --dry-run --strict` for blocking GitHub remote readiness verification;
-- `github --apply --yes` for conservative remote branch protection on unprotected repositories;
-- no-write tests;
-- agent install entrypoint: `INSTALL.md`;
-- public issue templates;
-- PR template for governed improvements;
-- first shared skill source: `adversarial-implementer-guard`;
-- deterministic Claude/Codex skill generator for examples;
-- skill drift check: `fuckia generate-skills --check`;
-- conflict-free `init --apply` writes Claude and Codex skills into target repositories.
+GitHub setup:
+
+```bash
+npx --yes github:bacoco/Fuckia github --dry-run --strict
+npx --yes github:bacoco/Fuckia github --apply --yes
+```
+
+Linear setup:
+
+```bash
+npx --yes github:bacoco/Fuckia linear --dry-run --team <TEAM_KEY>
+npx --yes github:bacoco/Fuckia linear --apply --yes --team <TEAM_KEY>
+```
+
+## What Gets Installed
+
+Fuckia adds governance files, not product features:
+
+- `AGENTS.md` for Codex;
+- `CLAUDE.md` for Claude Code;
+- shared Claude and Codex skills generated from one source;
+- PR templates with AI identity, plan review, real verification, and adversarial checks;
+- GitHub Actions for collaboration-contract checks;
+- Linear templates for spec, plan, plan-review, implementation, code-review, and verification;
+- receipts under `docs/fuckia/` so the next agent knows what happened.
+
+## How It Works
+
+Every risky change must answer these questions before it is treated as Done:
+
+- What is the source of truth?
+- What files are allowed?
+- What files are forbidden?
+- Which existing workflow must keep working?
+- Who reviewed the plan?
+- Which real user path was verified?
+- Which AI implemented the change?
+- Which AI or human validated it?
+
+Fuckia keeps these answers in PRs, Linear issues, skills, checks, and archive receipts.
+
+## GitHub Protection
+
+Fuckia protects new repositories with required status checks and conversation resolution.
+
+It does not enable required GitHub approving reviews by default. That rule can trap a one-account repository in an impossible self-approval state.
+
+If a repository already requires GitHub approvals, `fuckia github --dry-run` reports that platform gate and asks for an accepted reviewer account, team, or GitHub App.
+
+The process rule still exists:
+
+```text
+Author AI != Validator AI
+```
+
+GitHub account identity is transport. AI identity is the review contract. GitHub mergeability is a separate platform gate.
+
+## Linear Workflow
+
+Fuckia can create a Linear issue chain:
+
+1. spec;
+2. plan;
+3. plan-review;
+4. implement;
+5. code-review;
+6. verify.
+
+Linear becomes the active cockpit. GitHub remains the code, PR, CI, and archive system.
+
+## Core Laws
+
+The detailed constitution lives in `vibe-coding/constitution/`.
+
+The short version:
+
+1. One source of truth before work.
+2. Small files and clear directories before giant specs.
+3. Evidence before claim.
+4. Preserve working systems.
+5. No parallel engine, route, store, hook, workflow, or pipeline without an explicit contract.
+6. The implementing AI does not validate its own risky work.
+7. Done means real workflow verified, checks passed, required independent review completed, and evidence recorded.
+
+## Current Capabilities
+
+Implemented now:
+
+- new-project install;
+- existing-project migration plan;
+- Claude and Codex skill generation;
+- GitHub status-check setup;
+- GitHub audit for impossible approval gates;
+- Linear issue-chain creation;
+- strict-mode verification;
+- self-checking Fuckia repository.
 
 Next:
 
-- remaining shared skill catalog;
-- merge-preserving GitHub remote apply for repositories with existing rulesets or branch protection;
-- Linear template automation;
-- strict CI gates;
-- automated issue clustering and improvement proposals.
+- package or plugin publishing;
+- richer Linear native template support when the official API supports it;
+- public failure-report clustering into improvement PRs.
 
-## For Maintainers
+## Maintainers
 
 ```bash
 npm install

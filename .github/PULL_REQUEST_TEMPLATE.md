@@ -16,6 +16,23 @@ Fixes:
 - [ ] Validation rule
 - [ ] Installation or migration behavior
 
+## AI Identity
+
+Author AI:
+
+Validator AI:
+
+GitHub reviewer account or platform blocker:
+
+- [ ] Validator AI is different from Author AI when independent review is required.
+- [ ] GitHub account identity is used only as transport, not as proof of AI independence.
+- [ ] GitHub platform gate is recorded separately from AI review validity.
+
+## Plan Review
+
+- [ ] Plan reviewed by another agent or human.
+- [ ] Risky work does not use self-review.
+
 ## Safety
 
 - [ ] This PR does not modify unrelated product examples or fixtures.
@@ -35,6 +52,14 @@ Commands run:
 ## Real Workflow Protected
 
 Name the real workflow or failure class this PR protects.
+
+## Real Workflow Verification
+
+Commands and workflow tested:
+
+```text
+
+```
 
 ## Adversarial Implementer Pass
 

@@ -3,7 +3,10 @@ import { runGenerateSkills } from "../commands/generateSkills";
 import { runGithub } from "../commands/github";
 import { runHelp } from "../commands/help";
 import { runInit } from "../commands/init";
+import { runInstall } from "../commands/install";
+import { runLinear } from "../commands/linear";
 import { runMigrate } from "../commands/migrate";
+import { runStrict } from "../commands/strict";
 import { createCommandContext, type RunCliContext } from "./context";
 import { parseArgs } from "./parseArgs";
 
@@ -21,12 +24,18 @@ export async function runCli(rawArgs: string[], rawContext: RunCliContext): Prom
         return await runDoctor(args, context);
       case "init":
         return await runInit(args, context);
+      case "install":
+        return await runInstall(args, context);
       case "migrate":
         return await runMigrate(args, context);
       case "generate-skills":
         return await runGenerateSkills(args, context);
       case "github":
         return await runGithub(args, context);
+      case "linear":
+        return await runLinear(args, context);
+      case "strict":
+        return await runStrict(args, context);
       default:
         context.stderr(`Error: unknown command \`${args.command}\`.\n\n`);
         runHelp(context);

@@ -10,4 +10,5 @@ Read order:
 4. `04-preserve-working-systems.md`
 5. `05-separated-authority.md`
 6. `06-real-verification-before-done.md`
-
+7. `07-end-of-work-checkpoint.md`
+8. `08-delegated-review-without-ui.md`

@@ -9,6 +9,7 @@ Nothing in this directory is copied into the target repository by default.
 Files:
 
 - `one-line-prompts.md` - human copy-paste prompts.
+- `review-and-merge.md` - delegated PR review and merge prompt.
 - `claude/install-or-migrate.md` - Claude Code wrapper.
 - `codex/install-or-migrate.md` - Codex wrapper.
 

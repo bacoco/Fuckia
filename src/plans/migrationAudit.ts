@@ -36,6 +36,9 @@ const inventoryTargets: InventoryItem[] = [
   { path: "docs/README.md", exists: false, kind: "file" },
   { path: "docs/fuckia", exists: false, kind: "directory" },
   { path: "docs/fuckia/README.md", exists: false, kind: "file" },
+  { path: "docs/fuckia/archive/README.md", exists: false, kind: "file" },
+  { path: "docs/fuckia/linear/README.md", exists: false, kind: "file" },
+  { path: "docs/fuckia/linear/templates/README.md", exists: false, kind: "file" },
   { path: "docs/fuckia/merge-proposals/README.md", exists: false, kind: "file" }
 ];
 
