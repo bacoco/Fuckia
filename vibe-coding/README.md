@@ -7,12 +7,13 @@ The system is organized through progressive disclosure. Read the narrowest file 
 ## Read Order
 
 1. `constitution/README.md`
-2. `operating-model/README.md`
-3. `skills/README.md`
-4. `installation/README.md`
-5. `implementation/README.md`
-6. `prompts/developer-prompt.md`
-7. `references/sources.md`
+2. `../agent-runbooks/README.md`
+3. `operating-model/README.md`
+4. `skills/README.md`
+5. `installation/README.md`
+6. `implementation/README.md`
+7. `prompts/developer-prompt.md`
+8. `references/sources.md`
 
 ## Directories
 

@@ -116,9 +116,9 @@ npx fuckia migrate --apply
 
 ## Adversarial implementer pass
 
-- Likely bad interpretation: "template repo" means a pile of Markdown only.
+- Bad implementation path: "template repo" means a pile of Markdown only.
 - Guardrail added: template must include installable rules, generated skill outputs, scripts, and CI gates.
-- Likely bad interpretation: "migrate existing project" means overwrite local conventions.
+- Bad implementation path: "migrate existing project" means overwrite local conventions.
 - Guardrail added: migration must inventory and patch, not blindly replace.
 - Forbidden shortcut: deleting old docs or skills without a report and human approval.
 - Regression proof required: install kit on a fresh test repo and one existing repo without breaking existing workflows.

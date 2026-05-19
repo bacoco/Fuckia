@@ -97,11 +97,11 @@ Bypasses must be logged in Linear and visible in the PR.
 
 ## Adversarial implementer pass
 
-- Likely bad interpretation: "architecture spec says Linear supports X, so code against X."
+- Bad implementation path: "architecture spec says Linear supports X, so code against X."
 - Guardrail added: all product/API claims must be verified before coding.
-- Likely bad interpretation: "soft uncertain wording makes an unsupported claim acceptable."
+- Bad implementation path: "soft uncertain wording makes an unsupported claim acceptable."
 - Guardrail added: unsupported uncertainty is converted into `Unknown`, `Question`, or verified evidence.
-- Likely bad interpretation: "if strict enforcement is hard, skip it."
+- Bad implementation path: "if strict enforcement is hard, skip it."
 - Guardrail added: use warning mode first, then strict checks where technically possible.
 - Forbidden shortcut: silent fallback to comments only when custom fields/API are unavailable.
 - Regression proof required: implementation note records exact verified capabilities and limits.

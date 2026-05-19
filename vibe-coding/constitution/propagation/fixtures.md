@@ -8,7 +8,7 @@ Failing fixtures:
 - implementer skill permits parallel pipeline without Linear authorization;
 - verifier skill permits Done from unit tests only;
 - `AGENTS.md` contains the laws but `CLAUDE.md` does not;
-- uncertain causal language appears without `Unknown`, question, or verification.
+- uncertain causal language is present without `Unknown`, question, or verification.
 
 Passing fixtures:
 

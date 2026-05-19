@@ -62,7 +62,7 @@ These are starting points only. The implementer must re-check current docs durin
 
 ## Adversarial implementer pass
 
-- Likely bad interpretation: "links in this file are proof enough."
+- Bad implementation path: "links in this file are proof enough."
 - Guardrail added: links are starting points; implementer must verify current docs and record decisions.
 - Forbidden shortcut: coding against guessed field names, endpoints, or workflow behavior.
 - Regression proof required: implementation note cites exact docs/product behavior used.

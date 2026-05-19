@@ -1,6 +1,6 @@
 # Adversarial Implementer Pass
 
-## Likely Bad Interpretation
+## Bad Implementation Path
 
 "Build the installer" means write directly into target projects.
 
@@ -8,7 +8,7 @@
 
 First implementation slice is dry-run first. `migrate --dry-run` and `init --dry-run` must not write files.
 
-## Likely Bad Interpretation
+## Bad Implementation Path
 
 "Simplify installation" means hide all receipts.
 
@@ -16,7 +16,7 @@ First implementation slice is dry-run first. `migrate --dry-run` and `init --dry
 
 Installation can be one command, but it must produce visible receipts for created, changed, skipped, and risky files.
 
-## Likely Bad Interpretation
+## Bad Implementation Path
 
 "Existing project migration" means reorganize the project.
 
@@ -24,7 +24,7 @@ Installation can be one command, but it must produce visible receipts for create
 
 Migration audit may inventory and propose. It must not reorganize, delete, or modify product code.
 
-## Likely Bad Interpretation
+## Bad Implementation Path
 
 "Plugin path" means implement marketplace publishing first.
 

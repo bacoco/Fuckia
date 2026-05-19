@@ -8,6 +8,14 @@ The target experience is:
 npx fuckia init
 ```
 
+Agent bootstrap experience:
+
+```text
+Read and follow `https://github.com/bacoco/Fuckia/blob/main/agent-runbooks/<claude-or-codex>/install-or-migrate.md` for this repository. Start with dry-run inventory. Stop before any write that lacks explicit approval.
+```
+
+The agent runbook is followed from the Fuckia repository. It is not copied into the target repository by default.
+
 For existing projects:
 
 ```bash
@@ -29,4 +37,3 @@ Claude users should get a plugin path. Codex users should get generated skills a
 The user should not need to understand the full repository before installation.
 
 The installer must hide complexity while producing visible receipts for every change.
-

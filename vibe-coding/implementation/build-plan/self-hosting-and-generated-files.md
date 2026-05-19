@@ -78,11 +78,11 @@ After the generator exists:
 
 ## Adversarial Implementer Pass
 
-- Likely bad interpretation: "self-hosted" means the tool rewrites its own repo automatically.
+- Bad implementation path: "self-hosted" means the tool rewrites its own repo automatically.
 - Guardrail added: self-check is read-only unless an explicit apply command is used.
-- Likely bad interpretation: "generated files are useful, so commit all of them."
+- Bad implementation path: "generated files are useful, so commit all of them."
 - Guardrail added: commit generated files only when they are examples, fixtures, or product distribution artifacts.
-- Likely bad interpretation: "do not commit generated files" means skip generated skill examples.
+- Bad implementation path: "do not commit generated files" means skip generated skill examples.
 - Guardrail added: examples and fixtures are allowed when clearly marked and hash-tracked.
 - Existing behavior that must be preserved: source-of-truth files stay editable and generated files stay reproducible.
 - Forbidden implementation shortcuts: committing random local install output, machine-specific generated paths, or generated target-project files outside examples/fixtures.

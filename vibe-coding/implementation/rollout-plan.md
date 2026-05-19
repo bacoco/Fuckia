@@ -99,9 +99,9 @@ For each project:
 
 ## Adversarial implementer pass
 
-- Likely bad interpretation: "roll out everything everywhere immediately."
+- Bad implementation path: "roll out everything everywhere immediately."
 - Guardrail added: phased rollout with pilot and warning mode.
-- Likely bad interpretation: "migration means clean old docs now."
+- Bad implementation path: "migration means clean old docs now."
 - Guardrail added: inventory first, archive later, no deletion without approval.
 - Forbidden shortcut: strict gates across all repos before one successful pilot.
 - Regression proof required: blank repo demo and one existing project pilot.
