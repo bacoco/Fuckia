@@ -11,9 +11,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check generated skill headers
         run: |
-          for skill in adversarial-implementer-guard cross-agent-handoff delegated-review-and-merge destructive-change-guard end-of-work-checkpoint plan-review-gate platform-permission-gate real-verification-gate source-of-truth-gate; do
-            test -f ".claude/skills/$skill/SKILL.md"
-            test -f ".agents/skills/$skill/SKILL.md"
+          for skill in adversarial-implementer-guard cross-agent-handoff delegated-review-and-merge destructive-change-guard end-of-work-checkpoint evidence-language-guard plan-review-gate platform-permission-gate real-verification-gate source-of-truth-gate; do
+            test -f "kit/generated-skills/claude-$skill.md"
+            test -f "kit/generated-skills/codex-$skill.md"
           done
-          grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .claude/skills .agents/skills
-          grep -R "source_hash:" .claude/skills .agents/skills
+          grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" kit/generated-skills
+          grep -R "source_hash:" kit/generated-skills
