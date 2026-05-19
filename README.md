@@ -119,6 +119,7 @@ Working now:
 
 - `doctor`;
 - `init --dry-run`;
+- `init --apply` for conflict-free governance install;
 - `migrate --dry-run`;
 - no-write tests;
 - agent install entrypoint: `INSTALL.md`;
@@ -126,12 +127,13 @@ Working now:
 - PR template for governed improvements;
 - first shared skill source: `adversarial-implementer-guard`;
 - deterministic Claude/Codex skill generator for examples;
-- skill drift check: `fuckia generate-skills --check`.
+- skill drift check: `fuckia generate-skills --check`;
+- conflict-free `init --apply` writes Claude and Codex skills into target repositories.
 
 Next:
 
-- write-mode installer;
-- install-target Claude and Codex skill writes;
+- `migrate --plan`;
+- `migrate --apply`;
 - remaining shared skill catalog;
 - GitHub workflow automation;
 - Linear template automation;

@@ -18,7 +18,7 @@ export async function checkGeneratedFileHeaders(rootDir: string): Promise<Genera
 
   for (const absolutePath of files) {
     const content = await readTextFile(absolutePath);
-    if (!content.includes(generatedHeader)) {
+    if (!declaresGeneratedHeader(content)) {
       continue;
     }
 
@@ -32,6 +32,10 @@ export async function checkGeneratedFileHeaders(rootDir: string): Promise<Genera
   }
 
   return findings;
+}
+
+function declaresGeneratedHeader(content: string): boolean {
+  return content.split(/\r?\n/).slice(0, 12).some((line) => line.includes(generatedHeader));
 }
 
 function normalizePath(value: string): string {

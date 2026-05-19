@@ -1,4 +1,5 @@
 import path from "node:path";
+import { buildGeneratedSkillFiles } from "../skills/generateSharedSkills";
 
 export interface PlannedFile {
   path: string;
@@ -15,7 +16,12 @@ export interface InitPlan {
   automationBoundaries: string[];
 }
 
-export async function buildInitPlan(targetRoot: string): Promise<InitPlan> {
+export async function buildInitPlan(targetRoot: string, packageRoot = targetRoot): Promise<InitPlan> {
+  const generatedSkills = await buildGeneratedSkillFiles({
+    sourceRootDir: packageRoot,
+    outputKind: "install"
+  });
+
   return {
     mode: "dry-run",
     targetRoot: path.resolve(targetRoot),
@@ -34,7 +40,12 @@ export async function buildInitPlan(targetRoot: string): Promise<InitPlan> {
       { path: ".github/workflows/generated-skills.yml", source: "template", purpose: "Generated skill drift checks." },
       { path: ".github/workflows/pr-scope.yml", source: "template", purpose: "PR scope and destructive-change guard." },
       { path: "fuckia.config.yaml", source: "template", purpose: "Project-local Fuckia configuration." },
-      { path: "docs/fuckia/README.md", source: "template", purpose: "Installed governance map." }
+      { path: "docs/fuckia/README.md", source: "template", purpose: "Installed governance map." },
+      ...generatedSkills.map((skill) => ({
+        path: skill.output,
+        source: skill.source,
+        purpose: `${skill.target} generated skill.`
+      }))
     ],
     humanSteps: [
       "Create or choose the GitHub account or organization.",
@@ -46,7 +57,7 @@ export async function buildInitPlan(targetRoot: string): Promise<InitPlan> {
       "Account creation is a human step.",
       "Billing plan selection is a human step.",
       "Permission grants are human-approved steps.",
-      "Generated skills are written only by an explicit future apply command."
+      "Generated skills are written only by `init --apply` or a future migration apply command."
     ]
   };
 }

@@ -26,6 +26,7 @@ async function capture(command: string[], cwd: string): Promise<{ exitCode: numb
   let stderr = "";
   const exitCode = await runCli(command, {
     cwd,
+    packageRoot: process.cwd(),
     stdout: (message) => {
       stdout += message;
     },
@@ -57,6 +58,45 @@ test("init --dry-run writes nothing", async () => {
     assert.deepEqual(after, before);
     assert.match(result.stdout, /"mode": "dry-run"/);
     assert.match(result.stdout, /"AGENTS.md"/);
+  });
+});
+
+test("init --apply installs governance files and generated skills", async () => {
+  await withTempProject(async (directory) => {
+    const result = await capture(["init", "--apply"], directory);
+    const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
+    const claude = await readFile(path.join(directory, "CLAUDE.md"), "utf8");
+    const codexSkill = await readFile(
+      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      "utf8"
+    );
+    const claudeSkill = await readFile(
+      path.join(directory, ".claude", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      "utf8"
+    );
+    const workflow = await readFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "utf8");
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"status": "applied"/);
+    assert.match(agents, /Codex must follow Fuckia governance/);
+    assert.match(claude, /Claude Code must follow Fuckia governance/);
+    assert.match(codexSkill, /target: codex/);
+    assert.match(claudeSkill, /target: claude/);
+    assert.match(workflow, /Fuckia Collaboration Contract/);
+  });
+});
+
+test("init --apply blocks on conflicts and writes nothing else", async () => {
+  await withTempProject(async (directory) => {
+    await writeFile(path.join(directory, "AGENTS.md"), "# Existing Rules\n", "utf8");
+    const before = await snapshotTree(directory);
+    const result = await capture(["init", "--apply"], directory);
+    const after = await snapshotTree(directory);
+
+    assert.equal(result.exitCode, 1);
+    assert.deepEqual(after, before);
+    assert.match(result.stdout, /"status": "blocked"/);
+    assert.match(result.stdout, /AGENTS.md/);
   });
 });
 

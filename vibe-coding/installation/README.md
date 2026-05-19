@@ -8,6 +8,14 @@ The target experience is:
 npx fuckia init
 ```
 
+Current implemented write command:
+
+```bash
+fuckia init --apply
+```
+
+`init --apply` is only for conflict-free governance installation. Existing projects with `AGENTS.md`, `CLAUDE.md`, GitHub workflows, or skills must use migration.
+
 Agent bootstrap experience:
 
 ```text

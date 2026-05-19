@@ -102,6 +102,16 @@ Stop after the report.
 
 Do not write files until the human approves the exact write list.
 
+## After Human Approval
+
+For a new repository with no conflicting governance files, run:
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" init --apply
+```
+
+For an existing repository with conflicts, do not force init. Report that migration planning is required.
+
 ## Allowed Future Writes After Approval
 
 - `AGENTS.md`

@@ -6,6 +6,7 @@ export function formatHelp(): string {
     "  fuckia --help",
     "  fuckia doctor [--self] [--strict]",
     "  fuckia init --dry-run",
+    "  fuckia init --apply",
     "  fuckia migrate --dry-run",
     "  fuckia generate-skills --check",
     "  fuckia generate-skills --write --examples",

@@ -6,8 +6,11 @@ export type SkillTarget = "claude" | "codex";
 export type SkillGenerationMode = "check" | "write";
 
 export interface SkillGenerationOptions {
-  rootDir: string;
+  rootDir?: string;
+  sourceRootDir?: string;
+  targetRootDir?: string;
   mode: SkillGenerationMode;
+  outputKind?: "examples" | "install";
 }
 
 export interface SkillGenerationOutput {
@@ -24,6 +27,13 @@ export interface SkillGenerationResult {
   drift: SkillGenerationOutput[];
 }
 
+export interface GeneratedSkillFile {
+  target: SkillTarget;
+  source: string;
+  output: string;
+  content: string;
+}
+
 interface SharedSkillSource {
   name: string;
   description: string;
@@ -34,46 +44,84 @@ interface SharedSkillSource {
 }
 
 export async function generateSharedSkills(options: SkillGenerationOptions): Promise<SkillGenerationResult> {
-  const sourceDir = path.join(options.rootDir, "skills-src", "shared");
-  const sources = await readSharedSkillSources(options.rootDir, sourceDir);
+  const sourceRootDir = options.sourceRootDir ?? options.rootDir;
+  const targetRootDir = options.targetRootDir ?? options.rootDir;
+  if (!sourceRootDir || !targetRootDir) {
+    throw new Error("generateSharedSkills requires rootDir or explicit sourceRootDir and targetRootDir.");
+  }
+
+  const generatedFiles = await buildGeneratedSkillFiles({
+    sourceRootDir,
+    outputKind: options.outputKind ?? "examples"
+  });
   const outputs: SkillGenerationOutput[] = [];
 
-  for (const source of sources) {
-    for (const target of source.targets) {
-      const relativeOutput = normalizePath(path.join("examples", "generated-skills", target, source.name, "SKILL.md"));
-      const absoluteOutput = path.join(options.rootDir, relativeOutput);
-      const expected = renderGeneratedSkill(source, target);
-      const current = await readOptionalFile(absoluteOutput);
+  for (const file of generatedFiles) {
+    const absoluteOutput = path.join(targetRootDir, file.output);
+    const current = await readOptionalFile(absoluteOutput);
 
-      if (options.mode === "write") {
-        await mkdir(path.dirname(absoluteOutput), { recursive: true });
-        await writeFile(absoluteOutput, expected, "utf8");
-        outputs.push({
-          target,
-          source: source.relativePath,
-          output: relativeOutput,
-          status: current === expected ? "current" : "written"
-        });
-        continue;
-      }
-
+    if (options.mode === "write") {
+      await mkdir(path.dirname(absoluteOutput), { recursive: true });
+      await writeFile(absoluteOutput, file.content, "utf8");
       outputs.push({
-        target,
-        source: source.relativePath,
-        output: relativeOutput,
-        status: current === null ? "missing" : current === expected ? "current" : "drift"
+        target: file.target,
+        source: file.source,
+        output: file.output,
+        status: current === file.content ? "current" : "written"
       });
+      continue;
     }
+
+    outputs.push({
+      target: file.target,
+      source: file.source,
+      output: file.output,
+      status: current === null ? "missing" : current === file.content ? "current" : "drift"
+    });
   }
 
   const drift = outputs.filter((output) => output.status === "missing" || output.status === "drift");
 
   return {
     mode: options.mode,
-    sources: sources.length,
+    sources: new Set(generatedFiles.map((file) => file.source)).size,
     outputs,
     drift
   };
+}
+
+export async function buildGeneratedSkillFiles(options: {
+  sourceRootDir: string;
+  outputKind: "examples" | "install";
+}): Promise<GeneratedSkillFile[]> {
+  const sourceDir = path.join(options.sourceRootDir, "skills-src", "shared");
+  const sources = await readSharedSkillSources(options.sourceRootDir, sourceDir);
+  const files: GeneratedSkillFile[] = [];
+
+  for (const source of sources) {
+    for (const target of source.targets) {
+      files.push({
+        target,
+        source: source.relativePath,
+        output: generatedSkillOutputPath(source.name, target, options.outputKind),
+        content: renderGeneratedSkill(source, target)
+      });
+    }
+  }
+
+  return files;
+}
+
+function generatedSkillOutputPath(skillName: string, target: SkillTarget, outputKind: "examples" | "install"): string {
+  if (outputKind === "examples") {
+    return normalizePath(path.join("examples", "generated-skills", target, skillName, "SKILL.md"));
+  }
+
+  if (target === "claude") {
+    return normalizePath(path.join(".claude", "skills", skillName, "SKILL.md"));
+  }
+
+  return normalizePath(path.join(".agents", "skills", skillName, "SKILL.md"));
 }
 
 async function readSharedSkillSources(rootDir: string, sourceDir: string): Promise<SharedSkillSource[]> {

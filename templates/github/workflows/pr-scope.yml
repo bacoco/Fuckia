@@ -1,0 +1,17 @@
+name: Fuckia PR Scope
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  scope:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Report changed files
+        run: |
+          git diff --name-only origin/${{ github.base_ref }}...HEAD | tee changed-files.txt
+          echo "Fuckia warning mode: review changed-files.txt against the PR allowed and forbidden file lists."
