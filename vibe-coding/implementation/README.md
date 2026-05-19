@@ -8,8 +8,9 @@ Read order:
 2. `capabilities-decisions-and-open-risks.md`
 3. `capabilities/README.md`
 4. `../installation/README.md`
-5. `blueprint/README.md`
-6. `rollout-plan.md`
+5. `build-plan/README.md`
+6. `blueprint/README.md`
+7. `rollout-plan.md`
 
 ## Purpose
 
