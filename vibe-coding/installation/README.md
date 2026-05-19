@@ -11,10 +11,10 @@ npx fuckia init
 Agent bootstrap experience:
 
 ```text
-Read and follow `https://github.com/bacoco/Fuckia/blob/main/agent-runbooks/<claude-or-codex>/install-or-migrate.md` for this repository. Start with dry-run inventory. Stop before any write that lacks explicit approval.
+Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-The agent runbook is followed from the Fuckia repository. It is not copied into the target repository by default.
+The install file is followed from the Fuckia repository. It is not copied into the target repository by default.
 
 For existing projects:
 

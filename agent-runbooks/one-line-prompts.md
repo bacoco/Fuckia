@@ -2,20 +2,13 @@
 
 These prompts are pasted inside Claude Code or Codex while the agent is located in the target repository.
 
-## Claude Code
+## Claude Code Or Codex
 
 ```text
-Read and follow `https://github.com/bacoco/Fuckia/blob/main/agent-runbooks/claude/install-or-migrate.md` for this repository. Start with dry-run inventory. Stop before any write that lacks explicit approval.
+Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-## Codex
+## Platform-Specific Wrappers
 
-```text
-Read and follow `https://github.com/bacoco/Fuckia/blob/main/agent-runbooks/codex/install-or-migrate.md` for this repository. Start with dry-run inventory. Stop before any write that lacks explicit approval.
-```
-
-## Local Clone Variant
-
-```text
-Read and follow `<path-to-Fuckia>/agent-runbooks/<claude-or-codex>/install-or-migrate.md` for this repository. Start with dry-run inventory. Stop before any write that lacks explicit approval.
-```
+- Claude wrapper: `agent-runbooks/claude/install-or-migrate.md`
+- Codex wrapper: `agent-runbooks/codex/install-or-migrate.md`

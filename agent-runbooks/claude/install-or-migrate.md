@@ -1,109 +1,17 @@
-# Claude Install Or Migrate Runbook
+# Claude Wrapper
 
-You are Claude Code operating inside a target repository.
+You are Claude Code inside the target repository.
 
-Follow this file from the Fuckia repository. Do not copy this file into the target repository unless the human explicitly asks for an archive copy.
+Follow the root Fuckia install file:
 
-## First Reads
-
-Read these Fuckia files before acting:
-
-1. `vibe-coding/constitution/agent-constitution.md`
-2. `vibe-coding/constitution/evidence-language-guard.md`
-3. `vibe-coding/installation/README.md`
-4. `vibe-coding/installation/new-project/README.md`
-5. `vibe-coding/installation/existing-project/README.md`
-6. `vibe-coding/skills/shared-skills-system.md`
-
-## Laws For This Run
-
-1. Use evidence before claims.
-2. Use `Unknown` when evidence is missing.
-3. Ask the human or stop when required evidence cannot be read.
-4. Start with dry-run inventory.
-5. Do not modify product code.
-6. Do not delete existing agent instructions.
-7. Do not create parallel engines, stores, routers, pipelines, or workflows.
-8. Do not mark Done from isolated checks.
-
-## CLI Location
-
-The npm package is not published yet.
-
-Use a local clone of Fuckia:
-
-```bash
-cd /path/to/Fuckia
-npm install
-npm run build
+```text
+https://github.com/bacoco/Fuckia/blob/main/INSTALL.md
 ```
 
-Then return to the target repository.
+Claude-specific rules:
 
-If the local Fuckia path is unknown, ask the human for it before running CLI commands.
+- use Claude planning tools for task tracking;
+- do not use Claude subagents on overlapping files;
+- do not write target files before the human approves the exact file list.
 
-## Commands
-
-Run from the target repository:
-
-```bash
-node /path/to/Fuckia/dist/cli.js doctor
-node /path/to/Fuckia/dist/cli.js migrate --dry-run
-```
-
-For a blank or new repository, also run:
-
-```bash
-node /path/to/Fuckia/dist/cli.js init --dry-run
-```
-
-## Required Report
-
-Report these fields:
-
-- target repository path;
-- repository type: new or existing;
-- existing `AGENTS.md`;
-- existing `CLAUDE.md`;
-- existing Claude skills;
-- existing Codex skills;
-- existing GitHub workflows;
-- existing PR templates;
-- existing Linear references;
-- files that Fuckia would create;
-- existing files that require merge review;
-- GitHub permissions required;
-- Linear permissions required;
-- exact next approval needed from the human.
-
-## Write Boundary
-
-Stop before writes unless the human approves the exact file list.
-
-Approved writes are limited to governance installation:
-
-- agent rule files;
-- generated Claude and Codex skills;
-- GitHub templates;
-- GitHub workflows;
-- Fuckia config;
-- `docs/fuckia/` receipts.
-
-Forbidden writes:
-
-- product code;
-- application routes;
-- hooks;
-- stores;
-- engines;
-- pipelines;
-- unrelated docs cleanup;
-- deletion of existing rules.
-
-## Claude Mechanics
-
-Use Claude planning tools for task tracking.
-
-Use Claude subagents only with disjoint file ownership.
-
-Do not run parallel agents on the same files.
+All install behavior comes from `INSTALL.md`.
