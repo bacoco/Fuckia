@@ -51,7 +51,7 @@ Pick one risky existing flow, ideally similar to Harmonia mobile:
 
 - active Linear Project;
 - one active spec document in Linear;
-- one issue with file locks and delete budget;
+- one issue with file locks and destructive-change guard;
 - one plan-review by the other agent or a human;
 - one PR with gates;
 - one verification receipt;
@@ -91,7 +91,7 @@ For each project:
 - Claude and Codex generated shared skills are in sync.
 - PR fails if a generated shared skill is edited manually.
 - PR fails if forbidden files are touched.
-- PR fails if delete budget is exceeded.
+- PR fails if destructive-change guard is exceeded.
 - risky implementation is blocked until plan-review is approved.
 - self-review is blocked or escalated for risky work.
 - PR cannot be marked ready for risky UI work without verification receipt.

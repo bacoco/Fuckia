@@ -6,7 +6,7 @@ Strict mode blocks:
 - missing, divergent, or weakened role law propagation;
 - generated skill drift;
 - forbidden file edits;
-- delete budget excess;
+- destructive-change guard excess;
 - missing Linear ID;
 - risky work without independent plan-review;
 - missing verification receipt for product/UI work;

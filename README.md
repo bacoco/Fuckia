@@ -6,6 +6,7 @@ Start here:
 
 - `vibe-coding/README.md` - top-level map.
 - `vibe-coding/constitution/README.md` - foundational laws.
+- `vibe-coding/installation/README.md` - install paths for Claude, Codex, new projects, and existing projects.
 - `vibe-coding/implementation/README.md` - implementation path.
 - `vibe-coding/prompts/developer-prompt.md` - implementation prompt.
 

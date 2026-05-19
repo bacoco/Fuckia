@@ -6,7 +6,7 @@
 
 - Linear contract is complete;
 - file locks are declared;
-- delete budget is declared;
+- destructive-change guard is declared;
 - existing pipeline is named or explicitly not applicable;
 - required plan-review is approved or human-waived;
 - implementer has posted pre-flight.

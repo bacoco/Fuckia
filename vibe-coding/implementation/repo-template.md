@@ -10,12 +10,12 @@ source_of_truth: true
 
 # Repository Template
 
-The developer must create a reusable repository/template that can initialize new projects and retrofit existing projects.
+The product must become an installable kit, not a documentation bundle.
 
 ## Required template areas
 
 ```text
-agent-collab/
+fuckia/
   README.md
   linear/
     issue-templates/
@@ -41,7 +41,8 @@ agent-collab/
     doctor
   docs/
     archive-template/
-    migration-guide.md
+    install-new-project.md
+    migrate-existing-project.md
 ```
 
 Names may change, but the responsibilities must remain separated.
@@ -89,23 +90,29 @@ The archive is immutable evidence for the code history. It is not the active spe
 
 ## Project bootstrap command
 
-The kit should provide one documented bootstrap path for new projects:
+The kit must provide one command for new projects:
 
-```text
-init project -> install rules -> install generated skills -> install GitHub gates -> configure Linear templates -> run doctor
+```bash
+npx fuckia init
 ```
 
-The exact command is for the implementer to design.
+The command installs rules, generated skills, GitHub gates, project config, and docs, then runs `doctor`.
 
 ## Existing project migration
 
-Migration must be staged:
+Migration must be audit-first:
 
-1. inventory current agent rules, skills, docs, PR templates, workflows;
-2. identify duplicates and conflicts;
-3. install rules without deleting old docs;
-4. pilot on one critical project/feature;
-5. enable strict gates only after the pilot passes.
+```bash
+npx fuckia migrate --dry-run
+npx fuckia migrate --plan
+npx fuckia migrate --apply
+```
+
+`--dry-run` audits only. It must not modify code.
+
+`--plan` writes the migration plan.
+
+`--apply` is limited to governance files unless the user explicitly authorizes a broader change.
 
 ## Adversarial implementer pass
 

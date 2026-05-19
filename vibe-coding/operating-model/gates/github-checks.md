@@ -7,7 +7,7 @@ Required checks:
 - active Linear document linked or marked not needed;
 - changed files within allowed files;
 - forbidden files untouched;
-- delete budget respected;
+- destructive-change guard respected;
 - generated skills synced;
 - required plan-review approved;
 - planner and plan reviewer are different for risky work;

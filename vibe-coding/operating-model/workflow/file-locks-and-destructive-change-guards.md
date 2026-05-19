@@ -1,4 +1,4 @@
-# File Locks And Delete Budgets
+# File Locks And Destructive-Change Guards
 
 Each active Linear issue declares file locks.
 
@@ -9,9 +9,8 @@ Rules:
 - overlap requires explicit human comment in Linear;
 - GitHub CI detects changes outside allowed files and changes to forbidden files.
 
-Every issue that touches existing behavior defines a delete budget:
+Every issue that touches existing behavior defines a destructive-change guard:
 
 - per critical file when relevant;
-- total deletion limit for the PR;
-- zero budget for files that must not be rewritten.
-
+- total destructive-change limit for the PR;
+- zero destructive-change allowance for files that must not be rewritten.

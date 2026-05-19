@@ -9,7 +9,7 @@ Design required:
 - workflow statuses;
 - risk and verification labels;
 - file lock convention;
-- delete budget convention;
+- destructive-change guard convention;
 - authorized actor convention;
 - verification receipt convention.
 

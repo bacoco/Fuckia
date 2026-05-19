@@ -7,5 +7,5 @@ The initial repository/template must include:
 - platform-only adapter skills;
 - a `doctor` command for instruction and skill discovery;
 - sample Linear issues for low-risk, risky, emergency bypass, and third-reviewer flows;
-- failure fixtures for stale skill, bad frontmatter, forbidden file, delete budget, missing plan-review, missing verification receipt, and unsupported uncertainty language.
+- failure fixtures for stale skill, bad frontmatter, forbidden file, destructive-change guard, missing plan-review, missing verification receipt, and unsupported uncertainty language.
 

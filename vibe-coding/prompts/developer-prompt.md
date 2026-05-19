@@ -1,6 +1,6 @@
 # Developer Prompt
 
-You must create a reusable repository/template for coordinating Claude Code, Codex, Linear, and GitHub across new projects and existing projects.
+You must implement Fuckia as a reusable, installable governance kit for coordinating Claude Code, Codex, Linear, and GitHub across new projects and existing projects.
 
 Read `vibe-coding/constitution/agent-constitution.md` first. These laws are the root contract for the system. They are not a developer checklist.
 Then read `vibe-coding/constitution/agent-law-propagation.md`. Universal laws, role addenda, and validators must all exist.
@@ -24,11 +24,12 @@ vibe-coding/
 - The system must cover the 8 failure classes in `vibe-coding/operating-model/failure-catalog-cross-review.md`.
 - The system must deliver the initial skill set and additional mitigations in `vibe-coding/skills/initial-skills-and-risk-map.md`.
 - The system must enforce `vibe-coding/constitution/evidence-language-guard.md`: no uncertain causality without evidence.
+- Installation must be simple: Claude plugin path, Codex install path, and universal one-command CLI.
 
 ## Expected Deliverables
 
-1. An installable repo/template for a new project.
-2. A migration procedure for an existing project.
+1. One-command install for a new project: `npx fuckia init`.
+2. Audit-first migration for an existing project: `npx fuckia migrate --dry-run`, `--plan`, then `--apply`.
 3. Linear templates: Project, issue contract, statuses, verification receipt.
    - Include issue types or templates: spec, plan, plan-review, implement, code-review, verify.
    - `plan-review` must block `implement` for risky work.
@@ -47,7 +48,7 @@ vibe-coding/
    - role addenda;
    - mandatory Linear ID;
    - allowed/forbidden files;
-   - delete budget;
+   - destructive-change guard;
    - plan-review approval;
    - planner/reviewer separation;
    - implementer/code-reviewer separation;
@@ -58,6 +59,8 @@ vibe-coding/
 7. Warning mode followed by strict mode.
 8. A demo on a blank repo.
 9. A pilot on an existing project.
+10. Claude plugin distribution plan.
+11. Codex installation path.
 
 ## Non-Negotiable Constraints
 
@@ -78,6 +81,8 @@ vibe-coding/
 - Do not allow an agent to be the sole reviewer of its own code on risky work.
 - Do not auto-merge from typecheck or unit tests.
 - Do not migrate every project to strict mode before a pilot.
+- Do not make users understand the full repository before installing.
+- Do not modify product code during existing-project migration unless the user explicitly authorizes it.
 
 ## Required Decision Note Before Coding
 
@@ -96,7 +101,7 @@ Pilot plan:
 - Claude/Codex generation proven.
 - Invalid skill validation proven.
 - Test PR fails on forbidden file.
-- Test PR fails on delete budget.
+- Test PR fails on destructive-change guard.
 - Test PR fails on manually edited generated skill.
 - Doctor detects unloaded skill, duplicate, shadowing, invalid frontmatter, stale hash, AGENTS/CLAUDE divergence.
 - Check blocks unsupported causal language in plans, reviews, receipts, and handoffs.
@@ -105,6 +110,7 @@ Pilot plan:
 - Pilot Linear issue with verification receipt.
 - GitHub archive of a Linear snapshot.
 - Short docs for installing on a new project and migrating an existing project.
+- `existing-project-governance-auditor` skill implemented for safe migration audits.
 
 ## Important Context
 

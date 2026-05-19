@@ -9,15 +9,17 @@ The system is organized through progressive disclosure. Read the narrowest file 
 1. `constitution/README.md`
 2. `operating-model/README.md`
 3. `skills/README.md`
-4. `implementation/README.md`
-5. `prompts/developer-prompt.md`
-6. `references/sources.md`
+4. `installation/README.md`
+5. `implementation/README.md`
+6. `prompts/developer-prompt.md`
+7. `references/sources.md`
 
 ## Directories
 
 - `constitution/` - universal laws, law propagation, and evidence language guard.
 - `operating-model/` - Linear/GitHub workflow, gates, contracts, and failure classes.
 - `skills/` - shared, Claude-only, and Codex-only skill strategy.
+- `installation/` - plugin, CLI, new-project, and existing-project installation paths.
 - `implementation/` - standalone repo blueprint, rollout, capabilities, and migration plan.
 - `prompts/` - copy-paste implementation prompts.
 - `references/` - official docs and internal source references.

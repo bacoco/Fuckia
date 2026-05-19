@@ -7,7 +7,7 @@ Objective:
 Authorized agent:
 Allowed files:
 Forbidden files:
-Delete budget:
+Destructive-change guard:
 Existing pipeline to preserve:
 Required callbacks/routes/hooks/stores:
 Forbidden implementations:

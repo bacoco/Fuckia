@@ -8,5 +8,4 @@ Files:
 - `issue-chain.md`
 - `contracts.md`
 - `done-and-ready.md`
-- `file-locks-and-delete-budgets.md`
-
+- `file-locks-and-destructive-change-guards.md`

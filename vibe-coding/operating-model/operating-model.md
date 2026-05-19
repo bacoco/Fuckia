@@ -18,7 +18,7 @@ The operating model is governed by `vibe-coding/constitution/agent-constitution.
 2. `workflow/issue-chain.md`
 3. `workflow/contracts.md`
 4. `workflow/done-and-ready.md`
-5. `workflow/file-locks-and-delete-budgets.md`
+5. `workflow/file-locks-and-destructive-change-guards.md`
 6. `linear-github-gates.md`
 7. `failure-catalog-cross-review.md`
 8. `no-hallucination-rules.md`

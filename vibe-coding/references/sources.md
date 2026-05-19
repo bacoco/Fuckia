@@ -33,6 +33,9 @@ These are starting points only. The implementer must re-check current docs durin
 
 ## Claude and Codex skills
 
+- Claude Code plugins: https://code.claude.com/docs/en/plugins
+- Claude Code plugin marketplaces: https://code.claude.com/docs/en/plugin-marketplaces
+- Claude Code plugin reference: https://code.claude.com/docs/en/plugins-reference
 - Claude Code skills: https://code.claude.com/docs/en/skills
 - Claude Code GitHub Actions: https://code.claude.com/docs/en/github-actions
 - Codex skills: https://developers.openai.com/codex/skills

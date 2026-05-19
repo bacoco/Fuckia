@@ -8,7 +8,7 @@ Linear active spec/doc:
 Scope:
 Allowed files:
 Forbidden files:
-Delete budget:
+Destructive-change guard:
 Existing pipeline preserved:
 Verification:
 Archive snapshot:

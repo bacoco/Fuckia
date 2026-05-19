@@ -47,7 +47,7 @@ No database in v1. Store generated reports as Markdown/JSON artifacts.
 ## Developer Prompt
 
 ```text
-Implement the standalone `claude-codex-collab-kit` repository from this blueprint directory.
+Implement the standalone `fuckia` repository from this blueprint directory.
 
 Do not put it inside an existing product repo.
 Start with TypeScript/Node, deterministic validators, templates, generated skills, GitHub workflows, and a doctor command.

@@ -9,6 +9,7 @@ Read order:
 3. `initial-skills-and-risk-map.md`
 4. `catalog/README.md`
 5. `risks/README.md`
+6. `existing-project/README.md`
 
 ## Purpose
 

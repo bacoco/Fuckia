@@ -18,5 +18,4 @@ Hard rules:
 - verification blocks Done;
 - human override requires a visible Linear bypass reason.
 
-Plan-review is mandatory for risky work, multi-agent work, ambiguous instructions, core files, public API/data contract changes, high delete budgets, UI-visible workflow changes, and deploy changes.
-
+Plan-review is mandatory for risky work, multi-agent work, ambiguous instructions, core files, public API/data contract changes, broad destructive-change scope, UI-visible workflow changes, and deploy changes.
