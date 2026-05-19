@@ -31,6 +31,7 @@ Claude users should get a plugin path. Codex users should get generated skills a
 1. `distribution/README.md`
 2. `new-project/README.md`
 3. `existing-project/README.md`
+4. `platforms/README.md`
 
 ## Product Rule
 

@@ -26,19 +26,35 @@ Read these Fuckia files before acting:
 7. Do not create parallel engines, stores, routers, pipelines, or workflows.
 8. Do not mark Done from isolated checks.
 
+## CLI Location
+
+The npm package is not published yet.
+
+Use a local clone of Fuckia:
+
+```bash
+cd /path/to/Fuckia
+npm install
+npm run build
+```
+
+Then return to the target repository.
+
+If the local Fuckia path is unknown, ask the human for it before running CLI commands.
+
 ## Commands
 
 Run from the target repository:
 
 ```bash
-npx fuckia doctor
-npx fuckia migrate --dry-run
+node /path/to/Fuckia/dist/cli.js doctor
+node /path/to/Fuckia/dist/cli.js migrate --dry-run
 ```
 
 For a blank or new repository, also run:
 
 ```bash
-npx fuckia init --dry-run
+node /path/to/Fuckia/dist/cli.js init --dry-run
 ```
 
 ## Required Report

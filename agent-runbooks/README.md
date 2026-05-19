@@ -6,6 +6,8 @@ The human gives Claude Code or Codex one short prompt that points to one of thes
 
 Nothing in this directory is copied into the target repository by default.
 
+The npm package is not published yet. Runbooks use a local Fuckia clone and `node /path/to/Fuckia/dist/cli.js`.
+
 Files:
 
 - `one-line-prompts.md` - human copy-paste prompts.
