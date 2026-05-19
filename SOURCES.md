@@ -55,6 +55,7 @@ These are starting points only. The implementer must re-check current docs durin
 
 - Agent Constitution: `00-agent-constitution.md`
 - Evidence Language Guard: `11-evidence-language-guard.md`
+- Agent Law Propagation: `12-agent-law-propagation.md`
 
 ## Adversarial implementer pass
 

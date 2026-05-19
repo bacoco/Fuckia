@@ -14,6 +14,8 @@ Shared and platform-only skills must enforce `00-agent-constitution.md`.
 
 The constitution is not a skill. Skills are one enforcement mechanism for the constitution.
 
+Use `12-agent-law-propagation.md` to embed the universal law packet, role addenda, source paths, and hashes in generated Claude and Codex skills.
+
 Claude and Codex skill formats are not identical. Do not pretend one file can safely serve both.
 
 Use one neutral source and generate two outputs.

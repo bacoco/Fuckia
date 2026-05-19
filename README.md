@@ -48,6 +48,7 @@ Create a reusable project starter and migration kit where:
 - `09-capabilities-decisions-and-open-risks.md` - verified capabilities, technical decisions, and remaining risks.
 - `10-implementation-blueprint.md` - standalone repo structure, commands, schemas, gates, and pilot plan.
 - `11-evidence-language-guard.md` - mandatory rule against unsupported uncertainty language.
+- `12-agent-law-propagation.md` - universal laws, role addenda, tool adapters, and validators.
 - `PROMPT-A-DONNER-AU-DEV.md` - copy-paste prompt for the implementer.
 - `SOURCES.md` - official docs starting points to verify.
 

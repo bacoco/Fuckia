@@ -3,6 +3,7 @@
 Tu dois creer un repo/template reutilisable pour coordonner Claude Code, Codex, Linear et GitHub sur les nouveaux projets et les projets existants.
 
 Lis d'abord `00-agent-constitution.md`. Ces lois sont le contrat racine du systeme. Elles ne sont pas une checklist de developpeur.
+Lis ensuite `12-agent-law-propagation.md`. Les lois universelles, les addenda de role et les validators doivent tous exister.
 
 Lis d'abord tous les fichiers dans ce dossier:
 
@@ -13,6 +14,7 @@ docs/specs/specs/2026-05-19-claude-codex-linear-github-collaboration-kit/
 Objectif:
 
 - Les 5 lois de `00-agent-constitution.md` doivent gouverner tous les skills, templates, validators, workflows, reviews et receipts.
+- Chaque agent doit recevoir les lois universelles plus son addendum de role, sans divergence Claude/Codex.
 - Linear doit devenir le cockpit actif: spec active, contrats d'issues, statuts, decisions, verification receipts.
 - GitHub doit rester la preuve technique: branches, PRs, CI, reviews, merge history, archive versionnee.
 - Claude et Codex doivent suivre les memes regles.
@@ -41,6 +43,8 @@ Livrables attendus:
    - hash check des fichiers generes.
 6. Les checks minimaux:
    - constitution references;
+   - agent law coverage;
+   - role addenda;
    - Linear ID obligatoire;
    - allowed/forbidden files;
    - delete budget;
@@ -59,6 +63,8 @@ Contraintes non negociables:
 
 - Ne pas traiter `00-agent-constitution.md` comme de la documentation passive.
 - Chaque loi doit etre mappee a des skills, templates, checks, gates ou receipts.
+- Ne pas remplacer les validators par la constitution. Il faut les deux.
+- Ne pas creer des lois separees par agent qui divergent. Les addenda de role peuvent renforcer seulement.
 - Ne pas inventer les APIs Linear/GitHub/Claude/Codex. Verifier les docs officielles et documenter les choix.
 - Ne pas ecrire deux versions manuelles des skills partages.
 - Ne pas laisser un skill Claude-only ou Codex-only affaiblir une regle partagee.
@@ -86,6 +92,7 @@ Plan de pilotage:
 Definition of Done du repo/template:
 
 - constitution referencee par README, skills generes, templates, validators et workflows;
+- universal law packet et role addenda generes dans les skills Claude/Codex avec hash;
 - generation Claude/Codex prouvee;
 - validation de skill invalide prouvee;
 - PR test qui echoue sur fichier interdit;

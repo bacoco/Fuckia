@@ -73,6 +73,8 @@ claude-codex-collab-kit/
       discover-skills.ts
     validators/
       validate-constitution.ts
+      validate-agent-law-coverage.ts
+      validate-role-addenda.ts
       validate-skills.ts
       validate-pr-contract.ts
       validate-pr-scope.ts
@@ -178,6 +180,8 @@ collab-kit migrate --dry-run
 collab-kit migrate --write
 collab-kit generate-skills
 collab-kit validate-constitution
+collab-kit validate-agent-law-coverage
+collab-kit validate-role-addenda
 collab-kit validate-skills
 collab-kit validate-pr-contract
 collab-kit validate-pr-scope
@@ -196,6 +200,8 @@ Command behavior:
 - `migrate --write`: patches only with explicit report; never deletes old docs automatically.
 - `generate-skills`: regenerates `.claude/skills` and `.agents/skills` from neutral source.
 - `validate-constitution`: validates that templates, generated skills, and validators reference the foundational laws.
+- `validate-agent-law-coverage`: validates universal law packet propagation in skills, `AGENTS.md`, `CLAUDE.md`, templates, and workflows.
+- `validate-role-addenda`: validates that role-specific addenda strengthen and do not weaken the constitution.
 - `validate-skills`: fails stale hashes, invalid frontmatter, missing counterpart, duplicate skill names, and direct edits.
 - `validate-pr-contract`: validates PR body, Linear ID, risk class, required fields, and actor separation.
 - `validate-pr-scope`: validates changed files and delete budget.
@@ -283,7 +289,7 @@ Required workflows:
    - blocks forbidden file edits and delete budget violations.
 
 3. `collab-contract.yml`
-   - runs `validate-constitution`, `validate-pr-contract`, `validate-linear-gates`, `validate-verification-receipt`, `validate-archive-snapshot`, and `validate-evidence-language`;
+   - runs `validate-constitution`, `validate-agent-law-coverage`, `validate-role-addenda`, `validate-pr-contract`, `validate-linear-gates`, `validate-verification-receipt`, `validate-archive-snapshot`, and `validate-evidence-language`;
    - warning mode comments with findings;
    - strict mode fails checks.
 
@@ -359,6 +365,7 @@ Warning mode:
 Strict mode:
 
 - blocks missing constitution references in generated skills/templates;
+- blocks missing, divergent, or weakened role law propagation;
 - blocks generated skill drift;
 - blocks forbidden files;
 - blocks delete budget excess;

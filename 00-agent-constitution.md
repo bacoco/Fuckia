@@ -189,6 +189,21 @@ The implementation must include deterministic checks for the parts that can be c
 
 The parts that cannot be checked automatically must be explicit checklist gates with actor identity and receipt.
 
+## Law propagation
+
+Use `12-agent-law-propagation.md` to apply these laws.
+
+The model is:
+
+```text
+Universal constitution
+  -> role-specific addenda
+  -> Claude/Codex adapters
+  -> deterministic validators
+```
+
+Each agent receives the same universal laws. Role-specific rules may add constraints for planners, reviewers, implementers, verifiers, and emergency operators. They must not weaken this constitution.
+
 ## Priority
 
 When instructions conflict:
