@@ -28,15 +28,22 @@ export interface InitApplyResult {
 }
 
 const templateFiles: Array<{ templatePath: string; outputPath: string }> = [
+  { templatePath: "agents/README.md", outputPath: ".agents/README.md" },
+  { templatePath: "agents/skills/README.md", outputPath: ".agents/skills/README.md" },
+  { templatePath: "claude/README.md", outputPath: ".claude/README.md" },
+  { templatePath: "claude/skills/README.md", outputPath: ".claude/skills/README.md" },
   { templatePath: "project/AGENTS.md", outputPath: "AGENTS.md" },
   { templatePath: "project/CLAUDE.md", outputPath: "CLAUDE.md" },
   { templatePath: "project/fuckia.config.yaml", outputPath: "fuckia.config.yaml" },
-  { templatePath: "github/pull_request_template.md", outputPath: ".github/pull_request_template.md" },
+  { templatePath: "github/pull_request_template.md", outputPath: ".github/PULL_REQUEST_TEMPLATE.md" },
   { templatePath: "github/workflows/collab-contract.yml", outputPath: ".github/workflows/collab-contract.yml" },
   { templatePath: "github/workflows/generated-skills.yml", outputPath: ".github/workflows/generated-skills.yml" },
   { templatePath: "github/workflows/pr-scope.yml", outputPath: ".github/workflows/pr-scope.yml" },
+  { templatePath: "github/workflows/README.md", outputPath: ".github/workflows/README.md" },
+  { templatePath: "docs/README.md", outputPath: "docs/README.md" },
   { templatePath: "docs/fuckia/README.md", outputPath: "docs/fuckia/README.md" },
-  { templatePath: "docs/fuckia/end-of-work-checkpoint.md", outputPath: "docs/fuckia/end-of-work-checkpoint.md" }
+  { templatePath: "docs/fuckia/end-of-work-checkpoint.md", outputPath: "docs/fuckia/end-of-work-checkpoint.md" },
+  { templatePath: "docs/fuckia/merge-proposals/README.md", outputPath: "docs/fuckia/merge-proposals/README.md" }
 ];
 
 export async function applyInit(options: InitApplyOptions): Promise<InitApplyResult> {

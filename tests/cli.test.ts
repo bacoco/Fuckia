@@ -5,6 +5,10 @@ import path from "node:path";
 import test from "node:test";
 import { runCli } from "../src/core/runCli";
 import { snapshotTree } from "../src/fs/readTree";
+import { applyGitHubRemote } from "../src/github/apply";
+import { auditGitHubRemote } from "../src/github/audit";
+import { parseGitHubRemote } from "../src/github/remote";
+import type { CommandResult, CommandRunner } from "../src/github/runner";
 
 async function withTempProject(run: (directory: string) => Promise<void>): Promise<void> {
   const directory = await mkdtemp(path.join(tmpdir(), "fuckia-test-"));
@@ -19,6 +23,14 @@ async function createMinimalProject(directory: string): Promise<void> {
   await writeFile(path.join(directory, "README.md"), "# Fixture\n", "utf8");
   await mkdir(path.join(directory, "vibe-coding"), { recursive: true });
   await writeFile(path.join(directory, "vibe-coding", "README.md"), "# Fixture Map\n", "utf8");
+}
+
+async function createInstalledGithubFiles(directory: string): Promise<void> {
+  await mkdir(path.join(directory, ".github", "workflows"), { recursive: true });
+  await writeFile(path.join(directory, ".github", "PULL_REQUEST_TEMPLATE.md"), "# PR\n", "utf8");
+  await writeFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "name: Contract\n", "utf8");
+  await writeFile(path.join(directory, ".github", "workflows", "generated-skills.yml"), "name: Skills\n", "utf8");
+  await writeFile(path.join(directory, ".github", "workflows", "pr-scope.yml"), "name: Scope\n", "utf8");
 }
 
 async function capture(command: string[], cwd: string): Promise<{ exitCode: number; stdout: string; stderr: string }> {
@@ -43,6 +55,8 @@ test("--help prints usage", async () => {
     const result = await capture(["--help"], directory);
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /fuckia doctor/);
+    assert.match(result.stdout, /fuckia github --dry-run/);
+    assert.match(result.stdout, /fuckia github --apply --yes/);
     assert.equal(result.stderr, "");
   });
 });
@@ -257,6 +271,173 @@ test("generate-skills --check passes after examples are generated", async () => 
   });
 });
 
+test("parseGitHubRemote accepts supported github.com remote formats", () => {
+  const remotes = [
+    "https://github.com/bacoco/Fuckia.git",
+    "https://github.com/bacoco/Fuckia",
+    "git@github.com:bacoco/Fuckia.git",
+    "ssh://git@github.com/bacoco/Fuckia.git"
+  ];
+
+  for (const remote of remotes) {
+    const parsed = parseGitHubRemote(remote);
+    assert.equal(parsed?.fullName, "bacoco/Fuckia");
+    assert.equal(parsed?.webUrl, "https://github.com/bacoco/Fuckia");
+  }
+
+  assert.equal(parseGitHubRemote("https://gitlab.com/bacoco/Fuckia.git"), null);
+});
+
+test("github audit is read-only and reports remote readiness", async () => {
+  await withTempProject(async (directory) => {
+    await createInstalledGithubFiles(directory);
+    const before = await snapshotTree(directory);
+    const report = await auditGitHubRemote({
+      targetRoot: directory,
+      runner: fakeRunner({
+        "git remote get-url origin": ok("git@github.com:bacoco/Fuckia.git\n"),
+        "gh --version": ok("gh version 2.0.0\n"),
+        "gh auth status": ok("Logged in\n"),
+        "gh api repos/bacoco/Fuckia": ok(JSON.stringify({
+          default_branch: "main",
+          permissions: { admin: true, push: true, pull: true }
+        })),
+        "gh api repos/bacoco/Fuckia/actions/permissions": ok(JSON.stringify({
+          enabled: true,
+          allowed_actions: "all"
+        })),
+        "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([{ id: 1, name: "Fuckia" }])),
+        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": ok(JSON.stringify([
+          "contract",
+          "generated-skills",
+          "scope"
+        ]))
+      })
+    });
+    const after = await snapshotTree(directory);
+
+    assert.deepEqual(after, before);
+    assert.equal(report.remote?.fullName, "bacoco/Fuckia");
+    assert.equal(report.defaultBranch, "main");
+    assert.equal(report.remoteWrites, "none");
+    assert.equal(report.checks.every((check) => check.status === "pass"), true);
+  });
+});
+
+test("github audit reports missing required checks without writing", async () => {
+  await withTempProject(async (directory) => {
+    await createInstalledGithubFiles(directory);
+    const before = await snapshotTree(directory);
+    const report = await auditGitHubRemote({
+      targetRoot: directory,
+      runner: fakeRunner({
+        "git remote get-url origin": ok("https://github.com/bacoco/Fuckia.git\n"),
+        "gh --version": ok("gh version 2.0.0\n"),
+        "gh auth status": ok("Logged in\n"),
+        "gh api repos/bacoco/Fuckia": ok(JSON.stringify({
+          default_branch: "main",
+          permissions: { admin: false, push: true, pull: true }
+        })),
+        "gh api repos/bacoco/Fuckia/actions/permissions": ok(JSON.stringify({
+          enabled: true,
+          allowed_actions: "all"
+        })),
+        "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([])),
+        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": ok(JSON.stringify([
+          "contract"
+        ]))
+      })
+    });
+    const after = await snapshotTree(directory);
+    const requiredChecks = report.checks.find((check) => check.id === "github:required-checks");
+    const permissions = report.checks.find((check) => check.id === "github:permissions");
+
+    assert.deepEqual(after, before);
+    assert.equal(requiredChecks?.status, "fail");
+    assert.match(requiredChecks?.message ?? "", /generated-skills, scope/);
+    assert.equal(permissions?.status, "warning");
+    assert.equal(report.nextSteps.includes("Configure required GitHub checks only after installed workflows are pushed to the default branch."), true);
+  });
+});
+
+test("github apply requires explicit remote write approval", async () => {
+  await withTempProject(async (directory) => {
+    await createInstalledGithubFiles(directory);
+    const before = await snapshotTree(directory);
+    const result = await applyGitHubRemote({
+      targetRoot: directory,
+      approveRemoteWrites: false,
+      runner: fakeRunner({
+        "git remote get-url origin": ok("https://github.com/bacoco/Fuckia.git\n"),
+        "gh --version": ok("gh version 2.0.0\n"),
+        "gh auth status": ok("Logged in\n"),
+        "gh api repos/bacoco/Fuckia": ok(JSON.stringify({
+          default_branch: "main",
+          permissions: { admin: true, push: true, pull: true }
+        })),
+        "gh api repos/bacoco/Fuckia/actions/permissions": ok(JSON.stringify({
+          enabled: true,
+          allowed_actions: "all"
+        })),
+        "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([])),
+        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": fail("gh: Branch not protected (HTTP 404)")
+      })
+    });
+    const after = await snapshotTree(directory);
+
+    assert.deepEqual(after, before);
+    assert.equal(result.status, "blocked");
+    assert.equal(result.blockers.includes("Remote writes require `--yes`."), true);
+    assert.deepEqual(result.remoteWrites, []);
+  });
+});
+
+test("github apply creates branch protection for an unprotected repository", async () => {
+  await withTempProject(async (directory) => {
+    await createInstalledGithubFiles(directory);
+    const writes: Array<{ key: string; stdin?: string }> = [];
+    const before = await snapshotTree(directory);
+    const runner = recordingRunner({
+      "git remote get-url origin": ok("https://github.com/bacoco/Fuckia.git\n"),
+      "gh --version": ok("gh version 2.0.0\n"),
+      "gh auth status": ok("Logged in\n"),
+      "gh api repos/bacoco/Fuckia": ok(JSON.stringify({
+        default_branch: "main",
+        permissions: { admin: true, push: true, pull: true }
+      })),
+      "gh api repos/bacoco/Fuckia/actions/permissions": ok(JSON.stringify({
+        enabled: true,
+        allowed_actions: "all"
+      })),
+      "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([])),
+      "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks/contexts": [
+        fail("gh: Branch not protected (HTTP 404)"),
+        ok(JSON.stringify(["contract", "generated-skills", "scope"]))
+      ],
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/collab-contract.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/generated-skills.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/contents/.github/workflows/pr-scope.yml?ref=main": ok("{}"),
+      "gh api repos/bacoco/Fuckia/branches/main/protection": fail("gh: Branch not protected (HTTP 404)"),
+      "gh api --method PUT repos/bacoco/Fuckia/branches/main/protection --input -": ok("{}")
+    }, writes);
+
+    const result = await applyGitHubRemote({
+      targetRoot: directory,
+      approveRemoteWrites: true,
+      runner
+    });
+    const after = await snapshotTree(directory);
+    const write = writes.find((entry) => entry.key === "gh api --method PUT repos/bacoco/Fuckia/branches/main/protection --input -");
+
+    assert.deepEqual(after, before);
+    assert.equal(result.status, "applied");
+    assert.deepEqual(result.remoteWrites, ["PUT /repos/bacoco/Fuckia/branches/main/protection"]);
+    assert.match(write?.stdin ?? "", /"contexts": \[/);
+    assert.match(write?.stdin ?? "", /"contract"/);
+    assert.match(write?.stdin ?? "", /"required_approving_review_count": 1/);
+  });
+});
+
 async function createSkillSource(directory: string): Promise<void> {
   const sourceDir = path.join(directory, "skills-src", "shared");
   await mkdir(sourceDir, { recursive: true });
@@ -278,4 +459,45 @@ async function createSkillSource(directory: string): Promise<void> {
     ].join("\n"),
     "utf8"
   );
+}
+
+function ok(stdout: string): CommandResult {
+  return {
+    exitCode: 0,
+    stdout,
+    stderr: ""
+  };
+}
+
+function fail(stderr: string): CommandResult {
+  return {
+    exitCode: 1,
+    stdout: "",
+    stderr
+  };
+}
+
+type FakeResult = CommandResult | CommandResult[];
+
+function fakeRunner(results: Record<string, FakeResult>): CommandRunner {
+  return recordingRunner(results, []);
+}
+
+function recordingRunner(results: Record<string, FakeResult>, writes: Array<{ key: string; stdin?: string }>): CommandRunner {
+  return {
+    async run(command: string, args: string[], _cwd: string, stdin?: string): Promise<CommandResult> {
+      const key = [command, ...args].join(" ");
+      if (stdin !== undefined) {
+        writes.push({ key, stdin });
+      }
+
+      const result = results[key];
+      if (Array.isArray(result)) {
+        const next = result.shift();
+        return next ?? fail(`No remaining fake result for command: ${key}`);
+      }
+
+      return result ?? fail(`Unexpected command: ${key}`);
+    }
+  };
 }

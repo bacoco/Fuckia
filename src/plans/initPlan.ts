@@ -33,15 +33,22 @@ export async function buildInitPlan(targetRoot: string, packageRoot = targetRoot
       "docs/fuckia/archive"
     ],
     files: [
+      { path: ".agents/README.md", source: "template", purpose: "Codex agent directory map." },
+      { path: ".agents/skills/README.md", source: "template", purpose: "Codex generated skills directory map." },
+      { path: ".claude/README.md", source: "template", purpose: "Claude directory map." },
+      { path: ".claude/skills/README.md", source: "template", purpose: "Claude generated skills directory map." },
       { path: "AGENTS.md", source: "template", purpose: "Codex entry rules." },
       { path: "CLAUDE.md", source: "template", purpose: "Claude entry rules." },
-      { path: ".github/pull_request_template.md", source: "template", purpose: "PR collaboration contract." },
+      { path: ".github/PULL_REQUEST_TEMPLATE.md", source: "template", purpose: "PR collaboration contract." },
       { path: ".github/workflows/collab-contract.yml", source: "template", purpose: "Collaboration gate checks." },
       { path: ".github/workflows/generated-skills.yml", source: "template", purpose: "Generated skill drift checks." },
       { path: ".github/workflows/pr-scope.yml", source: "template", purpose: "PR scope and destructive-change guard." },
+      { path: ".github/workflows/README.md", source: "template", purpose: "GitHub workflow directory map." },
       { path: "fuckia.config.yaml", source: "template", purpose: "Project-local Fuckia configuration." },
+      { path: "docs/README.md", source: "template", purpose: "Installed docs directory map." },
       { path: "docs/fuckia/README.md", source: "template", purpose: "Installed governance map." },
       { path: "docs/fuckia/end-of-work-checkpoint.md", source: "template", purpose: "Required end-of-work checkpoint." },
+      { path: "docs/fuckia/merge-proposals/README.md", source: "template", purpose: "Merge proposal directory map." },
       ...generatedSkills.map((skill) => ({
         path: skill.output,
         source: skill.source,

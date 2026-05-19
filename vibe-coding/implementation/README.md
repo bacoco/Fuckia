@@ -11,6 +11,7 @@ Read order:
 5. `build-plan/README.md`
 6. `blueprint/README.md`
 7. `rollout-plan.md`
+8. `remaining-work/README.md`
 
 ## Purpose
 

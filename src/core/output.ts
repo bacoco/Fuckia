@@ -12,9 +12,12 @@ export function formatHelp(): string {
     "  fuckia migrate --apply",
     "  fuckia generate-skills --check",
     "  fuckia generate-skills --write --examples",
+    "  fuckia github --dry-run [--strict]",
+    "  fuckia github --apply --yes",
     "",
     "Safety rule:",
-    "  Install and migration commands are read-only unless a future explicit --apply command exists.",
+    "  Install and migration commands write only when an explicit --apply flag is used.",
+    "  GitHub remote apply requires an explicit --apply --yes command.",
     "  Skill generation writes only generated examples when --write --examples is used.",
     ""
   ].join("\n");

@@ -8,17 +8,21 @@ The target experience is:
 npx fuckia init
 ```
 
-Current implemented write command:
+Current implemented install and audit commands:
 
 ```bash
 fuckia init --apply
 fuckia migrate --plan
 fuckia migrate --apply
+fuckia github --dry-run
+fuckia github --apply --yes
 ```
 
 `init --apply` is only for conflict-free governance installation. Existing projects with `AGENTS.md`, `CLAUDE.md`, GitHub workflows, or skills must use migration.
 `migrate --plan` writes `docs/fuckia/migration-plan.md` only.
 `migrate --apply` preserves existing governance files and writes merge proposals under `docs/fuckia/merge-proposals/`.
+`github --dry-run` verifies the real GitHub repository without local or remote writes.
+`github --apply --yes` creates remote branch protection only for an unprotected GitHub repository without existing rulesets.
 
 Agent bootstrap experience:
 
@@ -37,6 +41,20 @@ npx fuckia migrate --apply
 ```
 
 Claude users should get a plugin path. Codex users should get generated skills and project instructions through the same one-command installer.
+
+## Platform State
+
+GitHub local workflow installation is implemented through `init --apply` and `migrate --apply`.
+
+GitHub remote readiness audit is implemented through:
+
+```bash
+npx fuckia github --dry-run --strict
+```
+
+GitHub remote apply is implemented for unprotected repositories without existing rulesets.
+
+Merge-preserving remote apply for repositories with existing branch protection or rulesets is not implemented.
 
 ## Read Order
 

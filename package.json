@@ -10,6 +10,11 @@
   "files": [
     "dist",
     "README.md",
+    "INSTALL.md",
+    "agent-runbooks",
+    "examples/generated-skills",
+    "skills-src",
+    "templates",
     "vibe-coding"
   ],
   "scripts": {

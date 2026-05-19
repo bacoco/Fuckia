@@ -29,6 +29,10 @@ These are starting points only. The implementer must re-check current docs durin
 - GitHub Actions events: https://docs.github.com/actions/reference/events-that-trigger-workflows
 - Branch protection: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
 - Rulesets and PR standardization: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/managing-and-standardizing-pull-requests
+- Repository API: https://docs.github.com/rest/repos/repos
+- GitHub Actions permissions API: https://docs.github.com/en/rest/actions
+- Repository rulesets API: https://docs.github.com/en/rest/repos/rules
+- Branch protection API: https://docs.github.com/en/rest/branches/branch-protection
 - Pull request templates: verify current GitHub docs before implementing.
 
 ## Claude and Codex skills

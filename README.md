@@ -124,6 +124,9 @@ Working now:
 - `migrate --dry-run`;
 - `migrate --plan`;
 - `migrate --apply` for governance-only existing-project migration;
+- `github --dry-run` for read-only GitHub remote readiness audit;
+- `github --dry-run --strict` for blocking GitHub remote readiness verification;
+- `github --apply --yes` for conservative remote branch protection on unprotected repositories;
 - no-write tests;
 - agent install entrypoint: `INSTALL.md`;
 - public issue templates;
@@ -136,7 +139,7 @@ Working now:
 Next:
 
 - remaining shared skill catalog;
-- GitHub workflow automation;
+- merge-preserving GitHub remote apply for repositories with existing rulesets or branch protection;
 - Linear template automation;
 - strict CI gates;
 - automated issue clustering and improvement proposals.

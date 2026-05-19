@@ -19,17 +19,24 @@ export interface MigrationAudit {
 const inventoryTargets: InventoryItem[] = [
   { path: "AGENTS.md", exists: false, kind: "file" },
   { path: "CLAUDE.md", exists: false, kind: "file" },
+  { path: ".agents/README.md", exists: false, kind: "file" },
   { path: ".agents/skills", exists: false, kind: "directory" },
+  { path: ".agents/skills/README.md", exists: false, kind: "file" },
+  { path: ".claude/README.md", exists: false, kind: "file" },
   { path: ".claude/skills", exists: false, kind: "directory" },
+  { path: ".claude/skills/README.md", exists: false, kind: "file" },
   { path: ".github/workflows", exists: false, kind: "directory" },
-  { path: ".github/pull_request_template.md", exists: false, kind: "file" },
+  { path: ".github/workflows/README.md", exists: false, kind: "file" },
+  { path: ".github/PULL_REQUEST_TEMPLATE.md", exists: false, kind: "file" },
   { path: ".github/workflows/collab-contract.yml", exists: false, kind: "file" },
   { path: ".github/workflows/generated-skills.yml", exists: false, kind: "file" },
   { path: ".github/workflows/pr-scope.yml", exists: false, kind: "file" },
   { path: "fuckia.config.yaml", exists: false, kind: "file" },
   { path: "docs/specs", exists: false, kind: "directory" },
+  { path: "docs/README.md", exists: false, kind: "file" },
   { path: "docs/fuckia", exists: false, kind: "directory" },
-  { path: "docs/fuckia/README.md", exists: false, kind: "file" }
+  { path: "docs/fuckia/README.md", exists: false, kind: "file" },
+  { path: "docs/fuckia/merge-proposals/README.md", exists: false, kind: "file" }
 ];
 
 export async function buildMigrationAudit(targetRoot: string): Promise<MigrationAudit> {

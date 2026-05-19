@@ -67,6 +67,7 @@ Run:
 cd "$target_dir"
 node "$FUCKIA_DIR/dist/cli.js" doctor
 node "$FUCKIA_DIR/dist/cli.js" migrate --dry-run
+node "$FUCKIA_DIR/dist/cli.js" github --dry-run
 ```
 
 For a new or empty repository, also run:
@@ -110,6 +111,8 @@ For a new repository with no conflicting governance files, run:
 node "$FUCKIA_DIR/dist/cli.js" init --apply
 ```
 
+After `init --apply`, commit and push the installed `.github` files before treating GitHub remote checks as enforceable.
+
 For an existing repository with conflicts, do not force init. Report that migration planning is required.
 
 For an existing repository after approval, run:
@@ -120,6 +123,48 @@ node "$FUCKIA_DIR/dist/cli.js" migrate --apply
 ```
 
 `migrate --apply` preserves existing governance files and writes merge proposals under `docs/fuckia/merge-proposals/`.
+
+After approved migration writes, commit and push the installed `.github` files before treating GitHub remote checks as enforceable.
+
+## Verify GitHub Remote Readiness
+
+Run:
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" github --dry-run --strict
+```
+
+This command verifies:
+
+- local Fuckia workflow files;
+- GitHub `origin` remote;
+- GitHub CLI availability;
+- GitHub CLI authentication;
+- repository readability;
+- admin or push permission signal;
+- GitHub Actions permissions;
+- repository ruleset visibility;
+- required status checks for the current Fuckia warning workflows.
+
+This command does not write to GitHub.
+
+If it fails, report the failing checks and stop before remote platform setup.
+
+## Apply GitHub Remote Protection
+
+Run this only after:
+
+- the installed workflow files are committed and pushed to the default branch;
+- `github --dry-run --strict` shows the local files, remote, authentication, repository, permissions, and Actions checks as ready;
+- the human explicitly approves remote GitHub writes.
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" github --apply --yes
+```
+
+This command creates branch protection only for an unprotected repository without existing rulesets.
+
+It blocks instead of overwriting existing rulesets or branch protection.
 
 ## Allowed Future Writes After Approval
 
