@@ -10,12 +10,14 @@ Read order:
 4. `laws/04-preserve-working-systems.md`
 5. `laws/05-separated-authority.md`
 6. `laws/06-real-verification-before-done.md`
-7. `agent-constitution.md`
-8. `enforcement/README.md`
-9. `agent-law-propagation.md`
-10. `propagation/README.md`
-11. `evidence-language-guard.md`
-12. `evidence-language/README.md`
+7. `laws/07-end-of-work-checkpoint.md`
+8. `laws/08-delegated-review-without-ui.md`
+9. `agent-constitution.md`
+10. `enforcement/README.md`
+11. `agent-law-propagation.md`
+12. `propagation/README.md`
+13. `evidence-language-guard.md`
+14. `evidence-language/README.md`
 
 ## Purpose
 

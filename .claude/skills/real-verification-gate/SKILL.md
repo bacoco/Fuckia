@@ -6,7 +6,7 @@ description: Use before declaring Done to require real workflow evidence beyond 
 <!--
 GENERATED FILE - DO NOT EDIT DIRECTLY
 source: skills-src/shared/real-verification-gate.skill.md
-source_hash: ea229d6f5cf7cc0599f48a3d891b711516ee49779d345b8e72903f30a1172d13
+source_hash: 18795707489b993aab424b4a655c07dcbb29e3a6ef6653d813a6496c36fe0908
 generated_by: fuckia generate-skills
 target: claude
 -->
@@ -22,6 +22,22 @@ target: claude
 
 Use this skill before saying work is done.
 
+Simple rule:
+
+```text
+Done = real workflow verified + required checks passed + required independent review completed + evidence written down.
+```
+
+## Status Words
+
+Use these words exactly:
+
+- `Implemented`: code or docs were changed.
+- `Verified`: required checks and the real workflow were tested.
+- `Ready for independent review`: verification passed, but another AI or human still needs to review.
+- `Blocked`: a required check, workflow, permission, or independent review is missing.
+- `Done`: verification passed and every required review or merge gate is complete.
+
 ## Done Requires
 
 Done requires evidence for:
@@ -31,6 +47,8 @@ Done requires evidence for:
 - generated skill drift when skills changed;
 - Linear or GitHub receipt when remote setup changed;
 - end-of-work checkpoint.
+
+For risky work, Done also requires completed independent AI or human review.
 
 ## Not Enough
 
@@ -42,6 +60,8 @@ These are not enough by themselves:
 - generated file presence;
 - a local command that bypasses the product path.
 
+Independent review required but missing is not Done.
+
 ## Verification Receipt
 
 Record:
@@ -52,3 +72,5 @@ Record:
 - files changed;
 - residual blockers;
 - next step.
+
+If external review is required but missing, report `Ready for independent review` or `Blocked: independent review required`.

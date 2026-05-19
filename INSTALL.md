@@ -197,6 +197,27 @@ node "$FUCKIA_DIR/dist/cli.js" strict --apply
 node "$FUCKIA_DIR/dist/cli.js" strict --dry-run --strict
 ```
 
+## Review And Merge PRs
+
+When the human asks the agent to handle PR review or merge, read:
+
+```text
+agent-runbooks/review-and-merge.md
+```
+
+The agent must:
+
+- prepare a review packet;
+- ask the human to approve all or selected fixes in chat;
+- apply approved fixes;
+- verify;
+- submit approval only from an AI or human reviewer independent from the implementation agent;
+- submit approval or merge only through a GitHub account accepted by branch protection.
+
+If the current agent cannot access the other AI directly, give the human a copy-paste prompt for that AI.
+
+If GitHub requires approval from someone other than the latest pusher and no separate write-access account exists, stop and report that blocker.
+
 ## Allowed Future Writes After Approval
 
 - `AGENTS.md`

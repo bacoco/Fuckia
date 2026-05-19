@@ -21,6 +21,7 @@ Without a control layer, agents can:
 - delete working code during a vague refactor;
 - pass isolated tests while the real product path is broken;
 - review their own risky work;
+- force the human to perform repetitive GitHub review UI work;
 - mark Done without end-to-end verification;
 - leave the next agent without a reliable source of truth.
 
@@ -84,6 +85,7 @@ Fuckia installs a project governance layer:
 - destructive-change guards;
 - self-review blocks for risky work;
 - verification receipts;
+- delegated review packets for PR review and merge;
 - archived snapshots for future agents.
 
 It does not replace GitHub, Linear, Claude, or Codex. It connects them into one workflow.
@@ -114,6 +116,22 @@ After reviewing the file list:
 npx --yes github:bacoco/Fuckia install --apply --yes
 ```
 
+## Review And Merge Without GitHub UI
+
+When a PR needs review, ask Claude or Codex to handle the review work:
+
+```text
+Review and merge this PR using Fuckia. Read `https://github.com/bacoco/Fuckia/blob/main/agent-runbooks/review-and-merge.md`. Prepare a review packet, ask me to approve all or selected fixes in chat, apply approved fixes, verify, then merge only if GitHub branch protection is satisfied.
+```
+
+The agent must do the comment triage, propose fixes, run verification, and report exact merge blockers.
+
+The policy is AI-level independence: the AI that implemented the PR must not approve it.
+
+GitHub account identity is the enforcement mechanism. If GitHub requires approval from someone other than the latest pusher, the agent needs an eligible write-access account to submit the independent review.
+
+If the current agent cannot access the other AI or eligible GitHub account, it must give you a copy-paste prompt for the other AI.
+
 ## Safety Contract
 
 Fuckia installation starts with audit only.
@@ -125,6 +143,7 @@ It must not:
 - create a parallel engine, store, router, hook, workflow, or pipeline;
 - mark Done from typecheck or unit tests alone;
 - let an agent self-review risky implementation.
+- bypass GitHub review requirements.
 
 ## Current Status
 
@@ -150,7 +169,7 @@ Working now:
 - agent install entrypoint: `INSTALL.md`;
 - public issue templates;
 - PR template for governed improvements;
-- shared skill sources for source-of-truth, plan review, real verification, destructive changes, handoff, platform permissions, end checkpoint, and adversarial implementation;
+- shared skill sources for source-of-truth, plan review, real verification, destructive changes, handoff, platform permissions, end checkpoint, delegated review, and adversarial implementation;
 - deterministic Claude/Codex skill generator for examples;
 - skill drift check: `fuckia generate-skills --check`;
 - conflict-free `init --apply` writes Claude and Codex skills into target repositories.

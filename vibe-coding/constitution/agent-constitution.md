@@ -25,6 +25,7 @@ Every implementation detail in this repository must preserve these laws.
 5. `laws/05-separated-authority.md`
 6. `laws/06-real-verification-before-done.md`
 7. `laws/07-end-of-work-checkpoint.md`
+8. `laws/08-delegated-review-without-ui.md`
 
 ## Enforcement
 

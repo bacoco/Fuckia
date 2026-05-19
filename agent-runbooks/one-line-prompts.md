@@ -12,3 +12,9 @@ Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/m
 
 - Claude wrapper: `agent-runbooks/claude/install-or-migrate.md`
 - Codex wrapper: `agent-runbooks/codex/install-or-migrate.md`
+
+## Review And Merge
+
+```text
+Review and merge this PR using Fuckia. Read `https://github.com/bacoco/Fuckia/blob/main/agent-runbooks/review-and-merge.md`. Prepare a review packet, ask me to approve all or selected fixes in chat, apply approved fixes, verify, then merge only if GitHub branch protection is satisfied.
+```

@@ -55,6 +55,7 @@ const requiredPrHeadings = [
 const requiredSkillNames = [
   "adversarial-implementer-guard",
   "cross-agent-handoff",
+  "delegated-review-and-merge",
   "destructive-change-guard",
   "end-of-work-checkpoint",
   "plan-review-gate",
