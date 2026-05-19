@@ -496,7 +496,8 @@ test("github apply creates branch protection for an unprotected repository", asy
     assert.deepEqual(result.remoteWrites, ["PUT /repos/bacoco/Fuckia/branches/main/protection"]);
     assert.match(write?.stdin ?? "", /"contexts": \[/);
     assert.match(write?.stdin ?? "", /"contract"/);
-    assert.match(write?.stdin ?? "", /"required_approving_review_count": 1/);
+    assert.match(write?.stdin ?? "", /"required_pull_request_reviews": null/);
+    assert.doesNotMatch(write?.stdin ?? "", /"required_approving_review_count": 1/);
   });
 });
 

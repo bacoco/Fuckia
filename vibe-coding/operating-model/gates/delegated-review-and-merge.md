@@ -39,7 +39,7 @@ GitHub identity only transports the approval. It does not prove AI independence 
 
 Every approval must record author AI and validator AI.
 
-Never switch GitHub accounts to simulate independent AI review.
+Never switch accounts to pretend that the same AI became an independent reviewer.
 
 ## GitHub Boundary
 
@@ -50,6 +50,8 @@ If a different AI reviewer uses the same GitHub account and GitHub accepts the r
 If GitHub rejects the review because of account-level branch protection, the agent must report that exact blocker.
 
 If the agent cannot access the other AI directly, it must output a copy-paste prompt for that AI.
+
+New-repository GitHub setup must not require GitHub approving reviews unless an accepted reviewer account, team, or GitHub App is known. Otherwise the default gate is status-check protection plus the recorded AI review process.
 
 ## No Bypass
 

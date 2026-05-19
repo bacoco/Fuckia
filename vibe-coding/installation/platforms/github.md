@@ -50,16 +50,27 @@ The apply command writes remote GitHub protection only when:
 
 It handles:
 
-- unprotected repositories by creating branch protection;
+- unprotected repositories by creating status-check branch protection without required GitHub approvals;
 - repositories with existing branch protection by adding only missing Fuckia status checks.
 
 Existing rulesets are read and preserved. Fuckia does not rewrite rulesets.
+
+## Review Protection Boundary
+
+Fuckia does not enable required GitHub approving reviews by default.
+
+Reason: GitHub enforces approval by account identity. A one-account repository can become impossible to merge when GitHub requires approval from someone other than the PR author or latest pusher.
+
+Default Fuckia protection uses required status checks and conversation resolution. AI review remains a process requirement through PR templates, skills, Linear, and receipts.
+
+Enable required GitHub approvals only when the repository has a known reviewer account, team, or GitHub App with the access required by branch protection.
 
 ## Remote Apply Requirement
 
 - read existing branch protection and rulesets first;
 - preserve existing required checks;
 - add only missing Fuckia checks;
+- do not add required GitHub approving reviews unless an accepted reviewer identity exists;
 - avoid overwriting repository-specific protections;
 - verify the final remote state after writes.
 

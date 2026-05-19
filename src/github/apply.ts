@@ -213,12 +213,7 @@ function buildBranchProtectionPayload(): unknown {
       contexts: ["contract", "generated-skills", "scope"]
     },
     enforce_admins: true,
-    required_pull_request_reviews: {
-      dismiss_stale_reviews: true,
-      require_code_owner_reviews: false,
-      required_approving_review_count: 1,
-      require_last_push_approval: true
-    },
+    required_pull_request_reviews: null,
     restrictions: null,
     required_conversation_resolution: true,
     allow_force_pushes: false,

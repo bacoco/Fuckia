@@ -161,9 +161,11 @@ Run this only after:
 node "$FUCKIA_DIR/dist/cli.js" github --apply --yes
 ```
 
-This command creates branch protection only for an unprotected repository without existing rulesets.
+This command creates status-check branch protection only for an unprotected repository without existing rulesets.
 
 It blocks instead of overwriting existing rulesets or branch protection.
+
+It does not enable required GitHub approving reviews by default. A repository should enable that GitHub platform gate only when it has a known reviewer account, team, or GitHub App accepted by branch protection.
 
 ## Apply Linear Issue Chain
 
@@ -212,14 +214,16 @@ The agent must:
 - apply approved fixes;
 - verify;
 - submit approval only from an AI or human reviewer independent from the implementation agent;
-- record the author AI and validator AI identities in the PR or review receipt;
+- record author AI, validator AI, and GitHub reviewer account or platform result in the PR or review receipt;
 - submit approval or merge only when GitHub accepts the operation.
 
 If the current agent cannot access the other AI directly, give the human a copy-paste prompt for that AI.
 
-GitHub account identity is transport only. Do not switch GitHub accounts to simulate independent AI review.
+GitHub account identity is transport for the Fuckia process. GitHub branch protection still enforces by account identity.
 
-If GitHub rejects the review because of account-level branch protection, stop and report that platform blocker.
+Do not switch accounts to pretend that the same AI became an independent reviewer.
+
+If GitHub rejects the review because of account-level branch protection, stop and report that platform blocker with the exact GitHub error.
 
 ## Allowed Future Writes After Approval
 

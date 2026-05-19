@@ -6,7 +6,7 @@ description: Use when a PR needs review handling, user approval, GitHub approval
 <!--
 GENERATED FILE - DO NOT EDIT DIRECTLY
 source: skills-src/shared/delegated-review-and-merge.skill.md
-source_hash: 3a9fe75d3f497370106981dc392f710aa17c4062e3668fa2adce5eb1f0b996aa
+source_hash: 97ab61fbcfcd17870dd66abb334519506b0ff0428a7fb14c7c520f4612bdf543
 generated_by: fuckia generate-skills
 target: codex
 -->
@@ -44,6 +44,7 @@ Before merge or approval, produce:
 - author AI identity;
 - validator AI identity;
 - explicit statement that validator AI is different from author AI;
+- GitHub reviewer account or exact platform blocker;
 - merge blockers that require GitHub permission.
 
 ## Human Decision Modes
@@ -75,17 +76,23 @@ Every PR or review receipt must trace:
 
 - author AI;
 - validator AI;
-- whether validator AI is different from author AI.
+- whether validator AI is different from author AI;
+- GitHub reviewer account or exact platform blocker.
 
-Never switch GitHub accounts to simulate independent AI review.
+Never switch accounts to pretend that the same AI became an independent reviewer.
 
 ## GitHub Execution Rule
 
 Submit the GitHub approval only when GitHub accepts the operation.
 
-If a different AI reviewer uses the same GitHub account and GitHub accepts the review, the Fuckia AI-independence rule is satisfied.
+Fuckia review validity and GitHub merge validity are separate gates:
 
-If GitHub rejects the review because of account-level branch protection, report that platform blocker.
+- Fuckia review validity requires `Validator AI != Author AI`.
+- GitHub merge validity requires a review submitted through an account accepted by branch protection.
+
+If a different AI reviewer uses the same GitHub account and GitHub accepts the review, the Fuckia AI-independence rule is satisfied and the GitHub platform gate is satisfied.
+
+If GitHub rejects the review because of account-level branch protection, report the exact platform blocker. Do not call the PR merge-ready.
 
 If the current agent cannot access a different AI reviewer, give the human a copy-paste prompt for the other AI.
 
@@ -108,6 +115,7 @@ The prompt must include:
 - PR URL;
 - author AI identity;
 - validator AI identity field for the other AI to fill;
+- GitHub reviewer account field or platform blocker field;
 - required review stance;
 - checks to verify;
 - comments to inspect;

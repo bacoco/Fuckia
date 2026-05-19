@@ -26,8 +26,9 @@ Every implementation detail in this repository must preserve these laws.
 6. Done requires real workflow verification, required checks, required independent review, and recorded evidence.
 7. Review independence is AI identity, not GitHub account identity.
 8. Every PR traces author AI and validator AI.
-9. Never switch GitHub accounts to simulate independent AI review.
-10. End substantial work with a concise checkpoint.
+9. GitHub mergeability is a separate platform gate enforced by account identity.
+10. Never treat account switching as proof that the same AI became independent.
+11. End substantial work with a concise checkpoint.
 
 ## Laws
 

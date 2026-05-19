@@ -22,8 +22,9 @@ Like Asimov-style robotics laws for AI coding sessions, these laws come first:
 6. Done means the real workflow is verified, required checks pass, independent review is complete when required, and evidence is recorded.
 7. Review independence is AI identity, not GitHub account identity.
 8. Every PR must trace the author AI and validator AI.
-9. Never switch GitHub accounts to simulate independent review.
-10. End every substantial task with current state, done, verification, corrections, remaining work, and next action.
+9. GitHub mergeability is a separate platform gate: GitHub may reject an AI-valid review when the reviewer account is not accepted by branch protection.
+10. Never treat GitHub account switching as proof of independent review.
+11. End every substantial task with current state, done, verification, corrections, remaining work, and next action.
 
 ## The Problem
 
@@ -143,9 +144,13 @@ The agent must do the comment triage, propose fixes, run verification, and repor
 
 The rule is AI identity independence: the AI that implemented the PR must not approve it.
 
-GitHub account identity is only transport. The same GitHub account may be used by a different AI reviewer when GitHub accepts the review, but the PR must record both identities: author AI and validator AI.
+GitHub account identity is only transport for the Fuckia process. GitHub itself enforces branch protection by account identity.
 
-If GitHub branch protection rejects the review because of account-level rules, report that exact platform blocker. Do not switch GitHub accounts to simulate AI independence.
+The same GitHub account may be used by a different AI reviewer only when GitHub accepts the review. If GitHub rejects it as self-approval or as a reviewer without write access, the review can be process-valid but not merge-valid.
+
+Every PR must record three fields: author AI, validator AI, and GitHub reviewer account or platform result.
+
+If GitHub branch protection rejects the review because of account-level rules, report that exact platform blocker. Do not switch accounts to pretend that the same AI became an independent reviewer.
 
 If the current agent cannot access the other AI, it must give you a copy-paste prompt for the other AI.
 
@@ -176,7 +181,7 @@ Working now:
 - `migrate --apply` for governance-only existing-project migration;
 - `github --dry-run` for read-only GitHub remote readiness audit;
 - `github --dry-run --strict` for blocking GitHub remote readiness verification;
-- `github --apply --yes` for conservative remote branch protection on unprotected repositories;
+- `github --apply --yes` for conservative status-check branch protection on unprotected repositories;
 - merge-preserving GitHub status check apply for repositories with existing branch protection;
 - `linear --dry-run`;
 - `linear --apply --yes --team <TEAM_KEY>` for Linear issue-chain creation;

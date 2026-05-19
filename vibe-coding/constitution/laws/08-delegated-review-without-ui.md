@@ -35,17 +35,20 @@ Every PR must trace:
 
 - author AI;
 - validator AI;
-- whether validator AI is different from author AI.
+- whether validator AI is different from author AI;
+- GitHub reviewer account or exact platform blocker.
 
 GitHub account identity is transport only.
 
 If a different AI reviewer uses the same GitHub account and GitHub accepts the review, the AI-independence rule is satisfied.
 
-Do not switch GitHub accounts to simulate independent AI review.
+Do not switch accounts to pretend that the same AI became an independent reviewer.
 
 If GitHub rejects the review because of account-level branch protection, the agent must report that platform blocker.
 
 If the current agent cannot access the other AI, it must give the human a copy-paste prompt for the other AI.
+
+For new repositories, Fuckia must not create required GitHub approving reviews unless an accepted reviewer account, team, or GitHub App is known. Status-check protection is the default.
 
 ## Forbidden Shortcut
 

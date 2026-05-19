@@ -16,8 +16,11 @@ Author AI:
 
 Validator AI:
 
+GitHub reviewer account or platform blocker:
+
 - [ ] Validator AI is different from Author AI when independent review is required.
 - [ ] GitHub account identity is used only as transport, not as proof of AI independence.
+- [ ] GitHub platform gate is recorded separately from AI review validity.
 
 ## Plan Review
 
