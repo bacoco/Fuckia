@@ -20,7 +20,7 @@ const forbiddenPatterns: Array<{ phrase: string; pattern: RegExp }> = [
 ];
 
 const allowedFiles = new Set([
-  "vibe-coding/constitution/evidence-language/forbidden-patterns.md"
+  "docs/vibe-coding/constitution/evidence-language/forbidden-patterns.md"
 ]);
 
 export async function checkEvidenceLanguage(rootDir: string): Promise<LanguageFinding[]> {

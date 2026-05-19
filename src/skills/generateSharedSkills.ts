@@ -114,7 +114,7 @@ export async function buildGeneratedSkillFiles(options: {
 
 function generatedSkillOutputPath(skillName: string, target: SkillTarget, outputKind: "examples" | "install"): string {
   if (outputKind === "examples") {
-    return normalizePath(path.join("examples", "generated-skills", target, skillName, "SKILL.md"));
+    return normalizePath(path.join("docs", "examples", "generated-skills", target, skillName, "SKILL.md"));
   }
 
   if (target === "claude") {

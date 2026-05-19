@@ -63,7 +63,7 @@ Each agent receives the same universal laws. Role-specific rules may add constra
 ## Developer Prompt
 
 ```text
-Start from `vibe-coding/constitution/agent-constitution.md`.
+Start from `docs/vibe-coding/constitution/agent-constitution.md`.
 
 These are foundational laws, not implementation suggestions.
 Every skill, template, validator, workflow, and receipt must enforce or explicitly reflect them.

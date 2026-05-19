@@ -204,7 +204,7 @@ node "$FUCKIA_DIR/dist/cli.js" strict --dry-run --strict
 When the human asks the agent to handle PR review or merge, read:
 
 ```text
-agent-runbooks/review-and-merge.md
+docs/agent-runbooks/review-and-merge.md
 ```
 
 The agent must:
@@ -251,8 +251,8 @@ If GitHub rejects the review because of account-level branch protection, stop an
 
 Read these only when the human approves platform setup:
 
-- `vibe-coding/installation/platforms/github.md`
-- `vibe-coding/installation/platforms/linear.md`
+- `docs/vibe-coding/installation/platforms/github.md`
+- `docs/vibe-coding/installation/platforms/linear.md`
 
 Platform automation must verify permissions before configuration.
 

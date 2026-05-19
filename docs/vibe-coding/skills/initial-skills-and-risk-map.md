@@ -10,7 +10,7 @@ source_of_truth: true
 
 # Initial Skills And Risk Map
 
-All skills are enforcement mechanisms for `vibe-coding/constitution/agent-constitution.md`.
+All skills are enforcement mechanisms for `docs/vibe-coding/constitution/agent-constitution.md`.
 
 ## Sections
 
@@ -35,9 +35,9 @@ Budget is not the constraint. Coordination, authority, stale context, and verifi
 ## Developer Prompt
 
 ```text
-Start with the v1 skills listed in `vibe-coding/skills/catalog/shared-v1.md`.
+Start with the v1 skills listed in `docs/vibe-coding/skills/catalog/shared-v1.md`.
 
 Implement shared skills from one neutral source and generate Claude/Codex outputs.
 Implement platform-only adapters only for tool mechanics.
-Implement risk handling from `vibe-coding/skills/risks/risk-map.md`.
+Implement risk handling from `docs/vibe-coding/skills/risks/risk-map.md`.
 ```

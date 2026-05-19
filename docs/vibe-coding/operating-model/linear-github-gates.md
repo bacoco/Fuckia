@@ -12,7 +12,7 @@ source_of_truth: true
 
 Linear coordinates. GitHub enforces.
 
-All gates must enforce `vibe-coding/constitution/agent-constitution.md`.
+All gates must enforce `docs/vibe-coding/constitution/agent-constitution.md`.
 
 ## Sections
 

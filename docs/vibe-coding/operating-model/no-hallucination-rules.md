@@ -14,7 +14,7 @@ The implementer must not invent capabilities, APIs, field names, or agent format
 
 ## Evidence language rule
 
-The implementer must also apply `vibe-coding/constitution/evidence-language-guard.md`.
+The implementer must also apply `docs/vibe-coding/constitution/evidence-language-guard.md`.
 
 Plans, reviews, verification receipts, handoffs, and incident notes must not use uncertain causal language as filler. When evidence is missing, the agent must write `Unknown`, ask a direct question, or verify before continuing.
 

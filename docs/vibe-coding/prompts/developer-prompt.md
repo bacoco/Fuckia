@@ -2,18 +2,18 @@
 
 You must implement Fuckia as a reusable, installable governance kit for coordinating Claude Code, Codex, Linear, and GitHub across new projects and existing projects.
 
-Read `vibe-coding/constitution/agent-constitution.md` first. These laws are the root contract for the system. They are not a developer checklist.
-Then read `vibe-coding/constitution/agent-law-propagation.md`. Universal laws, role addenda, and validators must all exist.
+Read `docs/vibe-coding/constitution/agent-constitution.md` first. These laws are the root contract for the system. They are not a developer checklist.
+Then read `docs/vibe-coding/constitution/agent-law-propagation.md`. Universal laws, role addenda, and validators must all exist.
 
 Read every file in this directory:
 
 ```text
-vibe-coding/
+docs/vibe-coding/
 ```
 
 ## Objective
 
-- The 6 laws in `vibe-coding/constitution/agent-constitution.md` must govern every skill, template, validator, workflow, review, and receipt.
+- The 6 laws in `docs/vibe-coding/constitution/agent-constitution.md` must govern every skill, template, validator, workflow, review, and receipt.
 - Every agent must receive the universal laws plus its role addendum, with no Claude/Codex divergence.
 - Linear must be the active cockpit: active spec, issue contracts, statuses, decisions, verification receipts.
 - GitHub must remain the technical proof layer: branches, PRs, CI, reviews, merge history, versioned archive.
@@ -21,9 +21,9 @@ vibe-coding/
 - Shared skills must be written once in a neutral source, then generated into Claude and Codex formats.
 - Planner, plan reviewer, implementer, code reviewer, and verifier roles must be separated for risky work.
 - Agents must never declare Done only because unit tests or typecheck pass.
-- The system must cover the 8 failure classes in `vibe-coding/operating-model/failure-catalog-cross-review.md`.
-- The system must deliver the initial skill set and additional mitigations in `vibe-coding/skills/initial-skills-and-risk-map.md`.
-- The system must enforce `vibe-coding/constitution/evidence-language-guard.md`: no uncertain causality without evidence.
+- The system must cover the 8 failure classes in `docs/vibe-coding/operating-model/failure-catalog-cross-review.md`.
+- The system must deliver the initial skill set and additional mitigations in `docs/vibe-coding/skills/initial-skills-and-risk-map.md`.
+- The system must enforce `docs/vibe-coding/constitution/evidence-language-guard.md`: no uncertain causality without evidence.
 - Installation must be simple: Claude plugin path, Codex install path, and universal one-command CLI.
 
 ## Expected Deliverables
@@ -38,7 +38,7 @@ vibe-coding/
    - shared;
    - claude-only;
    - codex-only;
-   - v1 skills from `vibe-coding/skills/initial-skills-and-risk-map.md`;
+   - v1 skills from `docs/vibe-coding/skills/initial-skills-and-risk-map.md`;
    - generators;
    - validators;
    - hash checks for generated files.
@@ -64,7 +64,7 @@ vibe-coding/
 
 ## Non-Negotiable Constraints
 
-- Do not treat `vibe-coding/constitution/agent-constitution.md` as passive documentation.
+- Do not treat `docs/vibe-coding/constitution/agent-constitution.md` as passive documentation.
 - Every law must map to skills, templates, checks, gates, or receipts.
 - Do not replace validators with the constitution. The system needs both.
 - Do not create separate divergent laws per agent. Role addenda may only strengthen the universal laws.

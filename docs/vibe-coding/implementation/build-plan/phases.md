@@ -25,7 +25,7 @@ Implement checks for:
 - current working directory;
 - Git repository presence;
 - root `README.md`;
-- `vibe-coding/` structure;
+- `docs/vibe-coding/` structure;
 - every directory has `README.md`;
 - English-only documentation scan;
 - old flat-path references.

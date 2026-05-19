@@ -5,7 +5,7 @@ Use this when a human wants the agent to handle pull request review and merge wo
 ## One-Line Prompt
 
 ```text
-Review and merge this PR using Fuckia. Read `https://github.com/bacoco/Fuckia/blob/main/agent-runbooks/review-and-merge.md`. Prepare a review packet, ask me to approve all or selected fixes in chat, apply approved fixes, verify, then merge only if GitHub branch protection is satisfied.
+Review and merge this PR using Fuckia. Read `https://github.com/bacoco/Fuckia/blob/main/docs/agent-runbooks/review-and-merge.md`. Prepare a review packet, ask me to approve all or selected fixes in chat, apply approved fixes, verify, then merge only if GitHub branch protection is satisfied.
 ```
 
 ## Required Steps

@@ -60,9 +60,9 @@ These are starting points only. The implementer must re-check current docs durin
 
 ## Internal guard specs
 
-- Agent Constitution: `vibe-coding/constitution/agent-constitution.md`
-- Evidence Language Guard: `vibe-coding/constitution/evidence-language-guard.md`
-- Agent Law Propagation: `vibe-coding/constitution/agent-law-propagation.md`
+- Agent Constitution: `docs/vibe-coding/constitution/agent-constitution.md`
+- Evidence Language Guard: `docs/vibe-coding/constitution/evidence-language-guard.md`
+- Agent Law Propagation: `docs/vibe-coding/constitution/agent-law-propagation.md`
 
 ## Adversarial implementer pass
 

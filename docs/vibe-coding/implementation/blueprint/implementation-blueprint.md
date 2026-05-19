@@ -10,7 +10,7 @@ source_of_truth: true
 
 # Implementation Blueprint
 
-Implementation starts from `vibe-coding/constitution/agent-constitution.md`.
+Implementation starts from `docs/vibe-coding/constitution/agent-constitution.md`.
 
 The laws are the root contract. The CLI, skills, templates, validators, GitHub workflows, and Linear workflow must enforce or reflect those laws.
 
