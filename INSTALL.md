@@ -132,3 +132,13 @@ Read these only when the human approves platform setup:
 - `vibe-coding/installation/platforms/linear.md`
 
 Platform automation must verify permissions before configuration.
+
+## If Installation Fails
+
+If the failure is reproducible and not caused by missing private access, open a public issue using:
+
+- `Failure report` when a guardrail failed;
+- `Install problem` when the install flow failed;
+- `Process improvement` when the workflow needs a better rule, template, skill, or validator.
+
+Include commands, output, target repository context, and the real workflow affected.

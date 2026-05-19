@@ -1,0 +1,42 @@
+name: Process improvement
+description: Propose an improvement to Fuckia rules, skills, templates, validators, or docs.
+title: "[improvement] "
+labels:
+  - improvement
+  - needs-review
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What workflow problem should this improvement solve?
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+      description: Name the rule, skill, template, validator, CLI command, GitHub check, or Linear template to change.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Link failure reports, PRs, commands, logs, or user reports that justify the change.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How should reviewers verify this improvement?
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What should this proposal not change?
+    validations:
+      required: false

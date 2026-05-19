@@ -1,0 +1,42 @@
+name: Install problem
+description: Report a problem while installing or auditing a project with Fuckia.
+title: "[install] "
+labels:
+  - install
+  - needs-triage
+body:
+  - type: textarea
+    id: target
+    attributes:
+      label: Target repository context
+      description: New project or existing project, public or private, and agent used.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Prompt or command used
+      description: Paste the prompt or command that was run.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output or error
+      description: Paste the relevant output. Redact secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: State what the install flow should have done.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node version, GitHub auth state, Linear auth state, and agent tool.
+    validations:
+      required: false

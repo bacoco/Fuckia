@@ -16,3 +16,16 @@ Read order:
 Shared governance must be authored once in a neutral source and generated into Claude and Codex formats.
 
 Claude-only and Codex-only skills are tool adapters. They must not weaken the universal laws.
+
+## Current Implementation State
+
+Implemented source:
+
+- `../../skills-src/shared/adversarial-implementer-guard.skill.md`
+
+Generated examples:
+
+- `../../examples/generated-skills/claude/`
+- `../../examples/generated-skills/codex/`
+
+The complete generator is not implemented yet. Current generated examples are committed as product examples, not as installed target-project output.

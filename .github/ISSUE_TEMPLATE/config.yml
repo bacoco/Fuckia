@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Installation entrypoint
+    url: https://github.com/bacoco/Fuckia/blob/main/INSTALL.md
+    about: Start here when installing Fuckia with Claude Code or Codex.

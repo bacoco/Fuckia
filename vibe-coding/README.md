@@ -11,9 +11,10 @@ The system is organized through progressive disclosure. Read the narrowest file 
 3. `operating-model/README.md`
 4. `skills/README.md`
 5. `installation/README.md`
-6. `implementation/README.md`
-7. `prompts/developer-prompt.md`
-8. `references/sources.md`
+6. `self-improvement/README.md`
+7. `implementation/README.md`
+8. `prompts/developer-prompt.md`
+9. `references/sources.md`
 
 ## Directories
 
@@ -21,6 +22,7 @@ The system is organized through progressive disclosure. Read the narrowest file 
 - `operating-model/` - Linear/GitHub workflow, gates, contracts, and failure classes.
 - `skills/` - shared, Claude-only, and Codex-only skill strategy.
 - `installation/` - plugin, CLI, new-project, and existing-project installation paths.
+- `self-improvement/` - public feedback and reviewed improvement loop.
 - `implementation/` - standalone repo blueprint, rollout, capabilities, and migration plan.
 - `prompts/` - copy-paste implementation prompts.
 - `references/` - official docs and internal source references.

@@ -1,0 +1,54 @@
+name: Failure report
+description: Report a real Claude/Codex collaboration failure that Fuckia should prevent.
+title: "[failure] "
+labels:
+  - failure-report
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when an AI coding workflow broke a real project or failed to protect a real workflow.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened
+      description: Describe the failure in concrete terms.
+      placeholder: "Example: Codex created a second pipeline beside the existing workflow, then marked Done from isolated tests."
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: List the agents, repository type, GitHub/Linear setup, and project workflow involved.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_guard
+    attributes:
+      label: Expected guardrail
+      description: What should Fuckia have blocked, warned about, or required before code changed?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Link PRs, issue IDs, logs, screenshots, commands, or sanitized excerpts.
+    validations:
+      required: true
+  - type: textarea
+    id: broken_workflow
+    attributes:
+      label: Broken real workflow
+      description: Name the user path, product path, command, route, or integration that broke.
+    validations:
+      required: true
+  - type: textarea
+    id: prevention
+    attributes:
+      label: Proposed prevention
+      description: State the validator, skill, template, check, or review rule that should change.
+    validations:
+      required: false

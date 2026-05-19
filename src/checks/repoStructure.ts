@@ -29,12 +29,14 @@ export async function checkRepositoryStructure(rootDir: string): Promise<Structu
     }
 
     const readmePath = path.join(directory, "README.md");
+    const skillPath = path.join(directory, "SKILL.md");
     const hasReadme = await fileExists(readmePath);
+    const hasSkill = await fileExists(skillPath);
     findings.push({
-      level: hasReadme ? "ok" : "warning",
+      level: hasReadme || hasSkill ? "ok" : "warning",
       check: "directory-readme",
       path: relativePath,
-      message: hasReadme ? "Directory README exists." : "Directory lacks README.md."
+      message: hasReadme ? "Directory README exists." : hasSkill ? "Skill directory contains SKILL.md." : "Directory lacks README.md."
     });
   }
 

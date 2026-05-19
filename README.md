@@ -8,6 +8,8 @@ It gives AI coding agents one shared operating system: same rules, same review g
 
 Use it when you want multiple agents to work fast without losing the real product contract.
 
+Fuckia also improves from public failure reports: when users hit a new Claude/Codex collaboration failure, the report can become a reviewed pull request that strengthens the rules, skills, templates, or checks.
+
 ## The Problem
 
 Claude and Codex do not automatically share a cockpit.
@@ -61,6 +63,14 @@ Every risky change gets:
 - real workflow verification;
 - an archived receipt for the next agent.
 
+Every accepted public failure report can become:
+
+- a new guardrail;
+- a stronger validator;
+- a clearer install rule;
+- a better Claude/Codex skill;
+- a regression fixture.
+
 ## What You Get
 
 Fuckia installs a project governance layer:
@@ -111,15 +121,19 @@ Working now:
 - `init --dry-run`;
 - `migrate --dry-run`;
 - no-write tests;
-- agent install entrypoint: `INSTALL.md`.
+- agent install entrypoint: `INSTALL.md`;
+- public issue templates;
+- PR template for governed improvements;
+- first shared skill source: `adversarial-implementer-guard`.
 
 Next:
 
 - write-mode installer;
-- generated Claude and Codex skill outputs;
+- full generated Claude and Codex skill outputs;
 - GitHub workflow automation;
 - Linear template automation;
-- strict CI gates.
+- strict CI gates;
+- automated issue clustering and improvement proposals.
 
 ## For Maintainers
 
