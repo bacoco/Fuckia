@@ -15,6 +15,32 @@ The human is inside the target repository and asked you to install Fuckia.
 - Preserve existing `AGENTS.md`, `CLAUDE.md`, skills, workflows, docs, and config.
 - If evidence is missing, write `Unknown`, verify, ask the human, or stop.
 
+## Requirements For Full Setup
+
+Local install and migration require:
+
+- Node.js 20 or newer;
+- npm;
+- git;
+- write access to the target repository working tree.
+
+GitHub remote setup requires:
+
+- GitHub CLI `gh`;
+- `gh auth status` authenticated;
+- repository admin permission for branch protection writes;
+- GitHub Actions enabled on the target repository;
+- installed `.github/workflows` files committed and pushed to the default branch before remote protection is applied.
+
+Linear setup requires:
+
+- `LINEAR_API_KEY`;
+- a Linear workspace where the key can create issues;
+- the target Linear team key;
+- human approval before remote Linear writes.
+
+Account creation, billing plan selection, organization setup, and permission grants are human-controlled steps. Fuckia verifies access and stops when required access is missing.
+
 ## Save The Target Path
 
 ```bash
