@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile, mkdir } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -87,3 +87,74 @@ test("doctor is read-only", async () => {
     assert.match(result.stdout, /writes: blocked/);
   });
 });
+
+test("generate-skills --write --examples creates Claude and Codex outputs", async () => {
+  await withTempProject(async (directory) => {
+    await createSkillSource(directory);
+
+    const result = await capture(["generate-skills", "--write", "--examples"], directory);
+    const claudeSkill = await readFile(
+      path.join(directory, "examples", "generated-skills", "claude", "demo-guard", "SKILL.md"),
+      "utf8"
+    );
+    const codexSkill = await readFile(
+      path.join(directory, "examples", "generated-skills", "codex", "demo-guard", "SKILL.md"),
+      "utf8"
+    );
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"status": "written"/);
+    assert.match(claudeSkill, /GENERATED FILE - DO NOT EDIT DIRECTLY/);
+    assert.match(claudeSkill, /target: claude/);
+    assert.match(claudeSkill, /## Claude Mechanics/);
+    assert.match(codexSkill, /target: codex/);
+    assert.match(codexSkill, /## Codex Mechanics/);
+  });
+});
+
+test("generate-skills --check is read-only and fails on drift", async () => {
+  await withTempProject(async (directory) => {
+    await createSkillSource(directory);
+    const before = await snapshotTree(directory);
+    const result = await capture(["generate-skills", "--check"], directory);
+    const after = await snapshotTree(directory);
+
+    assert.equal(result.exitCode, 1);
+    assert.deepEqual(after, before);
+    assert.match(result.stdout, /"status": "missing"/);
+  });
+});
+
+test("generate-skills --check passes after examples are generated", async () => {
+  await withTempProject(async (directory) => {
+    await createSkillSource(directory);
+    await capture(["generate-skills", "--write", "--examples"], directory);
+    const result = await capture(["generate-skills", "--check"], directory);
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"drift": \[\]/);
+  });
+});
+
+async function createSkillSource(directory: string): Promise<void> {
+  const sourceDir = path.join(directory, "skills-src", "shared");
+  await mkdir(sourceDir, { recursive: true });
+  await writeFile(
+    path.join(sourceDir, "demo-guard.skill.md"),
+    [
+      "---",
+      "name: demo-guard",
+      "description: Use when testing generated skill output.",
+      "targets:",
+      "  - claude",
+      "  - codex",
+      "---",
+      "",
+      "# Demo Guard",
+      "",
+      "Protect the real workflow before declaring Done.",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+}

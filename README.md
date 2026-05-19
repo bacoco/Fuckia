@@ -124,12 +124,15 @@ Working now:
 - agent install entrypoint: `INSTALL.md`;
 - public issue templates;
 - PR template for governed improvements;
-- first shared skill source: `adversarial-implementer-guard`.
+- first shared skill source: `adversarial-implementer-guard`;
+- deterministic Claude/Codex skill generator for examples;
+- skill drift check: `fuckia generate-skills --check`.
 
 Next:
 
 - write-mode installer;
-- full generated Claude and Codex skill outputs;
+- install-target Claude and Codex skill writes;
+- remaining shared skill catalog;
 - GitHub workflow automation;
 - Linear template automation;
 - strict CI gates;
@@ -140,6 +143,8 @@ Next:
 ```bash
 npm install
 npm test
+npm run check:skills
+npm run generate-skills
 npm run build
 node dist/cli.js doctor --self
 ```

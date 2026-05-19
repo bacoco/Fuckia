@@ -1,4 +1,5 @@
 import { runDoctor } from "../commands/doctor";
+import { runGenerateSkills } from "../commands/generateSkills";
 import { runHelp } from "../commands/help";
 import { runInit } from "../commands/init";
 import { runMigrate } from "../commands/migrate";
@@ -21,6 +22,8 @@ export async function runCli(rawArgs: string[], rawContext: RunCliContext): Prom
         return await runInit(args, context);
       case "migrate":
         return await runMigrate(args, context);
+      case "generate-skills":
+        return await runGenerateSkills(args, context);
       default:
         context.stderr(`Error: unknown command \`${args.command}\`.\n\n`);
         runHelp(context);

@@ -28,4 +28,21 @@ Generated examples:
 - `../../examples/generated-skills/claude/`
 - `../../examples/generated-skills/codex/`
 
-The complete generator is not implemented yet. Current generated examples are committed as product examples, not as installed target-project output.
+Generator commands:
+
+```bash
+npm run generate-skills
+npm run check:skills
+```
+
+Implemented generator scope:
+
+- reads `skills-src/shared/*.skill.md`;
+- writes generated examples under `examples/generated-skills/<target>/<skill>/SKILL.md`;
+- checks generated examples for drift.
+
+Not implemented:
+
+- install-target writes to `.claude/skills/...`;
+- install-target writes to `.agents/skills/...`;
+- complete shared skill catalog.

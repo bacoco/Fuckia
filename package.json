@@ -14,6 +14,8 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/build/create-cli-wrapper.mjs",
+    "check:skills": "npm run build && node dist/cli.js generate-skills --check",
+    "generate-skills": "npm run build && node dist/cli.js generate-skills --write --examples",
     "test": "npm run build && node --test dist/tests/*.test.js",
     "fuckia": "node dist/cli.js"
   },
