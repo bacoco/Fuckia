@@ -1,14 +1,85 @@
 # Fuckia
 
-Claude and Codex can break a project when they work from chat memory, skip review, create duplicate systems, or declare Done without testing the real workflow.
+**Stop Claude and Codex from breaking the same codebase in different ways.**
 
-Fuckia is a guardrail kit for that problem.
+Fuckia is a control layer for teams that use Claude Code, Codex, GitHub, and Linear on the same project.
 
-It installs shared rules, skills, GitHub checks, and Linear templates so Claude and Codex follow the same workflow before they touch code.
+It gives AI coding agents one shared operating system: same rules, same review gates, same GitHub checks, same Linear workflow, same verification standard.
 
-## Start
+Use it when you want multiple agents to work fast without losing the real product contract.
 
-Open Claude Code or Codex inside the project you want to protect.
+## The Problem
+
+Claude and Codex do not automatically share a cockpit.
+
+Without a control layer, agents can:
+
+- work from stale chat context;
+- create a second implementation beside the real one;
+- delete working code during a vague refactor;
+- pass isolated tests while the real product path is broken;
+- review their own risky work;
+- mark Done without end-to-end verification;
+- leave the next agent without a reliable source of truth.
+
+That is how multi-agent coding turns into days of cleanup.
+
+## Use Fuckia When
+
+- you switch between Claude and Codex on the same repository;
+- you run parallel AI coding sessions;
+- agents keep creating duplicate implementations;
+- reviews approve words instead of behavior;
+- Done gets declared from typecheck or unit tests alone;
+- existing working flows must not be broken while agents move fast.
+
+## What Fuckia Changes
+
+Fuckia turns AI coding from chat-driven improvisation into a governed workflow.
+
+Before an agent touches code, Fuckia makes it answer:
+
+- What is the source of truth?
+- What files are allowed?
+- What files are forbidden?
+- Who reviewed the plan?
+- Which existing workflow must keep working?
+- Which real user path proves Done?
+- What evidence is archived for the next agent?
+
+The goal is simple: Claude and Codex can both work, but neither can silently drift away from the product contract.
+
+## The Outcome
+
+Every risky change gets:
+
+- one source of truth;
+- explicit allowed and forbidden files;
+- independent plan review;
+- PR scope checks;
+- no self-review for risky work;
+- real workflow verification;
+- an archived receipt for the next agent.
+
+## What You Get
+
+Fuckia installs a project governance layer:
+
+- `AGENTS.md` for Codex;
+- `CLAUDE.md` for Claude Code;
+- shared Claude and Codex skills generated from one source;
+- GitHub PR templates and CI checks;
+- Linear templates for spec, plan, plan-review, implementation, review, and verification;
+- destructive-change guards;
+- self-review blocks for risky work;
+- verification receipts;
+- archived snapshots for future agents.
+
+It does not replace GitHub, Linear, Claude, or Codex. It connects them into one workflow.
+
+## Install Flow
+
+Open Claude Code or Codex inside the repository you want to protect.
 
 Paste this:
 
@@ -16,44 +87,38 @@ Paste this:
 Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-That is the intended install flow.
+The agent reads `INSTALL.md`, audits the repository, and reports exactly what it wants to create or merge.
 
-The human gives one sentence. The agent reads `INSTALL.md` and handles the technical steps.
+Nothing is written until you approve the exact file list.
 
-## What Fuckia Adds
+## Safety Contract
 
-- One shared rule system for Claude and Codex.
-- Agent instructions: `AGENTS.md` and `CLAUDE.md`.
-- Generated Claude and Codex skills from the same source.
-- GitHub PR templates and CI checks.
-- Linear templates for spec, plan, review, implementation, and verification.
-- A rule that risky work needs independent review.
-- A rule that Done requires real workflow verification.
+Fuckia installation starts with audit only.
 
-## Safety Rule
+It must not:
 
-Installation starts with audit only.
+- modify product code;
+- delete existing agent rules;
+- create a parallel engine, store, router, hook, workflow, or pipeline;
+- mark Done from typecheck or unit tests alone;
+- let an agent self-review risky implementation.
 
-The agent must show the exact files it wants to create or merge before writing anything.
-
-Fuckia installation must not modify product code.
-
-## Current State
+## Current Status
 
 Working now:
 
-- `doctor`
-- `init --dry-run`
-- `migrate --dry-run`
-- no-write tests
-- agent install file: `INSTALL.md`
+- `doctor`;
+- `init --dry-run`;
+- `migrate --dry-run`;
+- no-write tests;
+- agent install entrypoint: `INSTALL.md`.
 
-Next build steps:
+Next:
 
-- real write-mode installer;
-- generated skill outputs;
-- GitHub automation;
-- Linear automation;
+- write-mode installer;
+- generated Claude and Codex skill outputs;
+- GitHub workflow automation;
+- Linear template automation;
 - strict CI gates.
 
 ## For Maintainers
@@ -65,4 +130,4 @@ npm run build
 node dist/cli.js doctor --self
 ```
 
-More detail starts in `vibe-coding/README.md`.
+Technical detail starts in `vibe-coding/README.md`.
