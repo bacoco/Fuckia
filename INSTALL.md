@@ -4,6 +4,8 @@ This file is an agent procedure for Claude Code, Codex, or another AI coding age
 
 The human is inside the target repository and asked you to install Fuckia.
 
+Normal installation does not require Node.js or npm.
+
 ## Non-Negotiable Contract
 
 - Treat the current working directory as the target repository.
@@ -15,14 +17,24 @@ The human is inside the target repository and asked you to install Fuckia.
 - Preserve existing `AGENTS.md`, `CLAUDE.md`, skills, workflows, docs, and config.
 - If evidence is missing, write `Unknown`, verify, ask the human, or stop.
 
-## Requirements For Full Setup
+## Requirements
 
-Local install and migration require:
+Normal install and migration require:
 
-- Node.js 20 or newer;
-- npm;
-- git;
+- Claude Code, Codex, or another agent reading this file;
+- git access to `https://github.com/bacoco/Fuckia`;
+- a shell that can run `bash`;
 - write access to the target repository working tree.
+
+Normal install and migration do not require:
+
+- Node.js;
+- npm;
+- a published package;
+- a Claude marketplace plugin;
+- a Codex marketplace plugin.
+
+Advanced CLI use and Fuckia maintenance require Node.js and npm. Do not ask the human to install Node.js or npm for the normal installation path.
 
 GitHub remote setup requires:
 
@@ -67,34 +79,15 @@ For an existing local clone:
 FUCKIA_DIR="/absolute/path/to/Fuckia"
 ```
 
-## Build The CLI Engine
-
-Run inside the Fuckia repository:
-
-```bash
-cd "$FUCKIA_DIR"
-npm install
-npm run build
-```
-
-If build fails, report the failing command and stop.
-
 ## Audit The Target Repository
 
-Return to the target repository:
+Run:
 
 ```bash
-cd "$target_dir"
-node "$FUCKIA_DIR/dist/cli.js" install --dry-run
-node "$FUCKIA_DIR/dist/cli.js" github --dry-run --strict
-node "$FUCKIA_DIR/dist/cli.js" linear --dry-run
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run
 ```
 
-If the repository has no existing governance files, also run:
-
-```bash
-node "$FUCKIA_DIR/dist/cli.js" init --dry-run
-```
+This command is read-only.
 
 ## Report Before Writes
 
@@ -124,7 +117,7 @@ Stop after this report.
 Run this only after the human approves the write list:
 
 ```bash
-node "$FUCKIA_DIR/dist/cli.js" install --apply --yes
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes
 ```
 
 For an existing project, this command preserves conflicting governance files and writes merge proposals under:
@@ -135,55 +128,70 @@ docs/fuckia/merge-proposals/
 
 It must not modify product code.
 
-## Verify Local Installation
+## Verify Basic Installation
 
 Run:
 
 ```bash
-node "$FUCKIA_DIR/dist/cli.js" doctor
-node "$FUCKIA_DIR/dist/cli.js" strict --dry-run
+cd "$target_dir"
+test -f AGENTS.md
+test -f CLAUDE.md
+test -f fuckia.config.yaml
+test -f .github/PULL_REQUEST_TEMPLATE.md
+test -f .github/workflows/collab-contract.yml
+test -f .github/workflows/generated-skills.yml
+test -f .github/workflows/pr-scope.yml
+test -f docs/fuckia/README.md
+test -f docs/fuckia/end-of-work-checkpoint.md
+test -f .agents/skills/source-of-truth-gate/SKILL.md
+test -f .claude/skills/source-of-truth-gate/SKILL.md
+test -f .agents/skills/evidence-language-guard/SKILL.md
+test -f .claude/skills/evidence-language-guard/SKILL.md
+grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills .claude/skills >/dev/null
 ```
 
-Do not enable strict mode until the human approves it.
-
-After approval:
-
-```bash
-node "$FUCKIA_DIR/dist/cli.js" strict --apply
-node "$FUCKIA_DIR/dist/cli.js" strict --dry-run --strict
-```
+If any command fails, report the failing command and stop.
 
 ## GitHub Remote Setup
 
-Run this read-only check after the installed `.github` files are committed and pushed to the default branch:
+Run this after the installed `.github` files are committed and pushed to the default branch.
 
-```bash
-node "$FUCKIA_DIR/dist/cli.js" github --dry-run --strict
+Read:
+
+```text
+kit/vibe-coding/installation/platforms/github.md
 ```
 
-Apply remote GitHub protection only after explicit human approval:
+Verify access:
 
 ```bash
-node "$FUCKIA_DIR/dist/cli.js" github --apply --yes
+gh auth status
+gh repo view --json nameWithOwner,defaultBranchRef
+```
+
+Apply remote GitHub protection only after explicit human approval.
+
+If Node.js is available and the human wants the CLI automation, the optional command is:
+
+```bash
+cd "$target_dir"
+npx --yes github:bacoco/Fuckia github --dry-run --strict
+npx --yes github:bacoco/Fuckia github --apply --yes
 ```
 
 GitHub approval rules require a real GitHub reviewer account, team, or GitHub App accepted by branch protection. AI identity alone cannot satisfy GitHub platform review gates.
 
 ## Linear Setup
 
-Run this only when `LINEAR_API_KEY` is set and the human gives the team key:
+Run this only when `LINEAR_API_KEY` is set and the human gives the team key.
 
-```bash
-node "$FUCKIA_DIR/dist/cli.js" linear --dry-run --team <TEAM_KEY>
+Read:
+
+```text
+kit/vibe-coding/installation/platforms/linear.md
 ```
 
-Apply only after explicit human approval:
-
-```bash
-node "$FUCKIA_DIR/dist/cli.js" linear --apply --yes --team <TEAM_KEY>
-```
-
-This creates the issue chain:
+Create the issue chain:
 
 - spec;
 - plan;
@@ -192,10 +200,18 @@ This creates the issue chain:
 - code-review;
 - verify.
 
-The receipt is written to:
+Write the receipt to:
 
 ```text
 docs/fuckia/archive/linear-issue-chain.json
+```
+
+If Node.js is available and the human wants the CLI automation, the optional command is:
+
+```bash
+cd "$target_dir"
+LINEAR_API_KEY=<token> npx --yes github:bacoco/Fuckia linear --dry-run --team <TEAM_KEY>
+LINEAR_API_KEY=<token> npx --yes github:bacoco/Fuckia linear --apply --yes --team <TEAM_KEY>
 ```
 
 ## End Of Work

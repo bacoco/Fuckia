@@ -13,13 +13,13 @@ Review focus:
    - Claude plugin path;
    - Codex install path;
    - one prompt that points the agent to root `INSTALL.md`;
-   - CLI engine behind the agent procedure;
+   - Node-free installer behind the agent procedure;
    - audit-first migration for existing projects.
 
 2. Existing project safety:
-   - `migrate --dry-run` must not write;
-   - `migrate --plan` writes only a plan;
-   - `migrate --apply` touches governance files only unless explicitly authorized;
+   - `agent-install.sh --dry-run` must not write;
+   - `agent-install.sh --apply --yes` touches governance files only unless explicitly authorized;
+   - existing governance files are preserved with merge proposals;
    - product code must not be modified during audit.
 
 3. Constitution enforcement:

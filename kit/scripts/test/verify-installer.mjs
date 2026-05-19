@@ -8,6 +8,7 @@ import { spawnSync } from "node:child_process";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
 const cliPath = path.join(repoRoot, "dist", "cli.js");
+const shellInstallerPath = path.join(repoRoot, "kit", "scripts", "install", "agent-install.sh");
 
 function run(command, args, cwd, options = {}) {
   const result = spawnSync(command, args, {
@@ -57,6 +58,43 @@ function withTempDirectory(prefix, callback) {
 if (!existsSync(cliPath)) {
   throw new Error("dist/cli.js is missing. Run `npm run build` before this script.");
 }
+
+if (!existsSync(shellInstallerPath)) {
+  throw new Error("kit/scripts/install/agent-install.sh is missing.");
+}
+
+withTempDirectory("fuckia-shell-empty-", (directory) => {
+  run("git", ["init"], directory);
+  run("bash", [shellInstallerPath, "--target", directory, "--dry-run"], repoRoot);
+  run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes"], repoRoot);
+
+  assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
+  assertFile(directory, "CLAUDE.md", "Claude Code must follow Fuckia governance");
+  assertFile(directory, "README.md", "Fuckia governance is installed");
+  assertFile(directory, ".github/README.md", "GitHub Templates");
+  assertFile(directory, ".github/workflows/collab-contract.yml", "Fuckia Collaboration Contract");
+  assertFile(directory, ".agents/skills/evidence-language-guard/SKILL.md", "target: codex");
+  assertFile(directory, ".claude/skills/evidence-language-guard/SKILL.md", "target: claude");
+});
+
+withTempDirectory("fuckia-shell-existing-", (directory) => {
+  run("git", ["init"], directory);
+  writeFileSync(path.join(directory, "AGENTS.md"), "# Existing Codex Rules\n", "utf8");
+  writeFileSync(path.join(directory, "README.md"), "# Existing Project\n", "utf8");
+
+  run("bash", [shellInstallerPath, "--target", directory, "--dry-run"], repoRoot);
+  run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes"], repoRoot);
+
+  const agents = readFileSync(path.join(directory, "AGENTS.md"), "utf8");
+  if (agents !== "# Existing Codex Rules\n") {
+    throw new Error("Shell installer modified existing AGENTS.md.");
+  }
+
+  assertFile(directory, "docs/fuckia/migration-plan.md", "Fuckia Migration Plan");
+  assertFile(directory, "docs/fuckia/merge-proposals/AGENTS.md.md", "Merge Proposal: AGENTS.md");
+  assertFile(directory, ".agents/skills/evidence-language-guard/SKILL.md", "target: codex");
+  assertFile(directory, ".claude/skills/evidence-language-guard/SKILL.md", "target: claude");
+});
 
 run("node", [cliPath, "--help"], repoRoot);
 

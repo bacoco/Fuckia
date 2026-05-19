@@ -1,6 +1,6 @@
 # CLI
 
-The CLI is the deterministic enforcement surface used by the agent install procedure.
+The CLI is the optional deterministic enforcement surface for maintainers and terminal-driven automation.
 
 Implemented commands:
 

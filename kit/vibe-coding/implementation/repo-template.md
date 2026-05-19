@@ -96,16 +96,15 @@ The primary install path is one agent prompt:
 Install Fuckia in this repository. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md` and follow it. Start with audit only. Ask before writing files.
 ```
 
-The agent uses the CLI engine to install rules, generated skills, GitHub gates, project config, and docs, then runs verification.
+The agent uses the Node-free installer to install rules, generated skills, GitHub gates, project config, and docs, then runs verification.
 
 ## Existing project migration
 
 Migration must be audit-first:
 
 ```bash
-fuckia migrate --dry-run
-fuckia migrate --plan
-fuckia migrate --apply
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes
 ```
 
 `--dry-run` audits only. It must not modify code.

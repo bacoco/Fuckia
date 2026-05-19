@@ -91,6 +91,8 @@ The agent reads `INSTALL.md`, audits the repository, and reports exactly what it
 
 Nothing is written until you approve the exact file list.
 
+Normal installation does not require Node.js or npm.
+
 ## Safety Contract
 
 Fuckia installation starts with audit only.

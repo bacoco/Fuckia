@@ -2,16 +2,16 @@
 
 New project setup starts from the agent prompt in the root README.
 
-The agent runs the CLI engine in audit mode first:
+The agent runs the Node-free installer in audit mode first:
 
 ```bash
-fuckia install --dry-run
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run
 ```
 
 After human approval:
 
 ```bash
-fuckia install --apply --yes
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes
 ```
 
 The command creates:
@@ -27,16 +27,4 @@ The command creates:
 - `fuckia.config.yaml`;
 - `docs/fuckia/`.
 
-Verification:
-
-```bash
-fuckia doctor
-fuckia strict --dry-run
-```
-
-Strict mode is explicit:
-
-```bash
-fuckia strict --apply
-fuckia strict --dry-run --strict
-```
+Verification uses file checks from root `INSTALL.md`.

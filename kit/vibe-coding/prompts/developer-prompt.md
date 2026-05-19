@@ -24,12 +24,12 @@ kit/vibe-coding/
 - The system must cover the 8 failure classes in `kit/vibe-coding/operating-model/failure-catalog-cross-review.md`.
 - The system must deliver the initial skill set and additional mitigations in `kit/vibe-coding/skills/initial-skills-and-risk-map.md`.
 - The system must enforce `kit/vibe-coding/constitution/evidence-language-guard.md`: no uncertain causality without evidence.
-- Installation must be simple: one prompt in Claude or Codex, one shared install procedure, and a CLI engine behind the procedure.
+- Installation must be simple: one prompt in Claude or Codex, one shared install procedure, and a Node-free installer behind the procedure.
 
 ## Expected Deliverables
 
 1. Agent-first install prompt that tells Claude or Codex to read the root `INSTALL.md`.
-2. CLI engine commands: `fuckia install --dry-run`, `fuckia install --apply --yes`, `fuckia migrate --dry-run`, `--plan`, then `--apply`.
+2. Node-free installer commands: `agent-install.sh --dry-run` and `agent-install.sh --apply --yes`.
 3. Linear templates: Project, issue contract, statuses, verification receipt.
    - Include issue types or templates: spec, plan, plan-review, implement, code-review, verify.
    - `plan-review` must block `implement` for risky work.

@@ -14,6 +14,7 @@ Codex-specific rules:
 - use `apply_patch` for manual edits;
 - do not use subagents on overlapping files;
 - do not copy `INSTALL.md` into the target repository;
+- do not ask the human to install Node.js or npm for normal installation;
 - do not write target files before the human approves the exact file list.
 
 The install procedure is authoritative. This wrapper only adds Codex-specific execution rules.

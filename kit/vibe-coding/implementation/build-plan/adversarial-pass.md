@@ -30,7 +30,7 @@ Migration audit may inventory and propose. It must not reorganize, delete, or mo
 
 ## Guardrail Added
 
-Universal CLI is the first implementation slice. Claude plugin and Codex packaging use the CLI engine later.
+The Node-free installer is the normal implementation slice. Claude plugin, Codex packaging, and the Node CLI remain additional distribution and automation paths.
 
 ## Existing Behavior That Must Be Preserved
 

@@ -5,17 +5,13 @@ Existing project migration is audit-first.
 The agent starts with:
 
 ```bash
-fuckia install --dry-run
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run
 ```
 
-For an existing project, the install flow creates or uses a migration plan before writing governance files.
-
-Manual CLI sequence:
+After approval:
 
 ```bash
-fuckia migrate --dry-run
-fuckia migrate --plan
-fuckia migrate --apply
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes
 ```
 
 Migration audits:
@@ -34,4 +30,5 @@ Apply behavior:
 - writes missing governance files;
 - preserves existing governance files;
 - writes merge proposals under `docs/fuckia/merge-proposals/`;
+- writes `docs/fuckia/migration-plan.md` for existing projects;
 - does not modify product code.
