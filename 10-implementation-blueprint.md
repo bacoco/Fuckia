@@ -12,6 +12,8 @@ source_of_truth: true
 
 This is the implementation blueprint for the future standalone repository. It is still study/planning, not code.
 
+Implementation starts from `00-agent-constitution.md`. The laws are the root contract. The CLI, skills, templates, validators, GitHub workflows, and Linear workflow must enforce or reflect those laws.
+
 ## Repository name and boundary
 
 Default repo name:
@@ -38,6 +40,7 @@ No database in v1. Store generated reports as Markdown/JSON artifacts.
 ```text
 claude-codex-collab-kit/
   README.md
+  00-agent-constitution.md
   package.json
   tsconfig.json
   src/
@@ -69,12 +72,14 @@ claude-codex-collab-kit/
       validate-generated.ts
       discover-skills.ts
     validators/
+      validate-constitution.ts
       validate-skills.ts
       validate-pr-contract.ts
       validate-pr-scope.ts
       validate-linear-gates.ts
       validate-verification-receipt.ts
       validate-archive-snapshot.ts
+      validate-evidence-language.ts
     doctor/
       run-doctor.ts
       detect-instructions.ts
@@ -97,6 +102,7 @@ claude-codex-collab-kit/
       skill-sync-doctor.yaml
       cross-agent-status.yaml
       incident-escalation-bypass.yaml
+      evidence-language-guard.yaml
     claude-only/
       claude-linear-native-runner.yaml
       claude-plan-reviewer.yaml
@@ -159,6 +165,7 @@ claude-codex-collab-kit/
       missing-verification-receipt/
       duplicate-skill-name/
       prompt-injection-pr-body/
+      unsupported-uncertainty-language/
     unit/
     integration/
 ```
@@ -170,12 +177,14 @@ collab-kit init
 collab-kit migrate --dry-run
 collab-kit migrate --write
 collab-kit generate-skills
+collab-kit validate-constitution
 collab-kit validate-skills
 collab-kit validate-pr-contract
 collab-kit validate-pr-scope
 collab-kit validate-linear-gates
 collab-kit validate-verification-receipt
 collab-kit validate-archive-snapshot
+collab-kit validate-evidence-language
 collab-kit export-linear-snapshot
 collab-kit doctor
 ```
@@ -186,10 +195,12 @@ Command behavior:
 - `migrate --dry-run`: inventories existing AGENTS/CLAUDE/skills/workflows/templates without writing.
 - `migrate --write`: patches only with explicit report; never deletes old docs automatically.
 - `generate-skills`: regenerates `.claude/skills` and `.agents/skills` from neutral source.
+- `validate-constitution`: validates that templates, generated skills, and validators reference the foundational laws.
 - `validate-skills`: fails stale hashes, invalid frontmatter, missing counterpart, duplicate skill names, and direct edits.
 - `validate-pr-contract`: validates PR body, Linear ID, risk class, required fields, and actor separation.
 - `validate-pr-scope`: validates changed files and delete budget.
 - `validate-linear-gates`: validates plan-review and issue dependencies through Linear API when token is available.
+- `validate-evidence-language`: blocks unsupported uncertain causal language in strict mode.
 - `doctor`: reports setup health, effective rules, skill shadowing, tokens, mode, and stale branch/worktree risks.
 
 ## Configuration file
@@ -272,7 +283,7 @@ Required workflows:
    - blocks forbidden file edits and delete budget violations.
 
 3. `collab-contract.yml`
-   - runs `validate-pr-contract`, `validate-linear-gates`, `validate-verification-receipt`, and `validate-archive-snapshot`;
+   - runs `validate-constitution`, `validate-pr-contract`, `validate-linear-gates`, `validate-verification-receipt`, `validate-archive-snapshot`, and `validate-evidence-language`;
    - warning mode comments with findings;
    - strict mode fails checks.
 
@@ -347,6 +358,7 @@ Warning mode:
 
 Strict mode:
 
+- blocks missing constitution references in generated skills/templates;
 - blocks generated skill drift;
 - blocks forbidden files;
 - blocks delete budget excess;
@@ -354,6 +366,7 @@ Strict mode:
 - blocks risky work without independent plan-review;
 - blocks missing verification receipt for product/UI work;
 - blocks self-review on risky work unless human bypass exists.
+- blocks unsupported uncertain causal language in required plans, reviews, receipts, and handoffs.
 
 Do not enable strict mode globally before the pilot.
 
@@ -393,15 +406,19 @@ Success criteria:
 
 - Likely bad interpretation: "blueprint means build everything as a large platform."
 - Guardrail added: v1 is a deterministic CLI, templates, generated skills, GitHub workflows, and reports.
+- Likely bad interpretation: "the constitution is documentation."
+- Guardrail added: constitution laws must map to validators, generated skills, templates, and receipt gates.
 - Likely bad interpretation: "migrate existing project means overwrite existing agent files."
 - Guardrail added: migration starts dry-run and patch report; no blind deletion.
 - Likely bad interpretation: "strict mode should be default because safety matters."
 - Guardrail added: warning mode first, strict only after pilot signal quality is proven.
 - Likely bad interpretation: "AI review can set status checks directly."
 - Guardrail added: deterministic validators own gate results; AI review is evidence or advisory input.
+- Likely bad interpretation: "uncertain wording is acceptable because it is cautious."
+- Guardrail added: unsupported uncertainty is a gate failure until converted into `Unknown`, a question, or verified evidence.
 - Existing behavior that must be preserved: standalone repo boundary, single-source skills, Linear active contract, GitHub enforcement, and human responsibility for risky work.
 - Forbidden implementation shortcuts: product repo writes during study, generated skill hand edits, hidden write agents, untrusted PR secrets, global strict rollout, and auto-merge.
-- Regression proof required: test fixtures must demonstrate failures for forbidden file, delete budget, stale generated skill, missing plan-review, self-review, duplicate skill, prompt injection, and missing verification receipt.
+- Regression proof required: test fixtures must demonstrate failures for forbidden file, delete budget, stale generated skill, missing plan-review, self-review, duplicate skill, prompt injection, missing verification receipt, and unsupported uncertain causal language.
 
 ## Prompt a donner au dev
 

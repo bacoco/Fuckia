@@ -12,6 +12,14 @@ source_of_truth: true
 
 The implementer must not invent capabilities, APIs, field names, or agent formats.
 
+## Evidence language rule
+
+The implementer must also apply `11-evidence-language-guard.md`.
+
+Plans, reviews, verification receipts, handoffs, and incident notes must not use uncertain causal language as filler. When evidence is missing, the agent must write `Unknown`, ask a direct question, or verify before continuing.
+
+Unsupported claims are forbidden even when they are phrased politely or cautiously.
+
 ## Must verify before coding
 
 Verify from official docs or live product:
@@ -40,6 +48,30 @@ Risk:
 Fallback:
 ```
 
+## Required uncertainty handling
+
+Every important claim must be one of:
+
+```text
+Observed:
+Evidence:
+Conclusion:
+```
+
+```text
+Unknown:
+Missing evidence:
+Question:
+```
+
+```text
+Hypothesis:
+Verification command:
+Decision after verification:
+```
+
+`Hypothesis` cannot be used to approve a plan, start implementation, or mark Done. It must be resolved first.
+
 ## Do not assume these are true
 
 - Do not assume Linear required fields can block all bad issues natively.
@@ -67,6 +99,8 @@ Bypasses must be logged in Linear and visible in the PR.
 
 - Likely bad interpretation: "architecture spec says Linear supports X, so code against X."
 - Guardrail added: all product/API claims must be verified before coding.
+- Likely bad interpretation: "soft uncertain wording makes an unsupported claim acceptable."
+- Guardrail added: unsupported uncertainty is converted into `Unknown`, `Question`, or verified evidence.
 - Likely bad interpretation: "if strict enforcement is hard, skip it."
 - Guardrail added: use warning mode first, then strict checks where technically possible.
 - Forbidden shortcut: silent fallback to comments only when custom fields/API are unavailable.

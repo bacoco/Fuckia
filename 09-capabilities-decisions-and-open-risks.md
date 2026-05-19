@@ -16,6 +16,7 @@ This note continues the study before implementation. It converts the current doc
 
 The concept is pertinent, but the enforcement must be pragmatic:
 
+- `00-agent-constitution.md` is the root contract. It governs the rest of the system.
 - Linear should be the active cockpit because it has issues, documents, templates, blockers, GitHub integration, GraphQL API, webhooks, and native agent delegation.
 - GitHub must be the hard enforcement layer because branch protection, rulesets, status checks, reviews, CI, and immutable history are better suited to blocking merges.
 - Claude and Codex should share governance, not necessarily identical runtime mechanics.
@@ -153,6 +154,7 @@ Do not rely on AI review as the gate. Use AI review as input to deterministic ga
 
 Required deterministic checks:
 
+- Generated skills, templates, validators, and workflows reference the constitution.
 - PR title/body/branch includes Linear ID.
 - PR body includes active Linear document or explicit not-applicable reason.
 - Linear issue contract is present and parseable.
@@ -164,6 +166,7 @@ Required deterministic checks:
 - Risky work has code review from a different actor or required human approval.
 - UI/product work has verification receipt.
 - Archive snapshot exists before merge-ready.
+- Required plans, reviews, receipts, and handoffs pass the Evidence Language Guard.
 
 Warning mode should run these checks without blocking. Strict mode should block only after the pilot proves signal quality.
 
@@ -234,6 +237,11 @@ Bad initial uses:
    - Typecheck and unit tests are necessary but not sufficient.
    - Real workflow verification must use the product entry route or an approved staging equivalent.
 
+9. Unsupported uncertainty language
+   - Cautious wording can transform an unverified idea into an accepted fact.
+   - Enforce `11-evidence-language-guard.md` through skills, templates, validators, and PR checks.
+   - Missing evidence must produce `Unknown`, a direct question, or a verification step before action.
+
 ## What is not settled yet
 
 - Exact Linear API queries and mutations for documents, issue relations, labels, comments, and workflow transitions.
@@ -265,6 +273,8 @@ Before writing the repo, create `10-implementation-blueprint.md` with:
 - Guardrail added: automated loops must be bounded and synthesized after two rounds.
 - Likely bad interpretation: "same governance means identical files for Claude and Codex."
 - Guardrail added: governance is shared through neutral source; mechanics are generated per platform.
+- Likely bad interpretation: "uncertain phrasing is acceptable because it avoids overclaiming."
+- Guardrail added: unsupported uncertainty is not accepted; agents must verify, ask, or mark `Unknown`.
 - Existing behavior that must be preserved: standalone repo boundary, active Linear contract, GitHub proof/archive, single-source generated skills, and real workflow verification.
 - Forbidden implementation shortcuts: project-local installation during study, manual duplicated skills, PR-only Done, hidden write agents, fork PR secret exposure, and unlogged bypasses.
 - Regression proof required: a demo must show warnings in warning mode, blocking in strict mode, skill parity validation, and one risky implementation blocked until plan-review approval.

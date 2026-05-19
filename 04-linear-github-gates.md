@@ -12,6 +12,8 @@ source_of_truth: true
 
 Linear coordinates. GitHub enforces.
 
+All gates must enforce `00-agent-constitution.md`. A PR cannot be merge-ready when it violates a foundational law.
+
 ## Linear configuration to design
 
 The developer must define:

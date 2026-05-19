@@ -12,6 +12,8 @@ source_of_truth: true
 
 This file defines the first skills the collaboration kit must ship with, and the additional failure modes it must handle when Claude Code, Codex, Linear, GitHub, and optional third reviewers work together.
 
+All skills are enforcement mechanisms for `00-agent-constitution.md`.
+
 ## Core decision
 
 Use symmetric governance and asymmetric mechanics:
@@ -85,6 +87,11 @@ These skills are the minimum useful v1. The developer may rename or split them, 
     - handles urgent production fixes and blocked automation;
     - requires visible bypass reason, approver, scope, expiration, and follow-up issue;
     - logs bypasses as metrics so emergency mode does not become normal mode.
+
+13. `evidence-language-guard`
+    - blocks unsupported uncertain causal language in plans, reviews, verification receipts, handoffs, and incident notes;
+    - requires unsupported claims to become `Unknown`, a direct question, or a verified conclusion;
+    - treats unresolved uncertainty as a blocker for implementation, approval, and Done.
 
 ## Claude-only skills
 
@@ -221,6 +228,10 @@ It must not receive authority to change files unless converted into a normal imp
     - Risk: agents bypass the system because every typo fix requires full process.
     - Mitigation: define low-risk bypass thresholds, warning mode, and a small-change path that still records Linear ID and PR proof.
 
+19. Uncertainty-language drift
+    - Risk: agents write cautious-sounding guesses that become accepted facts.
+    - Mitigation: add `evidence-language-guard`, scan handoffs/reviews/receipts, and require `Unknown`, a direct question, or verification before action.
+
 ## Required v1 packaging
 
 The initial repository/template must include:
@@ -232,6 +243,7 @@ The initial repository/template must include:
   Linear connectivity, GitHub connectivity, and strict/warning mode;
 - sample Linear issues for low-risk, risky, emergency bypass, and third-reviewer flows;
 - test fixtures that intentionally fail for missing counterpart, stale generated skill, bad frontmatter, forbidden file, delete budget, missing plan-review, and missing verification receipt.
+- evidence-language fixtures that fail on unsupported uncertain causal language and pass on `Unknown`, `Question`, or verified evidence.
 
 ## Adversarial implementer pass
 
@@ -243,6 +255,8 @@ The initial repository/template must include:
 - Guardrail added: platform-only skills may only adapt mechanics and must not weaken shared gates.
 - Likely bad interpretation: "review by another AI is enough."
 - Guardrail added: risky work requires structured decisions mapped to gates, and human review remains final authority where configured.
+- Likely bad interpretation: "uncertain words reduce liability and can stay in the plan."
+- Guardrail added: unsupported uncertainty blocks implementation, approval, and Done until verified or converted into a direct question.
 - Existing behavior that must be preserved: Linear remains active source of truth, GitHub remains proof/archive, generated shared skills remain single-source, and product entry workflows remain verified end-to-end.
 - Forbidden implementation shortcuts: manual duplicate skills, unbounded AI review loops, hidden write agents, reviewer jobs with write tokens, PR-only Done, and bypasses without expiration.
 - Regression proof required: demo must show generated Claude/Codex skill parity, duplicate skill detection, strict gate failures, and one risky issue blocked until independent plan-review approval.

@@ -17,6 +17,8 @@ superseded_by:
 
 Architect handoff for building a reusable repository/template that coordinates Claude Code, Codex, Linear, and GitHub across new and existing projects.
 
+Start with `00-agent-constitution.md`. It defines the foundational laws. All specs, skills, templates, validators, and workflows must preserve those laws.
+
 This package is intentionally not implementation detail. The developer must build the repo, generators, skills, checks, and templates from these constraints after validating current Linear, GitHub, Claude, Codex, Gemini, and CodeRabbit documentation.
 
 ## Target outcome
@@ -34,6 +36,7 @@ Create a reusable project starter and migration kit where:
 
 ## Directory contents
 
+- `00-agent-constitution.md` - foundational laws for agents, skills, gates, and workflows.
 - `01-operating-model.md` - source-of-truth model and workflow.
 - `02-repo-template.md` - required repository/template structure.
 - `03-shared-skills-system.md` - how shared, Claude-only, and Codex-only skills must be managed.
@@ -44,6 +47,7 @@ Create a reusable project starter and migration kit where:
 - `08-initial-skills-and-risk-map.md` - initial Claude/Codex skill set and additional risk mitigations.
 - `09-capabilities-decisions-and-open-risks.md` - verified capabilities, technical decisions, and remaining risks.
 - `10-implementation-blueprint.md` - standalone repo structure, commands, schemas, gates, and pilot plan.
+- `11-evidence-language-guard.md` - mandatory rule against unsupported uncertainty language.
 - `PROMPT-A-DONNER-AU-DEV.md` - copy-paste prompt for the implementer.
 - `SOURCES.md` - official docs starting points to verify.
 
@@ -59,6 +63,8 @@ Claude/Codex local state = never the source of truth
 ```
 
 Do not keep active competing specs in Linear, `docs/specs`, `.claude`, and `.agents` at the same time.
+
+The constitution has priority over every generated skill, prompt, workflow, and local instruction file.
 
 ## Non-goals
 
@@ -78,6 +84,8 @@ Do not keep active competing specs in Linear, `docs/specs`, `.claude`, and `.age
 - Guardrail added: shared skills have one neutral source and generated Claude/Codex outputs with hash checks.
 - Likely bad interpretation: "Definition of Done means tests pass."
 - Guardrail added: Done requires real workflow verification on the target URL/environment and a receipt.
+- Likely bad interpretation: "uncertain wording is harmless context."
+- Guardrail added: uncertain causal language is forbidden unless converted into `Unknown`, `Question`, or verified evidence.
 - Likely bad interpretation: "Coordinate subagents by assigning them related tasks."
 - Guardrail added: subagents may only run in parallel when file locks and write scopes are disjoint.
 - Likely bad interpretation: "A planner can self-approve because the plan looks clear to them."

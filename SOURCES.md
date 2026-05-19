@@ -51,6 +51,11 @@ These are starting points only. The implementer must re-check current docs durin
 - Codex PR review help: https://help.openai.com/en/articles/11369540/
 - Codex Action security notes: https://github.com/openai/codex-action/blob/main/docs/security.md
 
+## Internal guard specs
+
+- Agent Constitution: `00-agent-constitution.md`
+- Evidence Language Guard: `11-evidence-language-guard.md`
+
 ## Adversarial implementer pass
 
 - Likely bad interpretation: "links in this file are proof enough."

@@ -10,6 +10,20 @@ source_of_truth: true
 
 # Operating Model
 
+## Foundational laws
+
+The operating model is governed by `00-agent-constitution.md`.
+
+Every workflow, issue contract, review gate, generated skill, and verification receipt must preserve:
+
+1. Evidence Before Claim.
+2. Source Of Truth Before Memory.
+3. Preserve Working Systems.
+4. Separated Authority.
+5. Real Verification Before Done.
+
+When any workflow instruction conflicts with the constitution, the constitution wins.
+
 ## Source of truth
 
 Use Linear as the active cockpit:

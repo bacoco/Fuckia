@@ -10,6 +10,10 @@ source_of_truth: true
 
 # Shared Skills System
 
+Shared and platform-only skills must enforce `00-agent-constitution.md`.
+
+The constitution is not a skill. Skills are one enforcement mechanism for the constitution.
+
 Claude and Codex skill formats are not identical. Do not pretend one file can safely serve both.
 
 Use one neutral source and generate two outputs.
@@ -117,6 +121,11 @@ The shared skills below are the responsibility groups that must exist in the neu
     - require bypass reason, approver, scope, expiration, and follow-up issue;
     - count bypasses as governance metrics.
 
+12. `evidence-language-guard`
+    - forbid unsupported uncertain causal language in plans, reviews, receipts, and handoffs;
+    - require `Observed/Evidence/Conclusion`, `Unknown/Missing evidence/Question`, or `Hypothesis/Verification command/Decision after verification`;
+    - block implementation, approval, or Done when a key claim remains unsupported.
+
 The developer may split or rename these, but the responsibilities must remain covered.
 
 Platform-only skills are allowed only as adapters. They may invoke Claude-specific or Codex-specific commands, GitHub Actions, subagent mechanisms, or plugin packaging.
@@ -142,5 +151,7 @@ They must not redefine the shared process or loosen the gates.
 - Guardrail added: third reviewers start read-only; writing requires a normal Linear implement issue and file locks.
 - Likely bad interpretation: "direct CLI invocation can bypass the skill."
 - Guardrail added: repo rules and CI checks must enforce shared contracts even when agents are invoked outside skills.
+- Likely bad interpretation: "uncertain language is safer than a firm claim."
+- Guardrail added: unsupported uncertainty is not safer; the agent must verify, ask, or record `Unknown`.
 - Forbidden shortcut: editing generated `.claude/skills` or `.agents/skills` directly.
 - Regression proof required: validators catch a broken YAML description, stale generated skill, and missing counterpart.
