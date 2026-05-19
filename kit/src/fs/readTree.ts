@@ -38,7 +38,7 @@ export async function walkFiles(rootDir: string, options: WalkOptions = {}): Pro
     for (const entry of entries) {
       const absolutePath = path.join(directory, entry.name);
       if (entry.isDirectory()) {
-        if (!ignoredDirectories.has(entry.name)) {
+        if (!isIgnoredDirectory(entry.name, ignoredDirectories)) {
           await visit(absolutePath);
         }
         continue;
@@ -61,7 +61,7 @@ export async function walkDirectories(rootDir: string, options: WalkOptions = {}
   async function visit(directory: string): Promise<void> {
     const entries = await readdir(directory, { withFileTypes: true });
     for (const entry of entries) {
-      if (!entry.isDirectory() || ignoredDirectories.has(entry.name)) {
+      if (!entry.isDirectory() || isIgnoredDirectory(entry.name, ignoredDirectories)) {
         continue;
       }
 
@@ -80,6 +80,10 @@ export async function snapshotTree(rootDir: string): Promise<string[]> {
     ignoredDirectories: [".git", "node_modules", "dist"]
   });
   return files.map((file) => normalizePath(path.relative(rootDir, file))).sort();
+}
+
+function isIgnoredDirectory(name: string, ignoredDirectories: Set<string>): boolean {
+  return ignoredDirectories.has(name) || name.startsWith(".npm-cache");
 }
 
 function normalizePath(value: string): string {

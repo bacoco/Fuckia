@@ -264,6 +264,19 @@ test("doctor is read-only", async () => {
   });
 });
 
+test("doctor ignores local npm cache directories", async () => {
+  await withTempProject(async (directory) => {
+    await createMinimalProject(directory);
+    await mkdir(path.join(directory, ".git"), { recursive: true });
+    await writeFile(path.join(directory, "docs", "README.md"), "# Docs\n", "utf8");
+    await mkdir(path.join(directory, ".npm-cache", "_cacache", "tmp"), { recursive: true });
+    const result = await capture(["doctor", "--strict"], directory);
+
+    assert.equal(result.exitCode, 0);
+    assert.doesNotMatch(result.stdout, /\.npm-cache/);
+  });
+});
+
 test("generate-skills --write --examples creates Claude and Codex outputs", async () => {
   await withTempProject(async (directory) => {
     await createSkillSource(directory);
