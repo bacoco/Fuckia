@@ -261,26 +261,20 @@ The initial repository/template must include:
 - Forbidden implementation shortcuts: manual duplicate skills, unbounded AI review loops, hidden write agents, reviewer jobs with write tokens, PR-only Done, and bypasses without expiration.
 - Regression proof required: demo must show generated Claude/Codex skill parity, duplicate skill detection, strict gate failures, and one risky issue blocked until independent plan-review approval.
 
-## Prompt a donner au dev
+## Developer Prompt
 
 Add this to the implementation prompt:
 
 ```text
-Lis aussi `08-initial-skills-and-risk-map.md`.
+Also read `08-initial-skills-and-risk-map.md`.
 
-Tu dois livrer un set initial de skills, pas seulement une architecture abstraite.
-Les skills partages doivent venir d'une source neutre et etre generes pour Claude
-et Codex. Les skills Claude-only et Codex-only ne peuvent adapter que la mecanique
-de l'outil; ils ne doivent pas affaiblir les regles partagees.
+You must deliver an initial skill set, not only an abstract architecture.
+Shared skills must come from a neutral source and be generated for Claude and Codex.
+Claude-only and Codex-only skills may adapt only tool mechanics.
+They must not weaken shared rules.
 
-Commence avec les skills v1 listes dans `08-initial-skills-and-risk-map.md`, ou
-propose des renommages equivalents en prouvant que toutes les responsabilites
-restent couvertes. Ajoute un `doctor` qui detecte les skills non charges,
-doublons, divergences de hash, frontmatter invalide, regles presentes seulement
-dans AGENTS.md ou CLAUDE.md, et absence de contrepartie Claude/Codex.
+Start with the v1 skills listed in `08-initial-skills-and-risk-map.md`, or propose equivalent renames while proving that every responsibility remains covered.
+Add a `doctor` command that detects unloaded skills, duplicate skills, hash divergence, invalid frontmatter, rules present only in AGENTS.md or CLAUDE.md, and missing Claude/Codex counterparts.
 
-Traite aussi les risques supplementaires: skill shadowing, split-brain
-Linear/GitHub/Markdown, review theater, prompt injection, fork PR secret boundary,
-stale worktrees, hidden subagents, emergency bypass abuse, verification environment
-mismatch, archive leakage, and infinite AI review loops.
+Also handle these additional risks: skill shadowing, Linear/GitHub/Markdown split-brain, review theater, prompt injection, fork PR secret boundary, stale worktrees, hidden subagents, emergency bypass abuse, verification environment mismatch, archive leakage, and infinite AI review loops.
 ```

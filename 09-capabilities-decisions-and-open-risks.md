@@ -279,7 +279,7 @@ Before writing the repo, create `10-implementation-blueprint.md` with:
 - Forbidden implementation shortcuts: project-local installation during study, manual duplicated skills, PR-only Done, hidden write agents, fork PR secret exposure, and unlogged bypasses.
 - Regression proof required: a demo must show warnings in warning mode, blocking in strict mode, skill parity validation, and one risky implementation blocked until plan-review approval.
 
-## Prompt a donner au dev
+## Developer Prompt
 
 ```text
 Continue from `09-capabilities-decisions-and-open-risks.md`.

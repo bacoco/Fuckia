@@ -427,7 +427,7 @@ Success criteria:
 - Forbidden implementation shortcuts: product repo writes during study, generated skill hand edits, hidden write agents, untrusted PR secrets, global strict rollout, and auto-merge.
 - Regression proof required: test fixtures must demonstrate failures for forbidden file, delete budget, stale generated skill, missing plan-review, self-review, duplicate skill, prompt injection, missing verification receipt, and unsupported uncertain causal language.
 
-## Prompt a donner au dev
+## Developer Prompt
 
 ```text
 Implement the standalone `claude-codex-collab-kit` repository from `10-implementation-blueprint.md`.

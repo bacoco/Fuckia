@@ -49,7 +49,7 @@ Create a reusable project starter and migration kit where:
 - `10-implementation-blueprint.md` - standalone repo structure, commands, schemas, gates, and pilot plan.
 - `11-evidence-language-guard.md` - mandatory rule against unsupported uncertainty language.
 - `12-agent-law-propagation.md` - universal laws, role addenda, tool adapters, and validators.
-- `PROMPT-A-DONNER-AU-DEV.md` - copy-paste prompt for the implementer.
+- `DEVELOPER-PROMPT.md` - copy-paste prompt for the implementer.
 - `SOURCES.md` - official docs starting points to verify.
 
 ## Core decision
@@ -95,6 +95,6 @@ The constitution has priority over every generated skill, prompt, workflow, and 
 - Forbidden implementation shortcuts: new parallel engines, large deletes without budget, local-only specs, generated skill edits, auto-merge from green typecheck.
 - Regression proof required: PR-level checks plus at least one real workflow verification receipt for UI/product changes.
 
-## Prompt a donner au dev
+## Developer Prompt
 
-Use `PROMPT-A-DONNER-AU-DEV.md`.
+Use `DEVELOPER-PROMPT.md`.

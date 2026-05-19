@@ -185,12 +185,12 @@ Required passing fixtures:
 - Forbidden implementation shortcuts: constitution only in README, laws copied manually without hashes, per-agent laws that diverge, and validators that only check file existence.
 - Regression proof required: fixtures must prove missing, divergent, or weakened laws fail in strict mode.
 
-## Prompt a donner au dev
+## Developer Prompt
 
 ```text
 Add the law propagation model from `12-agent-law-propagation.md`.
 
-Do not choose between universal laws and validator/dev rules. Implement both:
+Do not choose between universal laws and validator and developer rules. Implement both:
 universal constitution for every agent, role-specific addenda for each workflow role,
 and deterministic validators that fail missing, divergent, or weakened laws.
 ```

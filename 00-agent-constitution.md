@@ -227,7 +227,7 @@ When instructions conflict:
 - Forbidden implementation shortcuts: turning laws into documentation only, using AI reviews as approval without gates, self-review on risky work, and Done without real workflow evidence.
 - Regression proof required: fixtures must demonstrate each law blocking at least one bad path.
 
-## Prompt a donner au dev
+## Developer Prompt
 
 ```text
 Start from `00-agent-constitution.md`.

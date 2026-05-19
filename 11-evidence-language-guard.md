@@ -42,17 +42,9 @@ I think
 I suspect
 I assume
 should be
-il semble
-probablement
-peut-etre
-on dirait
-je pense
-j'imagine
-je suppose
-ca doit venir de
 ```
 
-Equivalent vague causal language is also forbidden.
+Equivalent vague causal language in any language is also forbidden.
 
 ## Required replacement formats
 
@@ -175,7 +167,7 @@ The correct behavior under missing evidence is not eloquence. The correct behavi
 - Forbidden implementation shortcuts: replacing weak uncertainty with confident unsupported claims, ignoring quoted examples, and allowing Done with unresolved Unknown fields.
 - Regression proof required: test fixtures must fail on unsupported uncertain causal language and pass when the same uncertainty is converted into `Unknown`, `Question`, or `Hypothesis` plus verification.
 
-## Prompt a donner au dev
+## Developer Prompt
 
 ```text
 Add the Evidence Language Guard from `11-evidence-language-guard.md`.
