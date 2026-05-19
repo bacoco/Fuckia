@@ -160,9 +160,10 @@ export async function applyStrictMode(targetRoot: string): Promise<StrictApplyRe
 
   const config = await readFile(configPath, "utf8");
   const strictConfig = config
-    .replace(/(^|\n)mode: warning(\n|$)/, "$1mode: strict$2")
-    .replace(/strict_checks_enabled: false/g, "strict_checks_enabled: true")
-    .replace(/pr_template: \.github\/pull_request_template\.md/g, "pr_template: .github/PULL_REQUEST_TEMPLATE.md");
+  const strictConfig = config
+    .replace(/(^|\n)mode:\s*warning(\s*#.*)?(\n|$)/, "$1mode: strict$2$3")
+    .replace(/strict_checks_enabled:\s*false/g, "strict_checks_enabled: true")
+    .replace(/pr_template:\s*['"]?\.github\/pull_request_template\.md['"]?/g, "pr_template: .github/PULL_REQUEST_TEMPLATE.md");
 
   if (strictConfig === config) {
     return {
