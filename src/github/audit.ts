@@ -51,6 +51,10 @@ interface StatusCheckProtectionPayload {
   checks?: unknown;
 }
 
+interface BranchProtectionPayload {
+  required_pull_request_reviews?: unknown;
+}
+
 const requiredLocalFiles = [
   ".github/PULL_REQUEST_TEMPLATE.md",
   ".github/workflows/collab-contract.yml",
@@ -207,6 +211,30 @@ export async function auditGitHubRemote(options: GitHubAuditOptions): Promise<Gi
         message: `Required checks are not verified: ${requiredChecks.message}`
       });
     }
+
+    const branchProtection = await runGhJson<BranchProtectionPayload>(
+      runner,
+      targetRoot,
+      ["api", `repos/${remote.fullName}/branches/${encodeURIComponent(defaultBranch)}/protection`]
+    );
+
+    if (branchProtection.ok) {
+      const requiresGitHubApproval = branchProtection.value.required_pull_request_reviews !== null
+        && branchProtection.value.required_pull_request_reviews !== undefined;
+      checks.push({
+        id: "github:review-platform-gate",
+        status: requiresGitHubApproval ? "warning" : "pass",
+        message: requiresGitHubApproval
+          ? "GitHub approving reviews are required. Verify that an accepted reviewer account, team, or GitHub App exists before relying on this branch protection."
+          : "GitHub approving reviews are not required by branch protection."
+      });
+    } else {
+      checks.push({
+        id: "github:review-platform-gate",
+        status: "unknown",
+        message: `GitHub branch protection read failed: ${branchProtection.message}`
+      });
+    }
   }
 
   return buildReport(targetRoot, remote, defaultBranch, checks, rulesetCount, requiredCheckContexts);
@@ -235,6 +263,7 @@ function buildReport(
       "GET /repos/{owner}/{repo}",
       "GET /repos/{owner}/{repo}/actions/permissions",
       "GET /repos/{owner}/{repo}/rulesets",
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection",
       "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
     ],
     nextSteps: buildNextSteps(checks)
@@ -256,6 +285,7 @@ export function readStatusCheckContexts(payload: StatusCheckProtectionPayload): 
 
 function buildNextSteps(checks: GitHubAuditCheck[]): string[] {
   const failingIds = new Set(checks.filter((check) => check.status === "fail").map((check) => check.id));
+  const warningIds = new Set(checks.filter((check) => check.status === "warning").map((check) => check.id));
   const nextSteps = ["Keep this audit output with the installation receipt."];
 
   if ([...failingIds].some((id) => id.startsWith("local:"))) {
@@ -276,6 +306,10 @@ function buildNextSteps(checks: GitHubAuditCheck[]): string[] {
 
   if (failingIds.has("github:required-checks")) {
     nextSteps.push("Configure required GitHub checks only after installed workflows are pushed to the default branch.");
+  }
+
+  if (warningIds.has("github:review-platform-gate")) {
+    nextSteps.push("Do not rely on required GitHub approvals until an accepted reviewer account, team, or GitHub App is verified.");
   }
 
   return nextSteps;

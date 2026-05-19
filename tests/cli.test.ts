@@ -367,6 +367,9 @@ test("github audit is read-only and reports remote readiness", async () => {
           strict: true,
           contexts: ["contract", "generated-skills", "scope"],
           checks: []
+        })),
+        "gh api repos/bacoco/Fuckia/branches/main/protection": ok(JSON.stringify({
+          required_pull_request_reviews: null
         }))
       })
     });
@@ -403,6 +406,9 @@ test("github audit reports missing required checks without writing", async () =>
           strict: true,
           contexts: ["contract"],
           checks: []
+        })),
+        "gh api repos/bacoco/Fuckia/branches/main/protection": ok(JSON.stringify({
+          required_pull_request_reviews: null
         }))
       })
     });
@@ -415,6 +421,48 @@ test("github audit reports missing required checks without writing", async () =>
     assert.match(requiredChecks?.message ?? "", /generated-skills, scope/);
     assert.equal(permissions?.status, "warning");
     assert.equal(report.nextSteps.includes("Configure required GitHub checks only after installed workflows are pushed to the default branch."), true);
+  });
+});
+
+test("github audit warns when existing branch protection requires GitHub approvals", async () => {
+  await withTempProject(async (directory) => {
+    await createInstalledGithubFiles(directory);
+    const report = await auditGitHubRemote({
+      targetRoot: directory,
+      runner: fakeRunner({
+        "git remote get-url origin": ok("https://github.com/bacoco/Fuckia.git\n"),
+        "gh --version": ok("gh version 2.0.0\n"),
+        "gh auth status": ok("Logged in\n"),
+        "gh api repos/bacoco/Fuckia": ok(JSON.stringify({
+          default_branch: "main",
+          permissions: { admin: true, push: true, pull: true }
+        })),
+        "gh api repos/bacoco/Fuckia/actions/permissions": ok(JSON.stringify({
+          enabled: true,
+          allowed_actions: "all"
+        })),
+        "gh api repos/bacoco/Fuckia/rulesets": ok(JSON.stringify([])),
+        "gh api repos/bacoco/Fuckia/branches/main/protection/required_status_checks": ok(JSON.stringify({
+          strict: true,
+          contexts: ["contract", "generated-skills", "scope"],
+          checks: []
+        })),
+        "gh api repos/bacoco/Fuckia/branches/main/protection": ok(JSON.stringify({
+          required_pull_request_reviews: {
+            required_approving_review_count: 1,
+            require_last_push_approval: true
+          }
+        }))
+      })
+    });
+    const reviewGate = report.checks.find((check) => check.id === "github:review-platform-gate");
+
+    assert.equal(reviewGate?.status, "warning");
+    assert.match(reviewGate?.message ?? "", /accepted reviewer account/);
+    assert.equal(
+      report.nextSteps.includes("Do not rely on required GitHub approvals until an accepted reviewer account, team, or GitHub App is verified."),
+      true
+    );
   });
 });
 
