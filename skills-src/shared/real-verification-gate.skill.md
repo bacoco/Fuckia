@@ -36,7 +36,7 @@ Done requires evidence for:
 - Linear or GitHub receipt when remote setup changed;
 - end-of-work checkpoint.
 
-For risky work, Done also requires completed independent AI or human review.
+For risky work, Done also requires a completed independent AI or human review.
 
 ## Not Enough
 

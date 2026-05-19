@@ -6,7 +6,7 @@ description: Use before declaring Done to require real workflow evidence beyond 
 <!--
 GENERATED FILE - DO NOT EDIT DIRECTLY
 source: skills-src/shared/real-verification-gate.skill.md
-source_hash: 18795707489b993aab424b4a655c07dcbb29e3a6ef6653d813a6496c36fe0908
+source_hash: f2f560997fe2aa60921ea02564a6ff628fdc3c67114cfd6be5741bef9a0719cf
 generated_by: fuckia generate-skills
 target: claude
 -->
@@ -48,7 +48,7 @@ Done requires evidence for:
 - Linear or GitHub receipt when remote setup changed;
 - end-of-work checkpoint.
 
-For risky work, Done also requires completed independent AI or human review.
+For risky work, Done also requires a completed independent AI or human review.
 
 ## Not Enough
 

@@ -47,9 +47,16 @@ const requiredFiles = [
 ];
 
 const requiredPrHeadings = [
+  "## AI Identity",
   "## Plan Review",
   "## Real Workflow Verification",
   "## Adversarial Implementer Pass"
+];
+
+const requiredPrChecklistLines = [
+  "- [ ] Validator AI is different from Author AI when independent review is required.",
+  "- [ ] GitHub platform gate is recorded separately from AI review validity.",
+  "- [ ] Risky work does not use self-review."
 ];
 
 const requiredSkillNames = [
@@ -95,6 +102,13 @@ export async function checkStrictMode(targetRoot: string): Promise<StrictReport>
         id: `pr-template:${heading}`,
         level: body.includes(heading) ? "pass" : "fail",
         message: body.includes(heading) ? `${heading} is present.` : `${heading} is missing.`
+      });
+    }
+    for (const line of requiredPrChecklistLines) {
+      findings.push({
+        id: `pr-template:rule:${line}`,
+        level: body.includes(line) ? "pass" : "fail",
+        message: body.includes(line) ? "Required PR rule is present." : `Required PR rule is missing: ${line}`
       });
     }
   }
