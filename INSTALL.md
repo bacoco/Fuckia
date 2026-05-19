@@ -53,6 +53,32 @@ Linear setup requires:
 
 Account creation, billing plan selection, organization setup, and permission grants are human-controlled steps. Fuckia verifies access and stops when required access is missing.
 
+## Platform Preflight
+
+Before proposing writes, check the platform state and report it.
+
+Run inside the target repository:
+
+```bash
+cd "$target_dir"
+git rev-parse --is-inside-work-tree
+git remote -v
+command -v gh >/dev/null 2>&1 && gh auth status || true
+command -v gh >/dev/null 2>&1 && gh repo view --json nameWithOwner,defaultBranchRef 2>/dev/null || true
+test -n "${LINEAR_API_KEY:-}" && echo "LINEAR_API_KEY=present" || echo "LINEAR_API_KEY=missing"
+```
+
+Use the results like this:
+
+- If `git` is missing or the target is not a git repository, ask the human whether to initialize git or continue with local files only.
+- If no GitHub remote exists, install local Fuckia files first, then ask whether the human wants to create or connect a GitHub repository.
+- If `gh` is missing, say GitHub remote setup is blocked until GitHub CLI is installed or another authenticated GitHub path is provided.
+- If `gh auth status` fails, ask the human to authenticate GitHub CLI.
+- If GitHub repository access is missing, ask the human to grant access or provide the correct repository.
+- If `LINEAR_API_KEY` is missing, install local Fuckia files first, then ask whether Linear setup stays skipped for now or resumes after the key is provided.
+- If the Linear team key is missing, ask the human for the team key before creating Linear issues.
+- If a required permission is missing, do not invent success. Report `Blocked`, the exact missing permission, and the next human action.
+
 ## Save The Target Path
 
 ```bash
@@ -95,6 +121,13 @@ Report these facts to the human:
 
 - target repository path;
 - new project or existing project;
+- git repository state;
+- GitHub remote state;
+- GitHub CLI state;
+- GitHub authentication state;
+- GitHub repository access state;
+- Linear API key state;
+- Linear team key state;
 - existing `AGENTS.md`;
 - existing `CLAUDE.md`;
 - existing `.agents/skills`;
