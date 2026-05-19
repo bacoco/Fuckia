@@ -22,7 +22,7 @@ Developer must verify:
 
 Output: short implementation decision note with links to official docs.
 
-The note must also classify the eight failure classes in `vibe-coding/operating-model/failure-catalog-cross-review.md` as:
+The note must also classify the eight failure classes in `docs/vibe-coding/operating-model/failure-catalog-cross-review.md` as:
 
 - prevented by CI;
 - prevented by Linear workflow;

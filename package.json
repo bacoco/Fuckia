@@ -2,7 +2,7 @@
   "name": "fuckia",
   "version": "0.1.0",
   "private": false,
-  "description": "Read-only first slice of the Fuckia Claude/Codex/Linear/GitHub collaboration kit.",
+  "description": "Claude and Codex collaboration guardrails for GitHub and Linear projects.",
   "type": "commonjs",
   "bin": {
     "fuckia": "./dist/cli.js"
@@ -11,11 +11,11 @@
     "dist",
     "README.md",
     "INSTALL.md",
-    "agent-runbooks",
-    "examples/generated-skills",
+    "docs/agent-runbooks",
+    "docs/examples/generated-skills",
     "skills-src",
     "templates",
-    "vibe-coding"
+    "docs/vibe-coding"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/build/create-cli-wrapper.mjs",

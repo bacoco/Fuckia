@@ -20,7 +20,7 @@ Read:
 
 ## Current Verdict
 
-`vibe-coding/constitution/agent-constitution.md` is the root contract.
+`docs/vibe-coding/constitution/agent-constitution.md` is the root contract.
 
 Linear is the active cockpit. GitHub is the enforceable proof layer.
 

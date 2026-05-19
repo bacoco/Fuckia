@@ -38,7 +38,7 @@ npm run check:skills
 Implemented generator scope:
 
 - reads `skills-src/shared/*.skill.md`;
-- writes generated examples under `examples/generated-skills/<target>/<skill>/SKILL.md`;
+- writes generated examples under `docs/examples/generated-skills/<target>/<skill>/SKILL.md`;
 - checks generated examples for drift.
 
 Not implemented:

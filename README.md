@@ -80,6 +80,17 @@ Fuckia adds governance files, not product features:
 - Linear templates for spec, plan, plan-review, implementation, code-review, and verification;
 - receipts under `docs/fuckia/` so the next agent knows what happened.
 
+## Repository Layout
+
+The root is intentionally small:
+
+- `README.md` and `INSTALL.md` are the human entry points.
+- `src/` is the Fuckia CLI source.
+- `templates/` contains files installed into target repositories.
+- `skills-src/` contains the neutral shared skill sources used to generate Claude and Codex skills.
+- `docs/` contains every long document, runbook, example, constitution, and design note.
+- `.agents/`, `.claude/`, and `.github/` are Fuckia's own self-protection files for this repository.
+
 ## How It Works
 
 Every risky change must answer these questions before it is treated as Done:
@@ -126,7 +137,7 @@ Linear becomes the active cockpit. GitHub remains the code, PR, CI, and archive 
 
 ## Core Laws
 
-The detailed constitution lives in `vibe-coding/constitution/`.
+The detailed constitution lives in `docs/vibe-coding/constitution/`.
 
 The short version:
 
@@ -168,4 +179,4 @@ npm run build
 node dist/cli.js doctor --self
 ```
 
-Technical detail starts in `vibe-coding/README.md`.
+Technical detail starts in `docs/vibe-coding/README.md`.

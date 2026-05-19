@@ -16,7 +16,7 @@ export async function checkRepositoryStructure(rootDir: string): Promise<Structu
   const findings: StructureFinding[] = [];
 
   await pushPresenceFinding(findings, rootDir, "README.md", "root-readme", "Root README exists.");
-  await pushPresenceFinding(findings, rootDir, "vibe-coding", "vibe-coding-directory", "Vibe Coding directory exists.", true);
+  await pushPresenceFinding(findings, rootDir, "docs/vibe-coding", "vibe-coding-directory", "Vibe Coding directory exists.", true);
 
   const directories = await walkDirectories(rootDir, {
     ignoredDirectories: Array.from(ignoredDirectories)

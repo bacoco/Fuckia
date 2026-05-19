@@ -5,7 +5,7 @@
 MUST preserve the progressive disclosure structure:
 
 - root stays minimal;
-- `vibe-coding/` remains the design source;
+- `docs/vibe-coding/` remains the design source;
 - every directory has a `README.md`;
 - large topics are split into focused files.
 

@@ -24,8 +24,8 @@ async function withTempProject(run: (directory: string) => Promise<void>): Promi
 
 async function createMinimalProject(directory: string): Promise<void> {
   await writeFile(path.join(directory, "README.md"), "# Fixture\n", "utf8");
-  await mkdir(path.join(directory, "vibe-coding"), { recursive: true });
-  await writeFile(path.join(directory, "vibe-coding", "README.md"), "# Fixture Map\n", "utf8");
+  await mkdir(path.join(directory, "docs", "vibe-coding"), { recursive: true });
+  await writeFile(path.join(directory, "docs", "vibe-coding", "README.md"), "# Fixture Map\n", "utf8");
 }
 
 async function createInstalledGithubFiles(directory: string): Promise<void> {
@@ -264,11 +264,11 @@ test("generate-skills --write --examples creates Claude and Codex outputs", asyn
 
     const result = await capture(["generate-skills", "--write", "--examples"], directory);
     const claudeSkill = await readFile(
-      path.join(directory, "examples", "generated-skills", "claude", "demo-guard", "SKILL.md"),
+      path.join(directory, "docs", "examples", "generated-skills", "claude", "demo-guard", "SKILL.md"),
       "utf8"
     );
     const codexSkill = await readFile(
-      path.join(directory, "examples", "generated-skills", "codex", "demo-guard", "SKILL.md"),
+      path.join(directory, "docs", "examples", "generated-skills", "codex", "demo-guard", "SKILL.md"),
       "utf8"
     );
 

@@ -10,7 +10,7 @@ source_of_truth: true
 
 # Operating Model
 
-The operating model is governed by `vibe-coding/constitution/agent-constitution.md`.
+The operating model is governed by `docs/vibe-coding/constitution/agent-constitution.md`.
 
 ## Sections
 

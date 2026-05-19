@@ -10,7 +10,7 @@ source_of_truth: true
 
 # Shared Skills System
 
-Shared and platform-only skills must enforce `vibe-coding/constitution/agent-constitution.md`.
+Shared and platform-only skills must enforce `docs/vibe-coding/constitution/agent-constitution.md`.
 
 The constitution is not a skill. Skills are one enforcement mechanism for the constitution.
 
