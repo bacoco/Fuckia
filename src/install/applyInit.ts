@@ -8,6 +8,12 @@ export interface InitApplyOptions {
   targetRoot: string;
 }
 
+export interface InstallFile {
+  relativePath: string;
+  source: string;
+  content: string;
+}
+
 export interface InitApplyFile {
   path: string;
   source: string;
@@ -19,12 +25,6 @@ export interface InitApplyResult {
   written: InitApplyFile[];
   conflicts: string[];
   nextSteps: string[];
-}
-
-interface InstallFile {
-  relativePath: string;
-  source: string;
-  content: string;
 }
 
 const templateFiles: Array<{ templatePath: string; outputPath: string }> = [
@@ -77,7 +77,7 @@ export async function applyInit(options: InitApplyOptions): Promise<InitApplyRes
   };
 }
 
-async function buildInstallFiles(options: InitApplyOptions): Promise<InstallFile[]> {
+export async function buildInstallFiles(options: InitApplyOptions): Promise<InstallFile[]> {
   const files: InstallFile[] = [];
 
   for (const template of templateFiles) {
@@ -108,7 +108,7 @@ async function readTemplate(packageRoot: string, templatePath: string): Promise<
   return readFile(path.join(packageRoot, "templates", templatePath), "utf8");
 }
 
-async function findConflicts(targetRoot: string, files: InstallFile[]): Promise<string[]> {
+export async function findConflicts(targetRoot: string, files: InstallFile[]): Promise<string[]> {
   const conflicts: string[] = [];
   for (const file of files) {
     if (await fileExists(path.join(targetRoot, file.relativePath))) {

@@ -23,8 +23,13 @@ const inventoryTargets: InventoryItem[] = [
   { path: ".claude/skills", exists: false, kind: "directory" },
   { path: ".github/workflows", exists: false, kind: "directory" },
   { path: ".github/pull_request_template.md", exists: false, kind: "file" },
+  { path: ".github/workflows/collab-contract.yml", exists: false, kind: "file" },
+  { path: ".github/workflows/generated-skills.yml", exists: false, kind: "file" },
+  { path: ".github/workflows/pr-scope.yml", exists: false, kind: "file" },
+  { path: "fuckia.config.yaml", exists: false, kind: "file" },
   { path: "docs/specs", exists: false, kind: "directory" },
-  { path: "docs/fuckia", exists: false, kind: "directory" }
+  { path: "docs/fuckia", exists: false, kind: "directory" },
+  { path: "docs/fuckia/README.md", exists: false, kind: "file" }
 ];
 
 export async function buildMigrationAudit(targetRoot: string): Promise<MigrationAudit> {

@@ -121,6 +121,8 @@ Working now:
 - `init --dry-run`;
 - `init --apply` for conflict-free governance install;
 - `migrate --dry-run`;
+- `migrate --plan`;
+- `migrate --apply` for governance-only existing-project migration;
 - no-write tests;
 - agent install entrypoint: `INSTALL.md`;
 - public issue templates;
@@ -132,8 +134,6 @@ Working now:
 
 Next:
 
-- `migrate --plan`;
-- `migrate --apply`;
 - remaining shared skill catalog;
 - GitHub workflow automation;
 - Linear template automation;

@@ -12,9 +12,13 @@ Current implemented write command:
 
 ```bash
 fuckia init --apply
+fuckia migrate --plan
+fuckia migrate --apply
 ```
 
 `init --apply` is only for conflict-free governance installation. Existing projects with `AGENTS.md`, `CLAUDE.md`, GitHub workflows, or skills must use migration.
+`migrate --plan` writes `docs/fuckia/migration-plan.md` only.
+`migrate --apply` preserves existing governance files and writes merge proposals under `docs/fuckia/merge-proposals/`.
 
 Agent bootstrap experience:
 

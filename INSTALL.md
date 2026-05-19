@@ -112,6 +112,15 @@ node "$FUCKIA_DIR/dist/cli.js" init --apply
 
 For an existing repository with conflicts, do not force init. Report that migration planning is required.
 
+For an existing repository after approval, run:
+
+```bash
+node "$FUCKIA_DIR/dist/cli.js" migrate --plan
+node "$FUCKIA_DIR/dist/cli.js" migrate --apply
+```
+
+`migrate --apply` preserves existing governance files and writes merge proposals under `docs/fuckia/merge-proposals/`.
+
 ## Allowed Future Writes After Approval
 
 - `AGENTS.md`

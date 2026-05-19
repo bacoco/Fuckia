@@ -115,6 +115,85 @@ test("migrate --dry-run writes nothing and reports existing instructions", async
   });
 });
 
+test("migrate --plan writes only a migration plan", async () => {
+  await withTempProject(async (directory) => {
+    await createMinimalProject(directory);
+    await writeFile(path.join(directory, "AGENTS.md"), "# Existing Rules\n", "utf8");
+    const before = await snapshotTree(directory);
+    const result = await capture(["migrate", "--plan"], directory);
+    const after = await snapshotTree(directory);
+    const plan = await readFile(path.join(directory, "docs", "fuckia", "migration-plan.md"), "utf8");
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"status": "planned"/);
+    assert.deepEqual(
+      after.filter((file) => !before.includes(file)),
+      ["docs/fuckia/migration-plan.md"]
+    );
+    assert.match(plan, /Existing Governance Inventory/);
+    assert.match(plan, /AGENTS.md/);
+  });
+});
+
+test("migrate --apply requires migration plan", async () => {
+  await withTempProject(async (directory) => {
+    await createMinimalProject(directory);
+    const before = await snapshotTree(directory);
+    const result = await capture(["migrate", "--apply"], directory);
+    const after = await snapshotTree(directory);
+
+    assert.equal(result.exitCode, 1);
+    assert.deepEqual(after, before);
+    assert.match(result.stdout, /migration-plan.md is missing/);
+  });
+});
+
+test("migrate --apply preserves conflicts and writes merge proposals", async () => {
+  await withTempProject(async (directory) => {
+    await createMinimalProject(directory);
+    await writeFile(path.join(directory, "AGENTS.md"), "# Existing Rules\n", "utf8");
+    await capture(["migrate", "--plan"], directory);
+    const result = await capture(["migrate", "--apply"], directory);
+    const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
+    const proposal = await readFile(
+      path.join(directory, "docs", "fuckia", "merge-proposals", "AGENTS.md.md"),
+      "utf8"
+    );
+    const codexSkill = await readFile(
+      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      "utf8"
+    );
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"status": "applied"/);
+    assert.match(result.stdout, /"preserved": \[/);
+    assert.equal(agents, "# Existing Rules\n");
+    assert.match(proposal, /Merge Proposal: AGENTS.md/);
+    assert.match(codexSkill, /target: codex/);
+  });
+});
+
+test("migrate --apply blocks when merge proposal already exists", async () => {
+  await withTempProject(async (directory) => {
+    await createMinimalProject(directory);
+    await writeFile(path.join(directory, "AGENTS.md"), "# Existing Rules\n", "utf8");
+    await capture(["migrate", "--plan"], directory);
+    await mkdir(path.join(directory, "docs", "fuckia", "merge-proposals"), { recursive: true });
+    await writeFile(
+      path.join(directory, "docs", "fuckia", "merge-proposals", "AGENTS.md.md"),
+      "# Existing Proposal\n",
+      "utf8"
+    );
+    const before = await snapshotTree(directory);
+    const result = await capture(["migrate", "--apply"], directory);
+    const after = await snapshotTree(directory);
+
+    assert.equal(result.exitCode, 1);
+    assert.deepEqual(after, before);
+    assert.match(result.stdout, /Merge proposal already exists/);
+  });
+});
+
 test("doctor is read-only", async () => {
   await withTempProject(async (directory) => {
     await createMinimalProject(directory);

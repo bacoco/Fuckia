@@ -8,6 +8,8 @@ export function formatHelp(): string {
     "  fuckia init --dry-run",
     "  fuckia init --apply",
     "  fuckia migrate --dry-run",
+    "  fuckia migrate --plan",
+    "  fuckia migrate --apply",
     "  fuckia generate-skills --check",
     "  fuckia generate-skills --write --examples",
     "",
