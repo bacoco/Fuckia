@@ -1,5 +1,6 @@
 import path from "node:path";
 import { directoryExists, fileExists } from "../fs/readTree";
+import type { ResolvedAgentMode } from "../install/agentMode";
 
 export interface InventoryItem {
   path: string;
@@ -9,6 +10,7 @@ export interface InventoryItem {
 
 export interface MigrationAudit {
   mode: "dry-run";
+  agentMode: ResolvedAgentMode;
   targetRoot: string;
   inventory: InventoryItem[];
   conflicts: string[];
@@ -42,11 +44,14 @@ const inventoryTargets: InventoryItem[] = [
   { path: "docs/fuckia/merge-proposals/README.md", exists: false, kind: "file" }
 ];
 
-export async function buildMigrationAudit(targetRoot: string): Promise<MigrationAudit> {
+export async function buildMigrationAudit(
+  targetRoot: string,
+  agentMode: ResolvedAgentMode = "dual-agent"
+): Promise<MigrationAudit> {
   const root = path.resolve(targetRoot);
   const inventory: InventoryItem[] = [];
 
-  for (const item of inventoryTargets) {
+  for (const item of inventoryTargets.filter((item) => includeInventoryItem(item.path, agentMode))) {
     const absolutePath = path.join(root, item.path);
     const exists = item.kind === "directory" ? await directoryExists(absolutePath) : await fileExists(absolutePath);
     inventory.push({ ...item, exists });
@@ -58,6 +63,7 @@ export async function buildMigrationAudit(targetRoot: string): Promise<Migration
 
   return {
     mode: "dry-run",
+    agentMode,
     targetRoot: root,
     inventory,
     conflicts,
@@ -69,4 +75,21 @@ export async function buildMigrationAudit(targetRoot: string): Promise<Migration
     ],
     writePolicy: "No files were written. First slice migration is inventory-only."
   };
+}
+
+function includeInventoryItem(itemPath: string, agentMode: ResolvedAgentMode): boolean {
+  if (agentMode !== "claude-only" && (itemPath === "AGENTS.md" || itemPath.startsWith(".agents"))) {
+    return true;
+  }
+
+  if (agentMode !== "codex-only" && (itemPath === "CLAUDE.md" || itemPath.startsWith(".claude"))) {
+    return true;
+  }
+
+  return !(
+    itemPath === "AGENTS.md" ||
+    itemPath.startsWith(".agents") ||
+    itemPath === "CLAUDE.md" ||
+    itemPath.startsWith(".claude")
+  );
 }

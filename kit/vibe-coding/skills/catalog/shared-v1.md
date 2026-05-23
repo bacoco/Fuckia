@@ -9,9 +9,10 @@ Current shared skills:
 3. `delegated-review-and-merge`
 4. `destructive-change-guard`
 5. `end-of-work-checkpoint`
-6. `plan-review-gate`
-7. `platform-permission-gate`
-8. `real-verification-gate`
-9. `source-of-truth-gate`
+6. `evidence-language-guard`
+7. `plan-review-gate`
+8. `platform-permission-gate`
+9. `real-verification-gate`
+10. `source-of-truth-gate`
 
 Every shared skill must include the universal law packet and constitution hash.

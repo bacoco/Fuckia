@@ -11,9 +11,27 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check generated skill headers
         run: |
+          agent_mode="$(awk '/^agent_mode:/ {print $2}' fuckia.config.yaml 2>/dev/null || true)"
+          case "$agent_mode" in
+            codex-only)
+              target_dirs=".agents/skills"
+              ;;
+            claude-only)
+              target_dirs=".claude/skills"
+              ;;
+            dual-agent|"")
+              target_dirs=".claude/skills .agents/skills"
+              ;;
+            *)
+              echo "Unsupported agent_mode: $agent_mode"
+              exit 1
+              ;;
+          esac
+
           for skill in adversarial-implementer-guard cross-agent-handoff delegated-review-and-merge destructive-change-guard end-of-work-checkpoint evidence-language-guard plan-review-gate platform-permission-gate real-verification-gate source-of-truth-gate; do
-            test -f ".claude/skills/$skill/SKILL.md"
-            test -f ".agents/skills/$skill/SKILL.md"
+            for target_dir in $target_dirs; do
+              test -f "$target_dir/$skill/SKILL.md"
+            done
           done
-          grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .claude/skills .agents/skills
-          grep -R "source_hash:" .claude/skills .agents/skills
+          grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" $target_dirs
+          grep -R "source_hash:" $target_dirs

@@ -10,6 +10,7 @@ https://github.com/bacoco/Fuckia/blob/main/INSTALL.md
 
 Codex-specific rules:
 
+- default to `codex-only` when the repository has no Claude markers and the human did not ask for dual-agent;
 - use `rg` for repository inventory;
 - use `apply_patch` for manual edits;
 - do not use subagents on overlapping files;

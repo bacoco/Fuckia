@@ -1,5 +1,6 @@
 import path from "node:path";
 import { fileExists } from "../fs/readTree";
+import { targetsForAgentMode, type ResolvedAgentMode } from "../install/agentMode";
 import { buildGeneratedSkillFiles } from "../skills/generateSharedSkills";
 
 export interface PlannedFile {
@@ -10,6 +11,7 @@ export interface PlannedFile {
 
 export interface InitPlan {
   mode: "dry-run";
+  agentMode: ResolvedAgentMode;
   targetRoot: string;
   directories: string[];
   files: PlannedFile[];
@@ -17,19 +19,25 @@ export interface InitPlan {
   automationBoundaries: string[];
 }
 
-export async function buildInitPlan(targetRoot: string, packageRoot = targetRoot): Promise<InitPlan> {
+export async function buildInitPlan(
+  targetRoot: string,
+  packageRoot = targetRoot,
+  agentMode: ResolvedAgentMode = "dual-agent"
+): Promise<InitPlan> {
   const generatedSkills = await buildGeneratedSkillFiles({
     sourceRootDir: packageRoot,
-    outputKind: "install"
+    outputKind: "install",
+    targets: targetsForAgentMode(agentMode)
   });
   const includeRootReadme = !(await fileExists(path.join(targetRoot, "README.md")));
 
   return {
     mode: "dry-run",
+    agentMode,
     targetRoot: path.resolve(targetRoot),
     directories: [
-      ".agents/skills",
-      ".claude/skills",
+      ...(agentMode === "claude-only" ? [] : [".agents/skills"]),
+      ...(agentMode === "codex-only" ? [] : [".claude/skills"]),
       ".github/workflows",
       "docs/fuckia",
       "docs/fuckia/archive"
@@ -38,12 +46,16 @@ export async function buildInitPlan(targetRoot: string, packageRoot = targetRoot
       ...(includeRootReadme
         ? [{ path: "README.md", source: "template", purpose: "Minimal README for empty target repositories." }]
         : []),
-      { path: ".agents/README.md", source: "template", purpose: "Codex agent directory map." },
-      { path: ".agents/skills/README.md", source: "template", purpose: "Codex generated skills directory map." },
-      { path: ".claude/README.md", source: "template", purpose: "Claude directory map." },
-      { path: ".claude/skills/README.md", source: "template", purpose: "Claude generated skills directory map." },
-      { path: "AGENTS.md", source: "template", purpose: "Codex entry rules." },
-      { path: "CLAUDE.md", source: "template", purpose: "Claude entry rules." },
+      ...(agentMode === "claude-only" ? [] : [
+        { path: ".agents/README.md", source: "template", purpose: "Codex agent directory map." },
+        { path: ".agents/skills/README.md", source: "template", purpose: "Codex generated skills directory map." },
+        { path: "AGENTS.md", source: "template", purpose: "Codex entry rules." }
+      ]),
+      ...(agentMode === "codex-only" ? [] : [
+        { path: ".claude/README.md", source: "template", purpose: "Claude directory map." },
+        { path: ".claude/skills/README.md", source: "template", purpose: "Claude generated skills directory map." },
+        { path: "CLAUDE.md", source: "template", purpose: "Claude entry rules." }
+      ]),
       { path: ".github/README.md", source: "template", purpose: "GitHub directory map." },
       { path: ".github/PULL_REQUEST_TEMPLATE.md", source: "template", purpose: "PR collaboration contract." },
       { path: ".github/workflows/collab-contract.yml", source: "template", purpose: "Collaboration gate checks." },

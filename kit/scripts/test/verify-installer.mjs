@@ -65,8 +65,8 @@ if (!existsSync(shellInstallerPath)) {
 
 withTempDirectory("fuckia-shell-empty-", (directory) => {
   run("git", ["init"], directory);
-  run("bash", [shellInstallerPath, "--target", directory, "--dry-run"], repoRoot);
-  run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes"], repoRoot);
+  run("bash", [shellInstallerPath, "--target", directory, "--dry-run", "--agent-mode", "dual-agent"], repoRoot);
+  run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes", "--agent-mode", "dual-agent"], repoRoot);
 
   assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
   assertFile(directory, "CLAUDE.md", "Claude Code must follow Fuckia governance");
@@ -77,13 +77,26 @@ withTempDirectory("fuckia-shell-empty-", (directory) => {
   assertFile(directory, ".claude/skills/evidence-language-guard/SKILL.md", "target: claude");
 });
 
+withTempDirectory("fuckia-shell-codex-only-", (directory) => {
+  run("git", ["init"], directory);
+  run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes", "--agent-mode", "codex-only"], repoRoot);
+
+  assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
+  assertFile(directory, ".agents/skills/evidence-language-guard/SKILL.md", "target: codex");
+  assertFile(directory, "fuckia.config.yaml", "agent_mode: codex-only");
+
+  if (existsSync(path.join(directory, "CLAUDE.md")) || existsSync(path.join(directory, ".claude"))) {
+    throw new Error("Codex-only shell install wrote Claude files.");
+  }
+});
+
 withTempDirectory("fuckia-shell-existing-", (directory) => {
   run("git", ["init"], directory);
   writeFileSync(path.join(directory, "AGENTS.md"), "# Existing Codex Rules\n", "utf8");
   writeFileSync(path.join(directory, "README.md"), "# Existing Project\n", "utf8");
 
-  run("bash", [shellInstallerPath, "--target", directory, "--dry-run"], repoRoot);
-  run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes"], repoRoot);
+  run("bash", [shellInstallerPath, "--target", directory, "--dry-run", "--agent-mode", "dual-agent"], repoRoot);
+  run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes", "--agent-mode", "dual-agent"], repoRoot);
 
   const agents = readFileSync(path.join(directory, "AGENTS.md"), "utf8");
   if (agents !== "# Existing Codex Rules\n") {
@@ -100,8 +113,8 @@ run("node", [cliPath, "--help"], repoRoot);
 
 withTempDirectory("fuckia-empty-", (directory) => {
   run("git", ["init"], directory);
-  run("node", [cliPath, "install", "--dry-run"], directory);
-  run("node", [cliPath, "install", "--apply", "--yes"], directory);
+  run("node", [cliPath, "install", "--dry-run", "--agent-mode", "dual-agent"], directory);
+  run("node", [cliPath, "install", "--apply", "--yes", "--agent-mode", "dual-agent"], directory);
   run("node", [cliPath, "strict", "--apply"], directory);
   run("node", [cliPath, "strict", "--dry-run", "--strict"], directory);
   run("node", [cliPath, "doctor", "--strict"], directory);
@@ -119,8 +132,8 @@ withTempDirectory("fuckia-existing-", (directory) => {
   writeFileSync(path.join(directory, "AGENTS.md"), "# Existing Codex Rules\n", "utf8");
   writeFileSync(path.join(directory, "README.md"), "# Existing Project\n", "utf8");
 
-  run("node", [cliPath, "install", "--dry-run"], directory);
-  run("node", [cliPath, "install", "--apply", "--yes"], directory);
+  run("node", [cliPath, "install", "--dry-run", "--agent-mode", "dual-agent"], directory);
+  run("node", [cliPath, "install", "--apply", "--yes", "--agent-mode", "dual-agent"], directory);
 
   const agents = readFileSync(path.join(directory, "AGENTS.md"), "utf8");
   if (agents !== "# Existing Codex Rules\n") {

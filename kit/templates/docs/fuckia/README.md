@@ -1,13 +1,25 @@
 # Fuckia
 
-This repository uses Fuckia governance for Claude Code and Codex collaboration.
+This repository uses Fuckia governance.
+
+Agent mode is recorded in `fuckia.config.yaml`.
 
 ## Agent Entrypoints
 
-- Codex reads `AGENTS.md`.
-- Claude Code reads `CLAUDE.md`.
-- Codex skills live in `.agents/skills/`.
-- Claude skills live in `.claude/skills/`.
+- Codex reads `AGENTS.md` when `codex-only` or `dual-agent` is enabled.
+- Claude Code reads `CLAUDE.md` when `claude-only` or `dual-agent` is enabled.
+- Codex skills live in `.agents/skills/` when Codex is enabled.
+- Claude skills live in `.claude/skills/` when Claude is enabled.
+
+## Core Guard
+
+The central rule is adversarial progressive disclosure:
+
+- preserve working routes, stores, callbacks, pipelines, and workflows;
+- convert vague implementation language into explicit `MUST` / `MUST NOT` constraints;
+- split code by responsibility instead of creating broad catch-all files;
+- expose summaries before details in APIs, prompts, retrieval, tests, and verification;
+- verify the real workflow before Done.
 
 ## Required Workflow
 

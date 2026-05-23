@@ -1,5 +1,6 @@
 version: 1
 mode: warning
+agent_mode: __AGENT_MODE__
 
 agents:
   claude:

@@ -3,11 +3,13 @@ import path from "node:path";
 import { fileExists } from "../fs/readTree";
 import type { MigrationAudit } from "../plans/migrationAudit";
 import { buildMigrationAudit } from "../plans/migrationAudit";
+import type { ResolvedAgentMode } from "./agentMode";
 import { buildInstallFiles } from "./applyInit";
 
 export interface MigratePlanOptions {
   packageRoot: string;
   targetRoot: string;
+  agentMode: ResolvedAgentMode;
 }
 
 export interface MigratePlanResult {
@@ -32,7 +34,7 @@ export async function writeMigrationPlan(options: MigratePlanOptions): Promise<M
     };
   }
 
-  const audit = await buildMigrationAudit(options.targetRoot);
+  const audit = await buildMigrationAudit(options.targetRoot, options.agentMode);
   const installFiles = await buildInstallFiles(options);
   const missing = installFiles
     .filter((file) => !audit.inventory.some((item) => item.path === file.relativePath && item.exists))
@@ -62,6 +64,7 @@ function renderMigrationPlan(audit: MigrationAudit, missing: string[], existing:
     "## Target",
     "",
     `- root: \`${audit.targetRoot}\``,
+    `- agent mode: \`${audit.agentMode}\``,
     "- mode: warning",
     "- product code changes: forbidden",
     "",

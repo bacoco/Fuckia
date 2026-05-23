@@ -3,6 +3,7 @@ import path from "node:path";
 import { checkEvidenceLanguage } from "../checks/docsLanguage";
 import { checkGeneratedFileHeaders } from "../checks/generatedFiles";
 import { fileExists } from "../fs/readTree";
+import type { ResolvedAgentMode } from "../install/agentMode";
 
 export type StrictFindingLevel = "pass" | "fail";
 
@@ -29,8 +30,6 @@ export interface StrictApplyResult {
 }
 
 const requiredFiles = [
-  "AGENTS.md",
-  "CLAUDE.md",
   "fuckia.config.yaml",
   ".github/PULL_REQUEST_TEMPLATE.md",
   ".github/workflows/collab-contract.yml",
@@ -75,8 +74,9 @@ const requiredSkillNames = [
 export async function checkStrictMode(targetRoot: string): Promise<StrictReport> {
   const root = path.resolve(targetRoot);
   const findings: StrictFinding[] = [];
+  const agentMode = await readConfiguredAgentMode(root);
 
-  for (const file of requiredFiles) {
+  for (const file of [...requiredFiles, ...requiredAgentFiles(agentMode)]) {
     findings.push(await presenceFinding(root, file));
   }
 
@@ -116,10 +116,7 @@ export async function checkStrictMode(targetRoot: string): Promise<StrictReport>
 
   const generated = await checkGeneratedFileHeaders(root);
   for (const skillName of requiredSkillNames) {
-    for (const file of [
-      `.claude/skills/${skillName}/SKILL.md`,
-      `.agents/skills/${skillName}/SKILL.md`
-    ]) {
+    for (const file of requiredSkillFiles(agentMode, skillName)) {
       findings.push(await presenceFinding(root, file));
     }
   }
@@ -150,6 +147,44 @@ export async function checkStrictMode(targetRoot: string): Promise<StrictReport>
       ? ["Run `fuckia strict --apply` after installing governance files and reviewing the report."]
       : ["Strict mode local checks pass."]
   };
+}
+
+async function readConfiguredAgentMode(root: string): Promise<ResolvedAgentMode> {
+  const configPath = path.join(root, "fuckia.config.yaml");
+  if (!(await fileExists(configPath))) {
+    return "dual-agent";
+  }
+
+  const config = await readFile(configPath, "utf8");
+  const match = config.match(/(^|\n)\s*agent_mode:\s*(codex-only|claude-only|dual-agent)(\s|$)/);
+  return (match?.[2] as ResolvedAgentMode | undefined) ?? "dual-agent";
+}
+
+function requiredAgentFiles(agentMode: ResolvedAgentMode): string[] {
+  if (agentMode === "codex-only") {
+    return ["AGENTS.md"];
+  }
+
+  if (agentMode === "claude-only") {
+    return ["CLAUDE.md"];
+  }
+
+  return ["AGENTS.md", "CLAUDE.md"];
+}
+
+function requiredSkillFiles(agentMode: ResolvedAgentMode, skillName: string): string[] {
+  if (agentMode === "codex-only") {
+    return [`.agents/skills/${skillName}/SKILL.md`];
+  }
+
+  if (agentMode === "claude-only") {
+    return [`.claude/skills/${skillName}/SKILL.md`];
+  }
+
+  return [
+    `.claude/skills/${skillName}/SKILL.md`,
+    `.agents/skills/${skillName}/SKILL.md`
+  ];
 }
 
 export async function applyStrictMode(targetRoot: string): Promise<StrictApplyResult> {
@@ -211,7 +246,7 @@ export async function applyStrictMode(targetRoot: string): Promise<StrictApplyRe
   const receiptPath = path.join("docs", "fuckia", "strict-mode.md");
   await writeFile(configPath, strictConfig, "utf8");
   await mkdir(path.dirname(path.join(root, receiptPath)), { recursive: true });
-  await writeFile(path.join(root, receiptPath), renderStrictReceipt(), "utf8");
+  await writeFile(path.join(root, receiptPath), renderStrictReceipt(await readConfiguredAgentMode(root)), "utf8");
 
   return {
     status: "applied",
@@ -231,16 +266,18 @@ async function presenceFinding(root: string, file: string): Promise<StrictFindin
   };
 }
 
-function renderStrictReceipt(): string {
+function renderStrictReceipt(agentMode: ResolvedAgentMode): string {
   return [
     "# Strict Mode Receipt",
     "",
     "Strict mode is enabled for this repository.",
     "",
+    `Agent mode: \`${agentMode}\`.`,
+    "",
     "Required local evidence:",
     "",
     "- installed agent rules;",
-    "- generated Claude and Codex skills;",
+    "- generated skills for the configured agent mode;",
     "- GitHub collaboration workflows;",
     "- Linear issue templates;",
     "- end-of-work checkpoint;",

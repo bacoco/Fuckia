@@ -6,6 +6,38 @@ The human is inside the target repository and asked you to install Fuckia.
 
 Normal installation does not require Node.js or npm.
 
+## Agent Modes
+
+Fuckia can install one active agent surface or both:
+
+- `codex-only`: install `AGENTS.md` and `.agents/skills/...`.
+- `claude-only`: install `CLAUDE.md` and `.claude/skills/...`.
+- `dual-agent`: install both Codex and Claude surfaces.
+
+Use explicit human wording when available:
+
+- "Codex only" -> `codex-only`
+- "Claude only" -> `claude-only`
+- "Claude and Codex", "both", or "dual" -> `dual-agent`
+
+If the human did not specify the mode, inspect existing repo markers:
+
+- Codex markers only: `AGENTS.md`, `.agents`, or `.agents/skills` -> use `codex-only`.
+- Claude markers only: `CLAUDE.md`, `.claude`, or `.claude/skills` -> use `claude-only`.
+- both marker families or no markers -> stop and ask one short question:
+
+```text
+Should I install Fuckia for Codex only, Claude only, or both?
+```
+
+Do not infer mode from missing Claude/Codex credentials alone.
+
+Recommended prompt:
+
+```text
+Install Fuckia here. Use the agent mode that matches this repo; ask if ambiguous.
+```
+
 ## Non-Negotiable Contract
 
 - Treat the current working directory as the target repository.
@@ -110,7 +142,7 @@ FUCKIA_DIR="/absolute/path/to/Fuckia"
 Run:
 
 ```bash
-bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run --agent-mode <codex-only|claude-only|dual-agent>
 ```
 
 This command is read-only.
@@ -128,6 +160,7 @@ Report these facts to the human:
 - GitHub repository access state;
 - Linear API key state;
 - Linear team key state;
+- selected agent mode;
 - existing `AGENTS.md`;
 - existing `CLAUDE.md`;
 - existing `.agents/skills`;
@@ -150,7 +183,7 @@ Stop after this report.
 Run this only after the human approves the write list:
 
 ```bash
-bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes --agent-mode <codex-only|claude-only|dual-agent>
 ```
 
 For an existing project, this command preserves conflicting governance files and writes merge proposals under:
@@ -167,8 +200,6 @@ Run:
 
 ```bash
 cd "$target_dir"
-test -f AGENTS.md
-test -f CLAUDE.md
 test -f fuckia.config.yaml
 test -f .github/PULL_REQUEST_TEMPLATE.md
 test -f .github/workflows/collab-contract.yml
@@ -176,11 +207,27 @@ test -f .github/workflows/generated-skills.yml
 test -f .github/workflows/pr-scope.yml
 test -f docs/fuckia/README.md
 test -f docs/fuckia/end-of-work-checkpoint.md
-test -f .agents/skills/source-of-truth-gate/SKILL.md
-test -f .claude/skills/source-of-truth-gate/SKILL.md
-test -f .agents/skills/evidence-language-guard/SKILL.md
-test -f .claude/skills/evidence-language-guard/SKILL.md
-grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills .claude/skills >/dev/null
+case "<codex-only|claude-only|dual-agent>" in
+  codex-only)
+    test -f AGENTS.md
+    test -f .agents/skills/source-of-truth-gate/SKILL.md
+    test ! -e CLAUDE.md
+    grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills >/dev/null
+    ;;
+  claude-only)
+    test -f CLAUDE.md
+    test -f .claude/skills/source-of-truth-gate/SKILL.md
+    test ! -e AGENTS.md
+    grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .claude/skills >/dev/null
+    ;;
+  dual-agent)
+    test -f AGENTS.md
+    test -f CLAUDE.md
+    test -f .agents/skills/source-of-truth-gate/SKILL.md
+    test -f .claude/skills/source-of-truth-gate/SKILL.md
+    grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills .claude/skills >/dev/null
+    ;;
+esac
 ```
 
 If any command fails, report the failing command and stop.

@@ -2,6 +2,7 @@ import type { CommandContext } from "../core/context";
 import { formatHeading, formatJson } from "../core/output";
 import type { ParsedArgs } from "../core/parseArgs";
 import { directoryExists, fileExists } from "../fs/readTree";
+import { parseAgentMode, resolveAgentMode, type AgentModeResolution, type ResolvedAgentModeResolution } from "../install/agentMode";
 import { applyInit } from "../install/applyInit";
 import { applyMigration } from "../install/migrateApply";
 import { writeMigrationPlan } from "../install/migratePlan";
@@ -10,6 +11,7 @@ import { buildMigrationAudit } from "../plans/migrationAudit";
 
 export interface InstallDryRun {
   mode: "dry-run";
+  agentMode: AgentModeResolution;
   targetKind: "new" | "existing";
   targetRoot: string;
   writes: "none";
@@ -19,6 +21,7 @@ export interface InstallDryRun {
 
 export interface InstallApplyResult {
   status: "applied" | "blocked";
+  agentMode: AgentModeResolution;
   targetKind: "new" | "existing";
   targetRoot: string;
   steps: unknown[];
@@ -27,14 +30,37 @@ export interface InstallApplyResult {
 }
 
 export async function runInstall(args: ParsedArgs, context: CommandContext): Promise<number> {
+  const agentMode = parseAgentMode(args.values.get("agent-mode"));
+  if (agentMode === null) {
+    context.stderr("Error: --agent-mode must be auto, codex-only, claude-only, or dual-agent.\n");
+    return 1;
+  }
+
+  const agentModeResolution = await resolveAgentMode(context.cwd, agentMode);
   if (args.flags.has("dry-run")) {
     context.writeGuard.assertReadOnly("install --dry-run");
     const targetKind = await detectTargetKind(context.cwd);
+    if (agentModeResolution.status === "ambiguous") {
+      const report: InstallDryRun = {
+        mode: "dry-run",
+        agentMode: agentModeResolution,
+        targetKind,
+        targetRoot: context.cwd,
+        writes: "none",
+        plan: null,
+        nextSteps: agentModeNextSteps()
+      };
+      context.stdout(formatHeading("Fuckia Install Dry Run"));
+      context.stdout(formatJson(report));
+      return 0;
+    }
+
     const plan = targetKind === "new"
-      ? await buildInitPlan(context.cwd, context.packageRoot)
-      : await buildMigrationAudit(context.cwd);
+      ? await buildInitPlan(context.cwd, context.packageRoot, agentModeResolution.mode)
+      : await buildMigrationAudit(context.cwd, agentModeResolution.mode);
     const report: InstallDryRun = {
       mode: "dry-run",
+      agentMode: agentModeResolution,
       targetKind,
       targetRoot: context.cwd,
       writes: "none",
@@ -54,7 +80,23 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
       return 1;
     }
 
-    const result = await applyInstall(context.cwd, context.packageRoot);
+    if (agentModeResolution.status === "ambiguous") {
+      const targetKind = await detectTargetKind(context.cwd);
+      const result: InstallApplyResult = {
+        status: "blocked",
+        agentMode: agentModeResolution,
+        targetKind,
+        targetRoot: context.cwd,
+        steps: [],
+        blockers: [agentModeResolution.question ?? "Agent mode is ambiguous."],
+        nextSteps: agentModeNextSteps()
+      };
+      context.stdout(formatHeading("Fuckia Install Apply"));
+      context.stdout(formatJson(result));
+      return 1;
+    }
+
+    const result = await applyInstall(context.cwd, context.packageRoot, agentModeResolution);
     context.stdout(formatHeading("Fuckia Install Apply"));
     context.stdout(formatJson(result));
     return result.status === "applied" ? 0 : 1;
@@ -64,12 +106,17 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
   return 1;
 }
 
-async function applyInstall(targetRoot: string, packageRoot: string): Promise<InstallApplyResult> {
+async function applyInstall(
+  targetRoot: string,
+  packageRoot: string,
+  agentMode: ResolvedAgentModeResolution
+): Promise<InstallApplyResult> {
   const targetKind = await detectTargetKind(targetRoot);
   if (targetKind === "new") {
-    const init = await applyInit({ targetRoot, packageRoot });
+    const init = await applyInit({ targetRoot, packageRoot, agentMode: agentMode.mode });
     return {
       status: init.status,
+      agentMode,
       targetKind,
       targetRoot,
       steps: [init],
@@ -80,11 +127,12 @@ async function applyInstall(targetRoot: string, packageRoot: string): Promise<In
 
   const steps: unknown[] = [];
   if (!(await fileExists(`${targetRoot}/docs/fuckia/migration-plan.md`))) {
-    const plan = await writeMigrationPlan({ targetRoot, packageRoot });
+    const plan = await writeMigrationPlan({ targetRoot, packageRoot, agentMode: agentMode.mode });
     steps.push(plan);
     if (plan.status === "blocked") {
       return {
         status: "blocked",
+        agentMode,
         targetKind,
         targetRoot,
         steps,
@@ -94,16 +142,26 @@ async function applyInstall(targetRoot: string, packageRoot: string): Promise<In
     }
   }
 
-  const migration = await applyMigration({ targetRoot, packageRoot });
+  const migration = await applyMigration({ targetRoot, packageRoot, agentMode: agentMode.mode });
   steps.push(migration);
   return {
     status: migration.status,
+    agentMode,
     targetKind,
     targetRoot,
     steps,
     blockers: migration.status === "blocked" ? [migration.blocker ?? "Migration apply failed."] : [],
     nextSteps: migration.nextSteps
   };
+}
+
+function agentModeNextSteps(): string[] {
+  return [
+    "Choose one mode: `--agent-mode codex-only`, `--agent-mode claude-only`, or `--agent-mode dual-agent`.",
+    "Use `codex-only` when only Codex will read repository instructions.",
+    "Use `claude-only` when only Claude Code will read repository instructions.",
+    "Use `dual-agent` when Claude and Codex both work in this repository."
+  ];
 }
 
 async function detectTargetKind(targetRoot: string): Promise<"new" | "existing"> {
