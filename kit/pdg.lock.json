@@ -1,7 +1,7 @@
 {
   "name": "PDG - Progressive Disclosure Guard",
   "repository": "https://github.com/bacoco/progressive-disclosure-guard.git",
-  "commit": "1effc15c06637b8f36a2c8a6e206773c0a9004ec",
+  "commit": "e9d1ae9112fa4833a0abcfb8c3a939e37377ac89",
   "files": {
     "codexSkill": "pdg.codex.skill.md",
     "claudeSkill": "pdg.claude.skill.md",
