@@ -1,6 +1,7 @@
 import path from "node:path";
 import { directoryExists, fileExists } from "../fs/readTree";
 import type { ResolvedAgentMode } from "../install/agentMode";
+import { guardSkillName, type InstallProfile } from "../install/installProfile";
 
 export interface InventoryItem {
   path: string;
@@ -11,6 +12,7 @@ export interface InventoryItem {
 export interface MigrationAudit {
   mode: "dry-run";
   agentMode: ResolvedAgentMode;
+  installProfile: InstallProfile;
   targetRoot: string;
   inventory: InventoryItem[];
   conflicts: string[];
@@ -46,12 +48,13 @@ const inventoryTargets: InventoryItem[] = [
 
 export async function buildMigrationAudit(
   targetRoot: string,
-  agentMode: ResolvedAgentMode = "dual-agent"
+  agentMode: ResolvedAgentMode = "dual-agent",
+  installProfile: InstallProfile = "full"
 ): Promise<MigrationAudit> {
   const root = path.resolve(targetRoot);
   const inventory: InventoryItem[] = [];
 
-  for (const item of inventoryTargets.filter((item) => includeInventoryItem(item.path, agentMode))) {
+  for (const item of inventoryFor(agentMode, installProfile)) {
     const absolutePath = path.join(root, item.path);
     const exists = item.kind === "directory" ? await directoryExists(absolutePath) : await fileExists(absolutePath);
     inventory.push({ ...item, exists });
@@ -64,6 +67,7 @@ export async function buildMigrationAudit(
   return {
     mode: "dry-run",
     agentMode,
+    installProfile,
     targetRoot: root,
     inventory,
     conflicts,
@@ -75,6 +79,29 @@ export async function buildMigrationAudit(
     ],
     writePolicy: "No files were written. First slice migration is inventory-only."
   };
+}
+
+function inventoryFor(agentMode: ResolvedAgentMode, installProfile: InstallProfile): InventoryItem[] {
+  if (installProfile === "guard-only") {
+    return guardOnlyInventory(agentMode);
+  }
+
+  return inventoryTargets.filter((item) => includeInventoryItem(item.path, agentMode));
+}
+
+function guardOnlyInventory(agentMode: ResolvedAgentMode): InventoryItem[] {
+  return [
+    ...(agentMode === "claude-only" ? [] : [{
+      path: `.agents/skills/${guardSkillName}/SKILL.md`,
+      exists: false,
+      kind: "file" as const
+    }]),
+    ...(agentMode === "codex-only" ? [] : [{
+      path: `.claude/skills/${guardSkillName}/SKILL.md`,
+      exists: false,
+      kind: "file" as const
+    }])
+  ];
 }
 
 function includeInventoryItem(itemPath: string, agentMode: ResolvedAgentMode): boolean {

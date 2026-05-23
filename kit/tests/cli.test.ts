@@ -139,6 +139,7 @@ test("install --apply supports codex-only mode", async () => {
     const files = await snapshotTree(directory);
     const config = await readFile(path.join(directory, "fuckia.config.yaml"), "utf8");
     const workflow = await readFile(path.join(directory, ".github", "workflows", "generated-skills.yml"), "utf8");
+    const contractWorkflow = await readFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "utf8");
     const codexSkill = await readFile(
       path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
       "utf8"
@@ -147,6 +148,8 @@ test("install --apply supports codex-only mode", async () => {
     assert.equal(result.exitCode, 0);
     assert.match(config, /agent_mode: codex-only/);
     assert.match(workflow, /agent_mode=/);
+    assert.match(contractWorkflow, /codex-only/);
+    assert.match(contractWorkflow, /Unsupported agent_mode/);
     assert.match(codexSkill, /target: codex/);
     assert.equal(files.includes("AGENTS.md"), true);
     assert.equal(files.includes("CLAUDE.md"), false);
@@ -170,6 +173,30 @@ test("install --apply supports claude-only mode", async () => {
     assert.equal(files.includes("CLAUDE.md"), true);
     assert.equal(files.includes("AGENTS.md"), false);
     assert.equal(files.some((file) => file.startsWith(".agents/")), false);
+  });
+});
+
+test("install --apply supports guard-only profile", async () => {
+  await withTempProject(async (directory) => {
+    const result = await capture(
+      ["install", "--apply", "--yes", "--agent-mode", "codex-only", "--profile", "guard-only"],
+      directory
+    );
+    const files = await snapshotTree(directory);
+    const skill = await readFile(
+      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      "utf8"
+    );
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"installProfile": "guard-only"/);
+    assert.match(skill, /target: codex/);
+    assert.equal(files.includes(".agents/skills/adversarial-implementer-guard/SKILL.md"), true);
+    assert.equal(files.includes("AGENTS.md"), false);
+    assert.equal(files.includes("README.md"), false);
+    assert.equal(files.includes("fuckia.config.yaml"), false);
+    assert.equal(files.some((file) => file.startsWith(".github/")), false);
+    assert.equal(files.some((file) => file.startsWith(".claude/")), false);
   });
 });
 

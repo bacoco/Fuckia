@@ -28,9 +28,20 @@ The central rule is adversarial progressive disclosure:
 3. Use plan-review before risky implementation.
 4. Implement only inside approved scope.
 5. Use code review by a different agent or human for risky work.
-6. Verify the real workflow before Done.
-7. Archive receipts in GitHub or `docs/fuckia/`.
-8. End with the checkpoint format in `docs/fuckia/end-of-work-checkpoint.md`.
+6. In single-agent mode, label author review as self-check and ask the human to approve the validation card.
+7. Verify the real workflow before Done.
+8. Archive receipts in GitHub or `docs/fuckia/`.
+9. End with the checkpoint format in `docs/fuckia/end-of-work-checkpoint.md`.
+
+## Human Validation Card
+
+Use this when no independent AI reviewer is available:
+
+- changed files:
+- real workflow or command to inspect:
+- expected result:
+- risk the human is accepting:
+- exact approval sentence: `Approved after human validation.`
 
 ## Installed Mode
 

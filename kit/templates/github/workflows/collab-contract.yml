@@ -11,10 +11,26 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check governance files
         run: |
-          test -f AGENTS.md
-          test -f CLAUDE.md
           test -f fuckia.config.yaml
           test -f docs/fuckia/README.md
+          agent_mode="$(grep -E '^agent_mode:' fuckia.config.yaml | awk '{print $2}')"
+          agent_mode="${agent_mode:-dual-agent}"
+          case "$agent_mode" in
+            codex-only)
+              test -f AGENTS.md
+              ;;
+            claude-only)
+              test -f CLAUDE.md
+              ;;
+            dual-agent)
+              test -f AGENTS.md
+              test -f CLAUDE.md
+              ;;
+            *)
+              echo "Unsupported agent_mode: $agent_mode"
+              exit 1
+              ;;
+          esac
       - name: Check pull request contract
         if: github.event_name == 'pull_request'
         env:
@@ -26,7 +42,7 @@ jobs:
           test "$body_trimmed" != "null" || { echo "PR body is null"; exit 1; }
           grep -q "## AI Identity" pr-body.md
           grep -q "Author AI:" pr-body.md
-          grep -q "Validator AI:" pr-body.md
+          grep -q "Validator AI or human reviewer:" pr-body.md
           grep -q "GitHub reviewer account or platform blocker:" pr-body.md
           grep -q "## Plan Review" pr-body.md
           grep -q "## Real Workflow Verification" pr-body.md

@@ -3,11 +3,13 @@ import path from "node:path";
 import { fileExists } from "../fs/readTree";
 import { buildGeneratedSkillFiles } from "../skills/generateSharedSkills";
 import { targetsForAgentMode, type ResolvedAgentMode } from "./agentMode";
+import { skillNamesForInstallProfile, type InstallProfile } from "./installProfile";
 
 export interface InitApplyOptions {
   packageRoot: string;
   targetRoot: string;
   agentMode: ResolvedAgentMode;
+  installProfile?: InstallProfile;
 }
 
 export interface InstallFile {
@@ -65,6 +67,7 @@ const optionalTemplateFiles: Array<{ templatePath: string; outputPath: string }>
 ];
 
 export async function applyInit(options: InitApplyOptions): Promise<InitApplyResult> {
+  const installProfile = options.installProfile ?? "full";
   const installFiles = await buildInstallFiles(options);
   const conflicts = await findConflicts(options.targetRoot, installFiles);
 
@@ -74,11 +77,16 @@ export async function applyInit(options: InitApplyOptions): Promise<InitApplyRes
       targetRoot: options.targetRoot,
       written: [],
       conflicts,
-      nextSteps: [
-        "Review conflicting files.",
-        "Use `fuckia migrate --dry-run` for existing projects.",
-        "Do not delete existing agent rules to force init."
-      ]
+      nextSteps: installProfile === "guard-only"
+        ? [
+          "Review the existing skill file.",
+          "Do not overwrite an existing skill without comparing its current behavior."
+        ]
+        : [
+          "Review conflicting files.",
+          "Use `fuckia migrate --dry-run` for existing projects.",
+          "Do not delete existing agent rules to force init."
+        ]
     };
   }
 
@@ -95,42 +103,48 @@ export async function applyInit(options: InitApplyOptions): Promise<InitApplyRes
     targetRoot: options.targetRoot,
     written,
     conflicts: [],
-    nextSteps: [
-      "Review generated governance files.",
-      "Run `fuckia doctor` from the target repository.",
-      "Keep warning mode until GitHub and Linear gates are configured."
-    ]
+    nextSteps: installProfile === "guard-only"
+      ? ["Review the installed skill file and confirm the target agent discovers it."]
+      : [
+        "Review generated governance files.",
+        "Run `fuckia doctor` from the target repository.",
+        "Keep warning mode until GitHub and Linear gates are configured."
+      ]
   };
 }
 
 export async function buildInstallFiles(options: InitApplyOptions): Promise<InstallFile[]> {
   const files: InstallFile[] = [];
+  const installProfile = options.installProfile ?? "full";
 
-  for (const template of templateFiles.filter((template) => includeScope(template.scope, options.agentMode))) {
-    files.push({
-      relativePath: normalizePath(template.outputPath),
-      source: normalizePath(path.join("kit", "templates", template.templatePath)),
-      content: await readTemplate(options.packageRoot, template.templatePath, options.agentMode)
-    });
-  }
-
-  for (const template of optionalTemplateFiles) {
-    const outputPath = normalizePath(template.outputPath);
-    if (await fileExists(path.join(options.targetRoot, outputPath))) {
-      continue;
+  if (installProfile === "full") {
+    for (const template of templateFiles.filter((template) => includeScope(template.scope, options.agentMode))) {
+      files.push({
+        relativePath: normalizePath(template.outputPath),
+        source: normalizePath(path.join("kit", "templates", template.templatePath)),
+        content: await readTemplate(options.packageRoot, template.templatePath, options.agentMode)
+      });
     }
 
-    files.push({
-      relativePath: outputPath,
-      source: normalizePath(path.join("kit", "templates", template.templatePath)),
-      content: await readTemplate(options.packageRoot, template.templatePath, options.agentMode)
-    });
+    for (const template of optionalTemplateFiles) {
+      const outputPath = normalizePath(template.outputPath);
+      if (await fileExists(path.join(options.targetRoot, outputPath))) {
+        continue;
+      }
+
+      files.push({
+        relativePath: outputPath,
+        source: normalizePath(path.join("kit", "templates", template.templatePath)),
+        content: await readTemplate(options.packageRoot, template.templatePath, options.agentMode)
+      });
+    }
   }
 
   const generatedSkills = await buildGeneratedSkillFiles({
     sourceRootDir: options.packageRoot,
     outputKind: "install",
-    targets: targetsForAgentMode(options.agentMode)
+    targets: targetsForAgentMode(options.agentMode),
+    skillNames: skillNamesForInstallProfile(installProfile)
   });
 
   for (const skill of generatedSkills) {

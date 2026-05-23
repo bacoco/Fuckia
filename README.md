@@ -8,6 +8,8 @@ Its most important piece is the **Adversarial Implementer Guard with Progressive
 
 The Claude/Codex collaboration layer is optional. The guardrails are useful even with one agent.
 
+The readable name is **Adversarial Progressive Disclosure Guard**. The stable skill slug remains `adversarial-implementer-guard` so existing installs keep working.
+
 ## The Problem
 
 Claude and Codex do not automatically share a cockpit.
@@ -85,7 +87,8 @@ Every risky change gets:
 - explicit allowed and forbidden files;
 - independent plan review;
 - PR scope checks;
-- no self-review for risky work;
+- no self-check presented as independent review;
+- a human validation card when only one AI agent is available;
 - real workflow verification;
 - an archived receipt for the next agent.
 
@@ -99,7 +102,7 @@ Fuckia installs a project governance layer:
 - GitHub PR templates and CI checks;
 - Linear templates for spec, plan, plan-review, implementation, review, and verification;
 - destructive-change guards;
-- self-review blocks for risky work;
+- self-check labelling and human validation fallback for risky work;
 - verification receipts;
 - archived snapshots for future agents.
 
@@ -129,6 +132,30 @@ Install Fuckia here for Claude only.
 Install Fuckia here for Claude and Codex.
 ```
 
+## Skill-Only Install
+
+If you only want the core guard, install the skill-only profile.
+
+Codex:
+
+```text
+Install only Fuckia's Adversarial Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+```
+
+Claude Code:
+
+```text
+Install only Fuckia's Adversarial Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+```
+
+The agent will use `--profile guard-only`. That writes only:
+
+- `.agents/skills/adversarial-implementer-guard/SKILL.md` for Codex;
+- `.claude/skills/adversarial-implementer-guard/SKILL.md` for Claude;
+- both files only when `dual-agent` is selected.
+
+No GitHub workflows, Linear templates, root `AGENTS.md`, root `CLAUDE.md`, or `fuckia.config.yaml` are installed in this profile.
+
 ## Safety Contract
 
 Fuckia installation starts with audit only.
@@ -139,13 +166,20 @@ It must not:
 - delete existing agent rules;
 - create a parallel engine, store, router, hook, workflow, or pipeline;
 - mark Done from typecheck or unit tests alone;
-- let an agent self-review risky implementation.
+- present an author self-check as independent review.
+
+When no other AI reviewer exists, the agent must give the human a short validation card and wait for:
+
+```text
+Approved after human validation.
+```
 
 ## Current Status
 
 Working now:
 
 - agent-first install through `INSTALL.md`;
+- skill-only install for the Adversarial Progressive Disclosure Guard;
 - Codex-only, Claude-only, and dual-agent installation modes;
 - install and migration audit;
 - write-mode installer;

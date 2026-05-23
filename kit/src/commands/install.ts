@@ -3,6 +3,7 @@ import { formatHeading, formatJson } from "../core/output";
 import type { ParsedArgs } from "../core/parseArgs";
 import { directoryExists, fileExists } from "../fs/readTree";
 import { parseAgentMode, resolveAgentMode, type AgentModeResolution, type ResolvedAgentModeResolution } from "../install/agentMode";
+import { parseInstallProfile, type InstallProfile } from "../install/installProfile";
 import { applyInit } from "../install/applyInit";
 import { applyMigration } from "../install/migrateApply";
 import { writeMigrationPlan } from "../install/migratePlan";
@@ -12,6 +13,7 @@ import { buildMigrationAudit } from "../plans/migrationAudit";
 export interface InstallDryRun {
   mode: "dry-run";
   agentMode: AgentModeResolution;
+  installProfile: InstallProfile;
   targetKind: "new" | "existing";
   targetRoot: string;
   writes: "none";
@@ -22,6 +24,7 @@ export interface InstallDryRun {
 export interface InstallApplyResult {
   status: "applied" | "blocked";
   agentMode: AgentModeResolution;
+  installProfile: InstallProfile;
   targetKind: "new" | "existing";
   targetRoot: string;
   steps: unknown[];
@@ -35,6 +38,11 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
     context.stderr("Error: --agent-mode must be auto, codex-only, claude-only, or dual-agent.\n");
     return 1;
   }
+  const installProfile = parseInstallProfile(args.values.get("profile"));
+  if (installProfile === null) {
+    context.stderr("Error: --profile must be full or guard-only.\n");
+    return 1;
+  }
 
   const agentModeResolution = await resolveAgentMode(context.cwd, agentMode);
   if (args.flags.has("dry-run")) {
@@ -44,6 +52,7 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
       const report: InstallDryRun = {
         mode: "dry-run",
         agentMode: agentModeResolution,
+        installProfile,
         targetKind,
         targetRoot: context.cwd,
         writes: "none",
@@ -56,18 +65,19 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
     }
 
     const plan = targetKind === "new"
-      ? await buildInitPlan(context.cwd, context.packageRoot, agentModeResolution.mode)
-      : await buildMigrationAudit(context.cwd, agentModeResolution.mode);
+      ? await buildInitPlan(context.cwd, context.packageRoot, agentModeResolution.mode, installProfile)
+      : installProfile === "guard-only"
+        ? await buildInitPlan(context.cwd, context.packageRoot, agentModeResolution.mode, installProfile)
+        : await buildMigrationAudit(context.cwd, agentModeResolution.mode, installProfile);
     const report: InstallDryRun = {
       mode: "dry-run",
       agentMode: agentModeResolution,
+      installProfile,
       targetKind,
       targetRoot: context.cwd,
       writes: "none",
       plan,
-      nextSteps: targetKind === "new"
-        ? ["Run `fuckia install --apply --yes` after reviewing the file list."]
-        : ["Run `fuckia migrate --plan`, review it, then run `fuckia migrate --apply` or `fuckia install --apply --yes`."]
+      nextSteps: installNextSteps(targetKind, installProfile)
     };
     context.stdout(formatHeading("Fuckia Install Dry Run"));
     context.stdout(formatJson(report));
@@ -85,6 +95,7 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
       const result: InstallApplyResult = {
         status: "blocked",
         agentMode: agentModeResolution,
+        installProfile,
         targetKind,
         targetRoot: context.cwd,
         steps: [],
@@ -96,7 +107,7 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
       return 1;
     }
 
-    const result = await applyInstall(context.cwd, context.packageRoot, agentModeResolution);
+    const result = await applyInstall(context.cwd, context.packageRoot, agentModeResolution, installProfile);
     context.stdout(formatHeading("Fuckia Install Apply"));
     context.stdout(formatJson(result));
     return result.status === "applied" ? 0 : 1;
@@ -109,14 +120,16 @@ export async function runInstall(args: ParsedArgs, context: CommandContext): Pro
 async function applyInstall(
   targetRoot: string,
   packageRoot: string,
-  agentMode: ResolvedAgentModeResolution
+  agentMode: ResolvedAgentModeResolution,
+  installProfile: InstallProfile
 ): Promise<InstallApplyResult> {
   const targetKind = await detectTargetKind(targetRoot);
-  if (targetKind === "new") {
-    const init = await applyInit({ targetRoot, packageRoot, agentMode: agentMode.mode });
+  if (targetKind === "new" || installProfile === "guard-only") {
+    const init = await applyInit({ targetRoot, packageRoot, agentMode: agentMode.mode, installProfile });
     return {
       status: init.status,
       agentMode,
+      installProfile,
       targetKind,
       targetRoot,
       steps: [init],
@@ -127,12 +140,13 @@ async function applyInstall(
 
   const steps: unknown[] = [];
   if (!(await fileExists(`${targetRoot}/docs/fuckia/migration-plan.md`))) {
-    const plan = await writeMigrationPlan({ targetRoot, packageRoot, agentMode: agentMode.mode });
+    const plan = await writeMigrationPlan({ targetRoot, packageRoot, agentMode: agentMode.mode, installProfile });
     steps.push(plan);
     if (plan.status === "blocked") {
       return {
         status: "blocked",
         agentMode,
+        installProfile,
         targetKind,
         targetRoot,
         steps,
@@ -142,11 +156,12 @@ async function applyInstall(
     }
   }
 
-  const migration = await applyMigration({ targetRoot, packageRoot, agentMode: agentMode.mode });
+  const migration = await applyMigration({ targetRoot, packageRoot, agentMode: agentMode.mode, installProfile });
   steps.push(migration);
   return {
     status: migration.status,
     agentMode,
+    installProfile,
     targetKind,
     targetRoot,
     steps,
@@ -162,6 +177,18 @@ function agentModeNextSteps(): string[] {
     "Use `claude-only` when only Claude Code will read repository instructions.",
     "Use `dual-agent` when Claude and Codex both work in this repository."
   ];
+}
+
+function installNextSteps(targetKind: "new" | "existing", installProfile: InstallProfile): string[] {
+  if (installProfile === "guard-only") {
+    return ["Run `fuckia install --apply --yes --profile guard-only` after reviewing the skill file list."];
+  }
+
+  if (targetKind === "new") {
+    return ["Run `fuckia install --apply --yes` after reviewing the file list."];
+  }
+
+  return ["Run `fuckia migrate --plan`, review it, then run `fuckia migrate --apply` or `fuckia install --apply --yes`."];
 }
 
 async function detectTargetKind(targetRoot: string): Promise<"new" | "existing"> {

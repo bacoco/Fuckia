@@ -2,6 +2,7 @@ import type { CommandContext } from "../core/context";
 import type { ParsedArgs } from "../core/parseArgs";
 import { formatHeading, formatJson } from "../core/output";
 import { parseAgentMode, resolveAgentMode } from "../install/agentMode";
+import { parseInstallProfile } from "../install/installProfile";
 import { applyMigration } from "../install/migrateApply";
 import { writeMigrationPlan } from "../install/migratePlan";
 import { buildMigrationAudit } from "../plans/migrationAudit";
@@ -12,15 +13,21 @@ export async function runMigrate(args: ParsedArgs, context: CommandContext): Pro
     context.stderr("Error: --agent-mode must be auto, codex-only, claude-only, or dual-agent.\n");
     return 1;
   }
+  const installProfile = parseInstallProfile(args.values.get("profile"));
+  if (installProfile === null) {
+    context.stderr("Error: --profile must be full or guard-only.\n");
+    return 1;
+  }
 
   const agentModeResolution = await resolveAgentMode(context.cwd, agentMode);
   if (args.flags.has("dry-run")) {
     context.writeGuard.assertReadOnly("migrate --dry-run");
     const audit = agentModeResolution.status === "resolved"
-      ? await buildMigrationAudit(context.cwd, agentModeResolution.mode)
+      ? await buildMigrationAudit(context.cwd, agentModeResolution.mode, installProfile)
       : {
         mode: "dry-run",
         agentMode: agentModeResolution,
+        installProfile,
         targetRoot: context.cwd,
         inventory: [],
         conflicts: [agentModeResolution.question],
@@ -51,7 +58,8 @@ export async function runMigrate(args: ParsedArgs, context: CommandContext): Pro
     const result = await writeMigrationPlan({
       packageRoot: context.packageRoot,
       targetRoot: context.cwd,
-      agentMode: agentModeResolution.mode
+      agentMode: agentModeResolution.mode,
+      installProfile
     });
     context.stdout(formatHeading("Fuckia Migration Plan"));
     context.stdout(formatJson(result));
@@ -62,7 +70,8 @@ export async function runMigrate(args: ParsedArgs, context: CommandContext): Pro
     const result = await applyMigration({
       packageRoot: context.packageRoot,
       targetRoot: context.cwd,
-      agentMode: agentModeResolution.mode
+      agentMode: agentModeResolution.mode,
+      installProfile
     });
     context.stdout(formatHeading("Fuckia Migration Apply"));
     context.stdout(formatJson(result));

@@ -90,6 +90,23 @@ withTempDirectory("fuckia-shell-codex-only-", (directory) => {
   }
 });
 
+withTempDirectory("fuckia-shell-guard-only-", (directory) => {
+  run("git", ["init"], directory);
+  run(
+    "bash",
+    [shellInstallerPath, "--target", directory, "--apply", "--yes", "--agent-mode", "codex-only", "--profile", "guard-only"],
+    repoRoot
+  );
+
+  assertFile(directory, ".agents/skills/adversarial-implementer-guard/SKILL.md", "target: codex");
+
+  for (const forbidden of ["AGENTS.md", "README.md", "fuckia.config.yaml", ".github", ".claude"]) {
+    if (existsSync(path.join(directory, forbidden))) {
+      throw new Error(`Guard-only shell install wrote unexpected path: ${forbidden}`);
+    }
+  }
+});
+
 withTempDirectory("fuckia-shell-existing-", (directory) => {
   run("git", ["init"], directory);
   writeFileSync(path.join(directory, "AGENTS.md"), "# Existing Codex Rules\n", "utf8");

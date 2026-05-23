@@ -53,9 +53,10 @@ const requiredPrHeadings = [
 ];
 
 const requiredPrChecklistLines = [
-  "- [ ] Validator AI is different from Author AI when independent review is required.",
+  "- [ ] Validator is different from Author AI, or human approval is recorded when independent review is required.",
   "- [ ] GitHub platform gate is recorded separately from AI review validity.",
-  "- [ ] Risky work does not use self-review."
+  "- [ ] Author AI self-check is labelled as self-check, not independent review.",
+  "- [ ] Single-agent fallback includes the human validation card when no other reviewer is available."
 ];
 
 const requiredSkillNames = [

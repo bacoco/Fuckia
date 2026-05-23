@@ -114,6 +114,31 @@ Require:
 - verification receipt;
 - archived evidence for the next agent.
 
+## Single-Agent Fallback
+
+When only one AI agent is available, do not pretend the post-code check is independent review.
+
+Use this rule:
+
+- the author AI may run an adversarial `self-check`;
+- the author AI must label it `self-check, not independent review`;
+- risky work still needs either human approval, another AI/session review, or an explicit `Ready for human validation` status;
+- the human validation request must be short enough to act on in one message.
+
+Human validation card:
+
+- changed files:
+- real workflow or command to inspect:
+- expected result:
+- risk the human is accepting:
+- exact approval sentence:
+
+The exact approval sentence must be:
+
+```text
+Approved after human validation.
+```
+
 ## Post-Code Check
 
 When code has changed, inspect the actual diff and answer:

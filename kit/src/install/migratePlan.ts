@@ -4,12 +4,14 @@ import { fileExists } from "../fs/readTree";
 import type { MigrationAudit } from "../plans/migrationAudit";
 import { buildMigrationAudit } from "../plans/migrationAudit";
 import type { ResolvedAgentMode } from "./agentMode";
+import type { InstallProfile } from "./installProfile";
 import { buildInstallFiles } from "./applyInit";
 
 export interface MigratePlanOptions {
   packageRoot: string;
   targetRoot: string;
   agentMode: ResolvedAgentMode;
+  installProfile?: InstallProfile;
 }
 
 export interface MigratePlanResult {
@@ -34,7 +36,7 @@ export async function writeMigrationPlan(options: MigratePlanOptions): Promise<M
     };
   }
 
-  const audit = await buildMigrationAudit(options.targetRoot, options.agentMode);
+  const audit = await buildMigrationAudit(options.targetRoot, options.agentMode, options.installProfile ?? "full");
   const installFiles = await buildInstallFiles(options);
   const missing = installFiles
     .filter((file) => !audit.inventory.some((item) => item.path === file.relativePath && item.exists))
@@ -65,6 +67,7 @@ function renderMigrationPlan(audit: MigrationAudit, missing: string[], existing:
     "",
     `- root: \`${audit.targetRoot}\``,
     `- agent mode: \`${audit.agentMode}\``,
+    `- install profile: \`${audit.installProfile}\``,
     "- mode: warning",
     "- product code changes: forbidden",
     "",

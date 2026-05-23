@@ -2,6 +2,7 @@ import type { CommandContext } from "../core/context";
 import type { ParsedArgs } from "../core/parseArgs";
 import { formatHeading, formatJson } from "../core/output";
 import { parseAgentMode, resolveAgentMode } from "../install/agentMode";
+import { parseInstallProfile } from "../install/installProfile";
 import { applyInit } from "../install/applyInit";
 import { buildInitPlan } from "../plans/initPlan";
 
@@ -11,15 +12,21 @@ export async function runInit(args: ParsedArgs, context: CommandContext): Promis
     context.stderr("Error: --agent-mode must be auto, codex-only, claude-only, or dual-agent.\n");
     return 1;
   }
+  const installProfile = parseInstallProfile(args.values.get("profile"));
+  if (installProfile === null) {
+    context.stderr("Error: --profile must be full or guard-only.\n");
+    return 1;
+  }
 
   const agentModeResolution = await resolveAgentMode(context.cwd, agentMode);
   if (args.flags.has("dry-run")) {
     context.writeGuard.assertReadOnly("init --dry-run");
     const plan = agentModeResolution.status === "resolved"
-      ? await buildInitPlan(context.cwd, context.packageRoot, agentModeResolution.mode)
+      ? await buildInitPlan(context.cwd, context.packageRoot, agentModeResolution.mode, installProfile)
       : {
         mode: "dry-run",
         agentMode: agentModeResolution,
+        installProfile,
         targetRoot: context.cwd,
         writes: "none",
         nextSteps: [
@@ -48,7 +55,8 @@ export async function runInit(args: ParsedArgs, context: CommandContext): Promis
     const result = await applyInit({
       packageRoot: context.packageRoot,
       targetRoot: context.cwd,
-      agentMode: agentModeResolution.mode
+      agentMode: agentModeResolution.mode,
+      installProfile
     });
     context.stdout(formatHeading("Fuckia Init Apply"));
     context.stdout(formatJson(result));

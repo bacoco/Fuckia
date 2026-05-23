@@ -26,5 +26,6 @@ verification:
 
 safety:
   block_self_review_for_risky_work: true
+  human_validation_fallback_enabled: true
   block_parallel_implementation_without_file_ownership: true
   block_product_code_changes_during_install: true

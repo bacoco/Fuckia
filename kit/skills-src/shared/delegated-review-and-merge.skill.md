@@ -29,8 +29,8 @@ Before merge or approval, produce:
 - files that will be changed;
 - verification commands to run;
 - author AI identity;
-- validator AI identity;
-- explicit statement that validator AI is different from author AI;
+- validator AI identity or human reviewer;
+- explicit statement that validator is different from author AI, or that human approval is recorded;
 - GitHub reviewer account or exact platform blocker;
 - merge blockers that require GitHub permission.
 
@@ -62,8 +62,8 @@ GitHub account identity is transport only. It is not the definition of review in
 Every PR or review receipt must trace:
 
 - author AI;
-- validator AI;
-- whether validator AI is different from author AI;
+- validator AI or human reviewer;
+- whether validator is independent from author AI or human approval is recorded;
 - GitHub reviewer account or exact platform blocker.
 
 Never switch accounts to pretend that the same AI became an independent reviewer.
@@ -74,14 +74,14 @@ Submit the GitHub approval only when GitHub accepts the operation.
 
 Fuckia review validity and GitHub merge validity are separate gates:
 
-- Fuckia review validity requires `Validator AI != Author AI`.
+- Fuckia review validity requires `Validator AI != Author AI` or recorded human approval.
 - GitHub merge validity requires a review submitted through an account accepted by branch protection.
 
 If a different AI reviewer uses the same GitHub account and GitHub accepts the review, the Fuckia AI-independence rule is satisfied and the GitHub platform gate is satisfied.
 
 If GitHub rejects the review because of account-level branch protection, report the exact platform blocker. Do not call the PR merge-ready.
 
-If the current agent cannot access a different AI reviewer, give the human a copy-paste prompt for the other AI.
+If the current agent cannot access a different AI reviewer, give the human a short validation card and a copy-paste prompt for another AI if the human wants one.
 
 ## Merge Rule
 
@@ -90,7 +90,7 @@ Merge only when:
 - all required checks pass;
 - all blocking review threads are resolved;
 - GitHub reports the PR is mergeable;
-- the required independent AI or human approval exists;
+- the required independent AI review or human approval exists;
 - the human has approved the merge instruction in chat or the active Linear issue.
 
 ## Handoff Prompt Requirement
@@ -108,6 +108,21 @@ The prompt must include:
 - comments to inspect;
 - command to approve if clean;
 - instruction not to approve if it is the same AI context that implemented.
+
+If no other AI is available, provide this human validation card instead:
+
+- PR URL:
+- changed files:
+- checks passed:
+- real workflow or command to inspect:
+- risk the human is accepting:
+- exact approval sentence:
+
+The exact approval sentence must be:
+
+```text
+Approved after human validation.
+```
 
 ## Receipt
 
