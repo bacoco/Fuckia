@@ -11,7 +11,7 @@ Normal installation does not require Node.js or npm.
 Fuckia has two install profiles:
 
 - `full`: install the governance kit, selected agent entrypoints, skills, docs, GitHub templates, and Linear templates.
-- `guard-only`: install only the **PDG - Progressive Disclosure Guard** skill.
+- `guard-only`: install only the **PDG - Progressive Disclosure Guard** skill and matching agent trigger file.
 
 The stable skill slug is `progressive-disclosure-guard`.
 
@@ -23,7 +23,7 @@ For standalone PDG installation, prefer the dedicated repository:
 https://github.com/bacoco/progressive-disclosure-guard
 ```
 
-Fuckia keeps a pinned vendored copy for full-kit installation and `guard-only` compatibility.
+Fuckia reads PDG from that repository at the commit pinned in `kit/pdg.lock.json`. It does not maintain a second PDG source.
 
 Use explicit human wording when available:
 
@@ -45,9 +45,11 @@ Install PDG - Progressive Disclosure Guard here for Claude Code. Read `https://g
 In `guard-only`, install only these files:
 
 - Codex: `.agents/skills/progressive-disclosure-guard/SKILL.md`
+- Codex trigger: `AGENTS.md`
 - Claude: `.claude/skills/progressive-disclosure-guard/SKILL.md`
+- Claude trigger: `CLAUDE.md`
 
-Do not install `AGENTS.md`, `CLAUDE.md`, `fuckia.config.yaml`, GitHub workflows, Linear templates, or `docs/fuckia` in `guard-only`.
+Do not install `fuckia.config.yaml`, GitHub workflows, Linear templates, or `docs/fuckia` in `guard-only`.
 
 ## Agent Modes
 
@@ -269,12 +271,16 @@ case "<codex-only|claude-only|dual-agent>" in
   codex-only)
     test -f AGENTS.md
     test -f .agents/skills/source-of-truth-gate/SKILL.md
+    test -f .agents/skills/progressive-disclosure-guard/SKILL.md
+    grep -q "progressive-disclosure-guard" AGENTS.md
     test ! -e CLAUDE.md
     grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills >/dev/null
     ;;
   claude-only)
     test -f CLAUDE.md
     test -f .claude/skills/source-of-truth-gate/SKILL.md
+    test -f .claude/skills/progressive-disclosure-guard/SKILL.md
+    grep -q "progressive-disclosure-guard" CLAUDE.md
     test ! -e AGENTS.md
     grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .claude/skills >/dev/null
     ;;
@@ -283,6 +289,10 @@ case "<codex-only|claude-only|dual-agent>" in
     test -f CLAUDE.md
     test -f .agents/skills/source-of-truth-gate/SKILL.md
     test -f .claude/skills/source-of-truth-gate/SKILL.md
+    test -f .agents/skills/progressive-disclosure-guard/SKILL.md
+    test -f .claude/skills/progressive-disclosure-guard/SKILL.md
+    grep -q "progressive-disclosure-guard" AGENTS.md
+    grep -q "progressive-disclosure-guard" CLAUDE.md
     grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills .claude/skills >/dev/null
     ;;
 esac
@@ -290,28 +300,32 @@ esac
 
 If any command fails, report the failing command and stop.
 
-For skill-only install, verify only the selected skill:
+For guard-only install, verify only the selected PDG skill and trigger:
 
 ```bash
 cd "$target_dir"
 case "<codex-only|claude-only|dual-agent>" in
   codex-only)
     test -f .agents/skills/progressive-disclosure-guard/SKILL.md
-    test ! -e AGENTS.md
+    test -f AGENTS.md
+    grep -q "progressive-disclosure-guard" AGENTS.md
     test ! -e CLAUDE.md
     test ! -e fuckia.config.yaml
     ;;
   claude-only)
     test -f .claude/skills/progressive-disclosure-guard/SKILL.md
+    test -f CLAUDE.md
+    grep -q "progressive-disclosure-guard" CLAUDE.md
     test ! -e AGENTS.md
-    test ! -e CLAUDE.md
     test ! -e fuckia.config.yaml
     ;;
   dual-agent)
     test -f .agents/skills/progressive-disclosure-guard/SKILL.md
     test -f .claude/skills/progressive-disclosure-guard/SKILL.md
-    test ! -e AGENTS.md
-    test ! -e CLAUDE.md
+    test -f AGENTS.md
+    test -f CLAUDE.md
+    grep -q "progressive-disclosure-guard" AGENTS.md
+    grep -q "progressive-disclosure-guard" CLAUDE.md
     test ! -e fuckia.config.yaml
     ;;
 esac

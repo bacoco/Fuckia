@@ -8,7 +8,7 @@ Usage:
   agent-install.sh --target <repo> --apply --yes --agent-mode <codex-only|claude-only|dual-agent> [--profile full|guard-only]
 
 Installs Fuckia governance files without Node.js or npm.
-Use --profile guard-only to install only the PDG - Progressive Disclosure Guard skill.
+Use --profile guard-only to install only the PDG skill and matching agent trigger.
 EOF
 }
 
@@ -92,11 +92,33 @@ target_dir="$(cd "$target" && pwd)"
 
 template_dir="$fuckia_dir/kit/templates"
 skills_dir="$fuckia_dir/kit/generated-skills"
+pdg_lock="$fuckia_dir/kit/pdg.lock.json"
 runtime_dir="$(mktemp -d)"
 trap 'rm -rf "$runtime_dir"' EXIT
 
 if [ ! -d "$template_dir" ] || [ ! -d "$skills_dir" ]; then
   echo "Fuckia templates or generated skills are missing." >&2
+  exit 1
+fi
+
+if [ ! -f "$pdg_lock" ]; then
+  echo "Fuckia PDG lock file is missing: $pdg_lock" >&2
+  exit 1
+fi
+
+json_value() {
+  sed -nE "s/.*\"$1\"[[:space:]]*:[[:space:]]*\"([^\"]+)\".*/\1/p" "$pdg_lock" | head -n 1
+}
+
+pdg_repo="$(json_value repository)"
+pdg_commit="$(json_value commit)"
+pdg_codex_skill="$(json_value codexSkill)"
+pdg_claude_skill="$(json_value claudeSkill)"
+pdg_codex_trigger="$(json_value codexTrigger)"
+pdg_claude_trigger="$(json_value claudeTrigger)"
+
+if [ -z "$pdg_repo" ] || [ -z "$pdg_commit" ] || [ -z "$pdg_codex_skill" ] || [ -z "$pdg_claude_skill" ] || [ -z "$pdg_codex_trigger" ] || [ -z "$pdg_claude_trigger" ]; then
+  echo "Fuckia PDG lock file is incomplete: $pdg_lock" >&2
   exit 1
 fi
 
@@ -171,6 +193,97 @@ add_template() {
   add_file "$template_dir/$1" "$2" "${3:-required}"
 }
 
+pdg_dir=""
+
+pdg_raw_base() {
+  repo_slug="$(printf '%s' "$pdg_repo" | sed -E 's#.*github.com[:/]([^/]+/[^/]+)(\.git)?$#\1#' | sed 's/\.git$//')"
+  if [ "$repo_slug" = "$pdg_repo" ]; then
+    return 1
+  fi
+
+  printf 'https://raw.githubusercontent.com/%s/%s' "$repo_slug" "$pdg_commit"
+}
+
+prepare_pdg_dir() {
+  if [ -n "$pdg_dir" ]; then
+    return 0
+  fi
+
+  if [ -n "${FUCKIA_PDG_DIR:-}" ]; then
+    pdg_dir="$FUCKIA_PDG_DIR"
+    return 0
+  fi
+
+  pdg_dir="$runtime_dir/pdg"
+  mkdir -p "$pdg_dir"
+
+  if command -v curl >/dev/null 2>&1; then
+    raw_base="$(pdg_raw_base)" || {
+      echo "Unsupported PDG repository URL: $pdg_repo" >&2
+      exit 1
+    }
+    for file in "$pdg_codex_skill" "$pdg_claude_skill" "$pdg_codex_trigger" "$pdg_claude_trigger"; do
+      curl -fsSL "$raw_base/$file" -o "$pdg_dir/$file" || {
+        echo "Failed to download PDG file: $file" >&2
+        exit 1
+      }
+    done
+    return 0
+  fi
+
+  if command -v git >/dev/null 2>&1; then
+    git clone --quiet "$pdg_repo" "$pdg_dir/repo"
+    git -C "$pdg_dir/repo" checkout --quiet "$pdg_commit"
+    pdg_dir="$pdg_dir/repo"
+    return 0
+  fi
+
+  echo "Need curl or git to fetch PDG from $pdg_repo#$pdg_commit." >&2
+  exit 1
+}
+
+pdg_file() {
+  prepare_pdg_dir
+  case "$1" in
+    codex-skill)
+      file="$pdg_dir/$pdg_codex_skill"
+      ;;
+    claude-skill)
+      file="$pdg_dir/$pdg_claude_skill"
+      ;;
+    codex-trigger)
+      file="$pdg_dir/$pdg_codex_trigger"
+      ;;
+    claude-trigger)
+      file="$pdg_dir/$pdg_claude_trigger"
+      ;;
+    *)
+      echo "Unknown PDG file key: $1" >&2
+      exit 1
+      ;;
+  esac
+
+  if [ ! -f "$file" ]; then
+    echo "Missing PDG file: $file" >&2
+    exit 1
+  fi
+
+  printf '%s\n' "$file"
+}
+
+add_template_with_pdg_trigger() {
+  template_path="$1"
+  trigger_key="$2"
+  output_path="$3"
+  runtime_path="$runtime_dir/$output_path"
+  {
+    sed "s/__AGENT_MODE__/$resolved_agent_mode/g" "$template_dir/$template_path"
+    echo
+    cat "$(pdg_file "$trigger_key")"
+  } > "$runtime_path"
+  add_file "$runtime_path" "$output_path"
+}
+
 include_codex() {
   [ "$resolved_agent_mode" = "codex-only" ] || [ "$resolved_agent_mode" = "dual-agent" ]
 }
@@ -184,13 +297,13 @@ sed "s/__AGENT_MODE__/$resolved_agent_mode/g" "$template_dir/project/fuckia.conf
 if [ "$install_profile" = "full" ] && include_codex; then
   add_template "agents/README.md" ".agents/README.md"
   add_template "agents/skills/README.md" ".agents/skills/README.md"
-  add_template "project/AGENTS.md" "AGENTS.md"
+  add_template_with_pdg_trigger "project/AGENTS.md" "codex-trigger" "AGENTS.md"
 fi
 
 if [ "$install_profile" = "full" ] && include_claude; then
   add_template "claude/README.md" ".claude/README.md"
   add_template "claude/skills/README.md" ".claude/skills/README.md"
-  add_template "project/CLAUDE.md" "CLAUDE.md"
+  add_template_with_pdg_trigger "project/CLAUDE.md" "claude-trigger" "CLAUDE.md"
 fi
 
 if [ "$install_profile" = "full" ]; then
@@ -221,11 +334,18 @@ if include_claude; then
     [ -f "$skill_file" ] || continue
     skill_name="$(basename "$skill_file" .md)"
     skill_name="${skill_name#claude-}"
+    if [ "$skill_name" = "progressive-disclosure-guard" ]; then
+      continue
+    fi
     if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "progressive-disclosure-guard" ]; then
       continue
     fi
     add_file "$skill_file" ".claude/skills/$skill_name/SKILL.md"
   done
+  add_file "$(pdg_file claude-skill)" ".claude/skills/progressive-disclosure-guard/SKILL.md"
+  if [ "$install_profile" = "guard-only" ]; then
+    add_file "$(pdg_file claude-trigger)" "CLAUDE.md"
+  fi
 fi
 
 if include_codex; then
@@ -233,11 +353,18 @@ if include_codex; then
     [ -f "$skill_file" ] || continue
     skill_name="$(basename "$skill_file" .md)"
     skill_name="${skill_name#codex-}"
+    if [ "$skill_name" = "progressive-disclosure-guard" ]; then
+      continue
+    fi
     if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "progressive-disclosure-guard" ]; then
       continue
     fi
     add_file "$skill_file" ".agents/skills/$skill_name/SKILL.md"
   done
+  add_file "$(pdg_file codex-skill)" ".agents/skills/progressive-disclosure-guard/SKILL.md"
+  if [ "$install_profile" = "guard-only" ]; then
+    add_file "$(pdg_file codex-trigger)" "AGENTS.md"
+  fi
 fi
 
 is_existing_project="false"
@@ -328,7 +455,7 @@ if [ "$mode" = "dry-run" ]; then
 fi
 
 if [ "$install_profile" = "guard-only" ] && [ "${#proposal_files[@]}" -gt 0 ]; then
-  echo "Blocked: guard-only install will not overwrite or create merge proposals for existing skill files." >&2
+  echo "Blocked: guard-only install will not overwrite or create merge proposals for existing PDG files." >&2
   print_list "blocked_existing_files:" "${preserve_files[@]+"${preserve_files[@]}"}" >&2
   exit 1
 fi

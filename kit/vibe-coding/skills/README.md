@@ -21,7 +21,8 @@ Claude-only and Codex-only skills are tool adapters. They must not weaken the un
 
 Implemented source:
 
-- `../../kit/skills-src/shared/progressive-disclosure-guard.skill.md`
+- Fuckia shared skills: `../../kit/skills-src/shared/*.skill.md`
+- PDG source of truth: `https://github.com/bacoco/progressive-disclosure-guard`, pinned by `../../kit/pdg.lock.json`
 
 Generated examples:
 
@@ -39,10 +40,7 @@ Implemented generator scope:
 
 - reads `kit/skills-src/shared/*.skill.md`;
 - writes generated examples under `kit/generated-skills/<target>-<skill>.md`;
+- excludes PDG because the installer fetches it from the pinned PDG repository;
 - checks generated examples for drift.
 
-Not implemented:
-
-- install-target writes to `.claude/skills/...`;
-- install-target writes to `.agents/skills/...`;
-- complete shared skill catalog.
+Installed skills are written to `.claude/skills/...` and `.agents/skills/...` by the init/install flow.

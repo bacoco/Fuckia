@@ -36,19 +36,84 @@ async function createInstalledGithubFiles(directory: string): Promise<void> {
   await writeFile(path.join(directory, ".github", "workflows", "pr-scope.yml"), "name: Scope\n", "utf8");
 }
 
+let pdgFixtureDirectory: Promise<string> | null = null;
+
+async function ensurePdgFixtureDirectory(): Promise<string> {
+  if (pdgFixtureDirectory) {
+    return pdgFixtureDirectory;
+  }
+
+  pdgFixtureDirectory = (async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "fuckia-pdg-"));
+    await writeFile(path.join(directory, "pdg.codex.skill.md"), [
+      "---",
+      "name: progressive-disclosure-guard",
+      "description: PDG fixture for Codex tests.",
+      "---",
+      "<!--",
+      "GENERATED FILE - DO NOT EDIT DIRECTLY",
+      "source: pdg.skill.md",
+      "source_hash: test",
+      "generated_by: progressive-disclosure-guard generate-skills",
+      "target: codex",
+      "-->",
+      "# PDG Fixture"
+    ].join("\n"), "utf8");
+    await writeFile(path.join(directory, "pdg.claude.skill.md"), [
+      "---",
+      "name: progressive-disclosure-guard",
+      "description: PDG fixture for Claude tests.",
+      "---",
+      "<!--",
+      "GENERATED FILE - DO NOT EDIT DIRECTLY",
+      "source: pdg.skill.md",
+      "source_hash: test",
+      "generated_by: progressive-disclosure-guard generate-skills",
+      "target: claude",
+      "-->",
+      "# PDG Fixture"
+    ].join("\n"), "utf8");
+    await writeFile(path.join(directory, "AGENTS.pdg.md"), [
+      "## PDG - Progressive Disclosure Guard",
+      "",
+      "Invoke the `progressive-disclosure-guard` skill before substantial Codex handoffs or code changes."
+    ].join("\n"), "utf8");
+    await writeFile(path.join(directory, "CLAUDE.pdg.md"), [
+      "## PDG - Progressive Disclosure Guard",
+      "",
+      "Invoke the `progressive-disclosure-guard` skill before substantial Claude handoffs or code changes."
+    ].join("\n"), "utf8");
+    return directory;
+  })();
+
+  return pdgFixtureDirectory;
+}
+
 async function capture(command: string[], cwd: string): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   let stdout = "";
   let stderr = "";
-  const exitCode = await runCli(command, {
-    cwd,
-    packageRoot: process.cwd(),
-    stdout: (message) => {
-      stdout += message;
-    },
-    stderr: (message) => {
-      stderr += message;
+  const previousPdgDir = process.env.FUCKIA_PDG_DIR;
+  process.env.FUCKIA_PDG_DIR = await ensurePdgFixtureDirectory();
+  let exitCode: number;
+
+  try {
+    exitCode = await runCli(command, {
+      cwd,
+      packageRoot: process.cwd(),
+      stdout: (message) => {
+        stdout += message;
+      },
+      stderr: (message) => {
+        stderr += message;
+      }
+    });
+  } finally {
+    if (previousPdgDir === undefined) {
+      delete process.env.FUCKIA_PDG_DIR;
+    } else {
+      process.env.FUCKIA_PDG_DIR = previousPdgDir;
     }
-  });
+  }
 
   return { exitCode, stdout, stderr };
 }
@@ -130,6 +195,7 @@ test("install --apply --yes installs new project governance", async () => {
     assert.match(result.stdout, /"status": "applied"/);
     assert.match(readme, /Fuckia governance is installed/);
     assert.match(agents, /Codex must follow Fuckia governance/);
+    assert.match(agents, /progressive-disclosure-guard/);
   });
 });
 
@@ -187,12 +253,14 @@ test("install --apply supports guard-only profile", async () => {
       path.join(directory, ".agents", "skills", "progressive-disclosure-guard", "SKILL.md"),
       "utf8"
     );
+    const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
 
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /"installProfile": "guard-only"/);
     assert.match(skill, /target: codex/);
+    assert.match(agents, /progressive-disclosure-guard/);
     assert.equal(files.includes(".agents/skills/progressive-disclosure-guard/SKILL.md"), true);
-    assert.equal(files.includes("AGENTS.md"), false);
+    assert.equal(files.includes("AGENTS.md"), true);
     assert.equal(files.includes("README.md"), false);
     assert.equal(files.includes("fuckia.config.yaml"), false);
     assert.equal(files.some((file) => file.startsWith(".github/")), false);
@@ -226,6 +294,8 @@ test("init --apply installs governance files and generated skills", async () => 
     assert.match(readme, /Fuckia governance is installed/);
     assert.match(agents, /Codex must follow Fuckia governance/);
     assert.match(claude, /Claude Code must follow Fuckia governance/);
+    assert.match(agents, /progressive-disclosure-guard/);
+    assert.match(claude, /progressive-disclosure-guard/);
     assert.match(codexSkill, /target: codex/);
     assert.match(claudeSkill, /target: claude/);
     assert.equal((await snapshotTree(directory)).includes(".github/README.md"), false);

@@ -92,6 +92,16 @@ function inventoryFor(agentMode: ResolvedAgentMode, installProfile: InstallProfi
 function guardOnlyInventory(agentMode: ResolvedAgentMode): InventoryItem[] {
   return [
     ...(agentMode === "claude-only" ? [] : [{
+      path: "AGENTS.md",
+      exists: false,
+      kind: "file" as const
+    }]),
+    ...(agentMode === "codex-only" ? [] : [{
+      path: "CLAUDE.md",
+      exists: false,
+      kind: "file" as const
+    }]),
+    ...(agentMode === "claude-only" ? [] : [{
       path: `.agents/skills/${guardSkillName}/SKILL.md`,
       exists: false,
       kind: "file" as const

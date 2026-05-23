@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileExists } from "../fs/readTree";
 import { targetsForAgentMode, type ResolvedAgentMode } from "../install/agentMode";
 import { skillNamesForInstallProfile, type InstallProfile } from "../install/installProfile";
+import { plannedPdgInstallFiles } from "../pdg/pdgRepository";
 import { buildGeneratedSkillFiles } from "../skills/generateSharedSkills";
 
 export interface PlannedFile {
@@ -33,6 +34,8 @@ export async function buildInitPlan(
     targets: targetsForAgentMode(agentMode),
     skillNames: skillNamesForInstallProfile(installProfile)
   });
+  const targets = targetsForAgentMode(agentMode);
+  const plannedPdg = plannedPdgInstallFiles(targets, true);
   const includeRootReadme = !(await fileExists(path.join(targetRoot, "README.md")));
 
   return {
@@ -52,12 +55,12 @@ export async function buildInitPlan(
       ...(installProfile === "full" && agentMode !== "claude-only" ? [
         { path: ".agents/README.md", source: "template", purpose: "Codex agent directory map." },
         { path: ".agents/skills/README.md", source: "template", purpose: "Codex generated skills directory map." },
-        { path: "AGENTS.md", source: "template", purpose: "Codex entry rules." }
+        { path: "AGENTS.md", source: "template + PDG repository", purpose: "Codex entry rules with PDG trigger." }
       ] : []),
       ...(installProfile === "full" && agentMode !== "codex-only" ? [
         { path: ".claude/README.md", source: "template", purpose: "Claude directory map." },
         { path: ".claude/skills/README.md", source: "template", purpose: "Claude generated skills directory map." },
-        { path: "CLAUDE.md", source: "template", purpose: "Claude entry rules." }
+        { path: "CLAUDE.md", source: "template + PDG repository", purpose: "Claude entry rules with PDG trigger." }
       ] : []),
       ...(installProfile === "full" ? [
         { path: ".github/PULL_REQUEST_TEMPLATE.md", source: "template", purpose: "PR collaboration contract." },
@@ -84,7 +87,11 @@ export async function buildInitPlan(
         path: skill.output,
         source: skill.source,
         purpose: `${skill.target} generated skill.`
-      }))
+      })),
+      ...plannedPdg.filter((file) => (
+        installProfile === "guard-only" ||
+        (file.path !== "AGENTS.md" && file.path !== "CLAUDE.md")
+      ))
     ],
     humanSteps: installProfile === "full"
       ? [
@@ -93,7 +100,7 @@ export async function buildInitPlan(
         "Grant GitHub repository permissions before repository configuration automation.",
         "Grant Linear workspace permissions before Linear template automation."
       ]
-      : ["Approve the single skill file list before writes."],
+      : ["Approve the PDG skill and trigger file list before writes."],
     automationBoundaries: installProfile === "full"
       ? [
         "Account creation is a human step.",
@@ -101,6 +108,6 @@ export async function buildInitPlan(
         "Permission grants are human-approved steps.",
         "Generated skills are written only by `init --apply` or a future migration apply command."
       ]
-      : ["Guard-only install writes only selected skill files."]
+      : ["Guard-only install writes only selected PDG skill and trigger files."]
   };
 }

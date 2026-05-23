@@ -9,12 +9,56 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
 const cliPath = path.join(repoRoot, "dist", "cli.js");
 const shellInstallerPath = path.join(repoRoot, "kit", "scripts", "install", "agent-install.sh");
+const pdgFixtureDir = mkdtempSync(path.join(tmpdir(), "fuckia-pdg-"));
+
+writeFileSync(path.join(pdgFixtureDir, "pdg.codex.skill.md"), [
+  "---",
+  "name: progressive-disclosure-guard",
+  "description: PDG fixture for Codex installer tests.",
+  "---",
+  "<!--",
+  "GENERATED FILE - DO NOT EDIT DIRECTLY",
+  "source: pdg.skill.md",
+  "source_hash: test",
+  "generated_by: progressive-disclosure-guard generate-skills",
+  "target: codex",
+  "-->",
+  "# PDG Fixture"
+].join("\n"), "utf8");
+writeFileSync(path.join(pdgFixtureDir, "pdg.claude.skill.md"), [
+  "---",
+  "name: progressive-disclosure-guard",
+  "description: PDG fixture for Claude installer tests.",
+  "---",
+  "<!--",
+  "GENERATED FILE - DO NOT EDIT DIRECTLY",
+  "source: pdg.skill.md",
+  "source_hash: test",
+  "generated_by: progressive-disclosure-guard generate-skills",
+  "target: claude",
+  "-->",
+  "# PDG Fixture"
+].join("\n"), "utf8");
+writeFileSync(path.join(pdgFixtureDir, "AGENTS.pdg.md"), [
+  "## PDG - Progressive Disclosure Guard",
+  "",
+  "Invoke the `progressive-disclosure-guard` skill before substantial Codex handoffs or code changes."
+].join("\n"), "utf8");
+writeFileSync(path.join(pdgFixtureDir, "CLAUDE.pdg.md"), [
+  "## PDG - Progressive Disclosure Guard",
+  "",
+  "Invoke the `progressive-disclosure-guard` skill before substantial Claude handoffs or code changes."
+].join("\n"), "utf8");
+
+process.on("exit", () => {
+  rmSync(pdgFixtureDir, { recursive: true, force: true });
+});
 
 function run(command, args, cwd, options = {}) {
   const result = spawnSync(command, args, {
     cwd,
     encoding: "utf8",
-    env: { ...process.env, ...options.env }
+    env: { ...process.env, FUCKIA_PDG_DIR: pdgFixtureDir, ...options.env }
   });
 
   if (result.status !== 0) {
@@ -70,6 +114,8 @@ withTempDirectory("fuckia-shell-empty-", (directory) => {
 
   assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
   assertFile(directory, "CLAUDE.md", "Claude Code must follow Fuckia governance");
+  assertFile(directory, "AGENTS.md", "progressive-disclosure-guard");
+  assertFile(directory, "CLAUDE.md", "progressive-disclosure-guard");
   assertFile(directory, "README.md", "Fuckia governance is installed");
   assertFile(directory, ".github/workflows/collab-contract.yml", "Fuckia Collaboration Contract");
   assertFile(directory, ".agents/skills/evidence-language-guard/SKILL.md", "target: codex");
@@ -81,6 +127,7 @@ withTempDirectory("fuckia-shell-codex-only-", (directory) => {
   run("bash", [shellInstallerPath, "--target", directory, "--apply", "--yes", "--agent-mode", "codex-only"], repoRoot);
 
   assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
+  assertFile(directory, "AGENTS.md", "progressive-disclosure-guard");
   assertFile(directory, ".agents/skills/evidence-language-guard/SKILL.md", "target: codex");
   assertFile(directory, "fuckia.config.yaml", "agent_mode: codex-only");
 
@@ -98,8 +145,9 @@ withTempDirectory("fuckia-shell-guard-only-", (directory) => {
   );
 
   assertFile(directory, ".agents/skills/progressive-disclosure-guard/SKILL.md", "target: codex");
+  assertFile(directory, "AGENTS.md", "progressive-disclosure-guard");
 
-  for (const forbidden of ["AGENTS.md", "README.md", "fuckia.config.yaml", ".github", ".claude"]) {
+  for (const forbidden of ["README.md", "fuckia.config.yaml", ".github", ".claude"]) {
     if (existsSync(path.join(directory, forbidden))) {
       throw new Error(`Guard-only shell install wrote unexpected path: ${forbidden}`);
     }

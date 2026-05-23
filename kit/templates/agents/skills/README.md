@@ -1,5 +1,5 @@
 # Codex Skills
 
-This directory contains generated Codex skills.
+This directory contains installed Codex skills.
 
-Do not edit generated skills by hand. Update `skills-src/shared/...` in Fuckia, regenerate, then reinstall.
+Do not edit installed skills by hand. Most skills come from Fuckia shared sources; `progressive-disclosure-guard` comes from the standalone PDG repository pinned by Fuckia.

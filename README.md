@@ -18,7 +18,7 @@ That guard is useful before any Claude/Codex collaboration. You can install only
 
 The readable name is **PDG - Progressive Disclosure Guard**. The skill slug is `progressive-disclosure-guard`.
 
-PDG now has its own minimal repository: `https://github.com/bacoco/progressive-disclosure-guard`. Fuckia vendors a pinned copy so the full collaboration kit can still install it with the rest of the governance files.
+PDG now has its own minimal repository: `https://github.com/bacoco/progressive-disclosure-guard`. Fuckia uses that repository as the source of truth and fetches the pinned PDG files during install.
 
 ## What It Prevents
 
@@ -102,13 +102,15 @@ Claude Code prompt:
 Install PDG - Progressive Disclosure Guard here for Claude Code. Read `https://github.com/bacoco/progressive-disclosure-guard/blob/main/INSTALL.md`, start with audit only, report the exact files you will write, and ask before writing.
 ```
 
-Guard-only writes only the selected skill file:
+Guard-only writes only the selected PDG skill file and the matching agent trigger file:
 
 - Codex: `.agents/skills/progressive-disclosure-guard/SKILL.md`
 - Claude Code: `.claude/skills/progressive-disclosure-guard/SKILL.md`
 - Dual agent: both skill files
+- Codex trigger: `AGENTS.md`
+- Claude Code trigger: `CLAUDE.md`
 
-It does not install `AGENTS.md`, `CLAUDE.md`, GitHub workflows, Linear templates, `docs/fuckia`, or `fuckia.config.yaml`.
+It does not install GitHub workflows, Linear templates, `docs/fuckia`, or `fuckia.config.yaml`.
 
 ## Install Full Fuckia
 

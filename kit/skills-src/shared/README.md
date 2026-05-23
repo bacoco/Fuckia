@@ -4,7 +4,6 @@ Shared skills apply to both Claude and Codex.
 
 Initial source files:
 
-- `progressive-disclosure-guard.skill.md` - protects plans, specs, reviews, and prompts from damaging literal interpretations. This file is vendored from the standalone PDG repository pinned in `../../pdg.lock.json`.
 - `cross-agent-handoff.skill.md` - keeps handoff state explicit between Claude and Codex.
 - `delegated-review-and-merge.skill.md` - lets agents prepare review packets and perform approved GitHub review or merge operations.
 - `destructive-change-guard.skill.md` - blocks risky deletion and replacement work without explicit evidence.
@@ -16,3 +15,5 @@ Initial source files:
 - `source-of-truth-gate.skill.md` - requires authoritative project context before implementation.
 
 Rule: platform-specific adapters may change invocation mechanics. They must not weaken shared instructions.
+
+PDG is not authored in this directory. `progressive-disclosure-guard` comes from the standalone PDG repository pinned in `../../pdg.lock.json`.

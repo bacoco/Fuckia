@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileExists } from "../fs/readTree";
+import { buildPdgInstallFiles, readPdgTriggerBlock } from "../pdg/pdgRepository";
 import { buildGeneratedSkillFiles } from "../skills/generateSharedSkills";
 import { targetsForAgentMode, type ResolvedAgentMode } from "./agentMode";
 import { skillNamesForInstallProfile, type InstallProfile } from "./installProfile";
@@ -38,8 +39,6 @@ const templateFiles: Array<{ templatePath: string; outputPath: string; scope: Te
   { templatePath: "agents/skills/README.md", outputPath: ".agents/skills/README.md", scope: "codex" },
   { templatePath: "claude/README.md", outputPath: ".claude/README.md", scope: "claude" },
   { templatePath: "claude/skills/README.md", outputPath: ".claude/skills/README.md", scope: "claude" },
-  { templatePath: "project/AGENTS.md", outputPath: "AGENTS.md", scope: "codex" },
-  { templatePath: "project/CLAUDE.md", outputPath: "CLAUDE.md", scope: "claude" },
   { templatePath: "project/fuckia.config.yaml", outputPath: "fuckia.config.yaml", scope: "common" },
   { templatePath: "github/pull_request_template.md", outputPath: ".github/PULL_REQUEST_TEMPLATE.md", scope: "common" },
   { templatePath: "github/workflows/collab-contract.yml", outputPath: ".github/workflows/collab-contract.yml", scope: "common" },
@@ -78,8 +77,8 @@ export async function applyInit(options: InitApplyOptions): Promise<InitApplyRes
       conflicts,
       nextSteps: installProfile === "guard-only"
         ? [
-          "Review the existing skill file.",
-          "Do not overwrite an existing skill without comparing its current behavior."
+          "Review the existing PDG skill or trigger file.",
+          "Do not overwrite existing agent rules without comparing their current behavior."
         ]
         : [
           "Review conflicting files.",
@@ -103,7 +102,7 @@ export async function applyInit(options: InitApplyOptions): Promise<InitApplyRes
     written,
     conflicts: [],
     nextSteps: installProfile === "guard-only"
-      ? ["Review the installed skill file and confirm the target agent discovers it."]
+      ? ["Review the installed PDG skill and trigger file, then confirm the target agent discovers the skill."]
       : [
         "Review generated governance files.",
         "Run `fuckia doctor` from the target repository.",
@@ -122,6 +121,22 @@ export async function buildInstallFiles(options: InitApplyOptions): Promise<Inst
         relativePath: normalizePath(template.outputPath),
         source: normalizePath(path.join("kit", "templates", template.templatePath)),
         content: await readTemplate(options.packageRoot, template.templatePath, options.agentMode)
+      });
+    }
+
+    if (includeScope("codex", options.agentMode)) {
+      files.push({
+        relativePath: "AGENTS.md",
+        source: "kit/templates/project/AGENTS.md + PDG repository:AGENTS.pdg.md",
+        content: await readTemplateWithPdgTrigger(options.packageRoot, "project/AGENTS.md", options.agentMode, "codex")
+      });
+    }
+
+    if (includeScope("claude", options.agentMode)) {
+      files.push({
+        relativePath: "CLAUDE.md",
+        source: "kit/templates/project/CLAUDE.md + PDG repository:CLAUDE.pdg.md",
+        content: await readTemplateWithPdgTrigger(options.packageRoot, "project/CLAUDE.md", options.agentMode, "claude")
       });
     }
 
@@ -154,6 +169,12 @@ export async function buildInstallFiles(options: InitApplyOptions): Promise<Inst
     });
   }
 
+  files.push(...await buildPdgInstallFiles(
+    options.packageRoot,
+    targetsForAgentMode(options.agentMode),
+    installProfile === "guard-only"
+  ));
+
   return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 }
 
@@ -164,6 +185,17 @@ async function readTemplate(
 ): Promise<string> {
   const content = await readFile(path.join(packageRoot, "kit", "templates", templatePath), "utf8");
   return content.replace(/__AGENT_MODE__/g, agentMode);
+}
+
+async function readTemplateWithPdgTrigger(
+  packageRoot: string,
+  templatePath: string,
+  agentMode: ResolvedAgentMode,
+  target: "codex" | "claude"
+): Promise<string> {
+  const template = await readTemplate(packageRoot, templatePath, agentMode);
+  const trigger = await readPdgTriggerBlock(packageRoot, target);
+  return `${template.trimEnd()}\n\n${trigger.trimEnd()}\n`;
 }
 
 function includeScope(scope: TemplateScope, agentMode: ResolvedAgentMode): boolean {

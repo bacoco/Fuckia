@@ -11,9 +11,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check generated skill headers
         run: |
-          for skill in progressive-disclosure-guard cross-agent-handoff delegated-review-and-merge destructive-change-guard end-of-work-checkpoint evidence-language-guard plan-review-gate platform-permission-gate real-verification-gate source-of-truth-gate; do
+          for skill in cross-agent-handoff delegated-review-and-merge destructive-change-guard end-of-work-checkpoint evidence-language-guard plan-review-gate platform-permission-gate real-verification-gate source-of-truth-gate; do
             test -f "kit/generated-skills/claude-$skill.md"
             test -f "kit/generated-skills/codex-$skill.md"
           done
           grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" kit/generated-skills
           grep -R "source_hash:" kit/generated-skills
+      - name: Check pinned PDG repository
+        run: npm run check:pdg
