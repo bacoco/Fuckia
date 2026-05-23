@@ -6,6 +6,73 @@ The human is inside the target repository and asked you to install Fuckia.
 
 Normal installation does not require Node.js or npm.
 
+## Install Profiles
+
+Fuckia has two install profiles:
+
+- `full`: install the governance kit, selected agent entrypoints, skills, docs, GitHub templates, and Linear templates.
+- `guard-only`: install only the **Adversarial Progressive Disclosure Guard** skill.
+
+The stable skill slug is `adversarial-implementer-guard`.
+
+Use `guard-only` when the human only wants the progressive disclosure/adversarial guard and does not want the full Claude/Codex collaboration kit.
+
+Use explicit human wording when available:
+
+- "only the guard", "only the skill", or "Adversarial Progressive Disclosure Guard" -> `guard-only`
+- "Fuckia", "full kit", "collaboration", "GitHub", or "Linear" -> `full`
+
+Prompt for Codex:
+
+```text
+Install only Fuckia's Adversarial Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+```
+
+Prompt for Claude Code:
+
+```text
+Install only Fuckia's Adversarial Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+```
+
+In `guard-only`, install only these files:
+
+- Codex: `.agents/skills/adversarial-implementer-guard/SKILL.md`
+- Claude: `.claude/skills/adversarial-implementer-guard/SKILL.md`
+
+Do not install `AGENTS.md`, `CLAUDE.md`, `fuckia.config.yaml`, GitHub workflows, Linear templates, or `docs/fuckia` in `guard-only`.
+
+## Agent Modes
+
+Fuckia can install one active agent surface or both:
+
+- `codex-only`: install `AGENTS.md` and `.agents/skills/...`.
+- `claude-only`: install `CLAUDE.md` and `.claude/skills/...`.
+- `dual-agent`: install both Codex and Claude surfaces.
+
+Use explicit human wording when available:
+
+- "Codex only" -> `codex-only`
+- "Claude only" -> `claude-only`
+- "Claude and Codex", "both", or "dual" -> `dual-agent`
+
+If the human did not specify the mode, inspect existing repo markers:
+
+- Codex markers only: `AGENTS.md`, `.agents`, or `.agents/skills` -> use `codex-only`.
+- Claude markers only: `CLAUDE.md`, `.claude`, or `.claude/skills` -> use `claude-only`.
+- both marker families or no markers -> stop and ask one short question:
+
+```text
+Should I install Fuckia for Codex only, Claude only, or both?
+```
+
+Do not infer mode from missing Claude/Codex credentials alone.
+
+Recommended prompt:
+
+```text
+Install Fuckia here. Use the agent mode that matches this repo; ask if ambiguous.
+```
+
 ## Non-Negotiable Contract
 
 - Treat the current working directory as the target repository.
@@ -110,10 +177,16 @@ FUCKIA_DIR="/absolute/path/to/Fuckia"
 Run:
 
 ```bash
-bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run --agent-mode <codex-only|claude-only|dual-agent>
 ```
 
 This command is read-only.
+
+For skill-only install:
+
+```bash
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --dry-run --agent-mode <codex-only|claude-only|dual-agent> --profile guard-only
+```
 
 ## Report Before Writes
 
@@ -128,6 +201,8 @@ Report these facts to the human:
 - GitHub repository access state;
 - Linear API key state;
 - Linear team key state;
+- install profile;
+- selected agent mode;
 - existing `AGENTS.md`;
 - existing `CLAUDE.md`;
 - existing `.agents/skills`;
@@ -150,7 +225,13 @@ Stop after this report.
 Run this only after the human approves the write list:
 
 ```bash
-bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes --agent-mode <codex-only|claude-only|dual-agent>
+```
+
+For skill-only install:
+
+```bash
+bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" --apply --yes --agent-mode <codex-only|claude-only|dual-agent> --profile guard-only
 ```
 
 For an existing project, this command preserves conflicting governance files and writes merge proposals under:
@@ -161,14 +242,14 @@ docs/fuckia/merge-proposals/
 
 It must not modify product code.
 
+In `guard-only`, if the target skill already exists with different content, stop and report the conflict. Do not overwrite it and do not create migration files.
+
 ## Verify Basic Installation
 
 Run:
 
 ```bash
 cd "$target_dir"
-test -f AGENTS.md
-test -f CLAUDE.md
 test -f fuckia.config.yaml
 test -f .github/PULL_REQUEST_TEMPLATE.md
 test -f .github/workflows/collab-contract.yml
@@ -176,14 +257,57 @@ test -f .github/workflows/generated-skills.yml
 test -f .github/workflows/pr-scope.yml
 test -f docs/fuckia/README.md
 test -f docs/fuckia/end-of-work-checkpoint.md
-test -f .agents/skills/source-of-truth-gate/SKILL.md
-test -f .claude/skills/source-of-truth-gate/SKILL.md
-test -f .agents/skills/evidence-language-guard/SKILL.md
-test -f .claude/skills/evidence-language-guard/SKILL.md
-grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills .claude/skills >/dev/null
+case "<codex-only|claude-only|dual-agent>" in
+  codex-only)
+    test -f AGENTS.md
+    test -f .agents/skills/source-of-truth-gate/SKILL.md
+    test ! -e CLAUDE.md
+    grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills >/dev/null
+    ;;
+  claude-only)
+    test -f CLAUDE.md
+    test -f .claude/skills/source-of-truth-gate/SKILL.md
+    test ! -e AGENTS.md
+    grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .claude/skills >/dev/null
+    ;;
+  dual-agent)
+    test -f AGENTS.md
+    test -f CLAUDE.md
+    test -f .agents/skills/source-of-truth-gate/SKILL.md
+    test -f .claude/skills/source-of-truth-gate/SKILL.md
+    grep -R "GENERATED FILE - DO NOT EDIT DIRECTLY" .agents/skills .claude/skills >/dev/null
+    ;;
+esac
 ```
 
 If any command fails, report the failing command and stop.
+
+For skill-only install, verify only the selected skill:
+
+```bash
+cd "$target_dir"
+case "<codex-only|claude-only|dual-agent>" in
+  codex-only)
+    test -f .agents/skills/adversarial-implementer-guard/SKILL.md
+    test ! -e AGENTS.md
+    test ! -e CLAUDE.md
+    test ! -e fuckia.config.yaml
+    ;;
+  claude-only)
+    test -f .claude/skills/adversarial-implementer-guard/SKILL.md
+    test ! -e AGENTS.md
+    test ! -e CLAUDE.md
+    test ! -e fuckia.config.yaml
+    ;;
+  dual-agent)
+    test -f .agents/skills/adversarial-implementer-guard/SKILL.md
+    test -f .claude/skills/adversarial-implementer-guard/SKILL.md
+    test ! -e AGENTS.md
+    test ! -e CLAUDE.md
+    test ! -e fuckia.config.yaml
+    ;;
+esac
+```
 
 ## GitHub Remote Setup
 

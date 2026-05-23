@@ -70,7 +70,7 @@ test("init --dry-run writes nothing", async () => {
   await withTempProject(async (directory) => {
     await createMinimalProject(directory);
     const before = await snapshotTree(directory);
-    const result = await capture(["init", "--dry-run"], directory);
+    const result = await capture(["init", "--dry-run", "--agent-mode", "dual-agent"], directory);
     const after = await snapshotTree(directory);
 
     assert.equal(result.exitCode, 0);
@@ -83,7 +83,7 @@ test("init --dry-run writes nothing", async () => {
 test("install --dry-run detects new project and writes nothing", async () => {
   await withTempProject(async (directory) => {
     const before = await snapshotTree(directory);
-    const result = await capture(["install", "--dry-run"], directory);
+    const result = await capture(["install", "--dry-run", "--agent-mode", "dual-agent"], directory);
     const after = await snapshotTree(directory);
 
     assert.equal(result.exitCode, 0);
@@ -93,9 +93,35 @@ test("install --dry-run detects new project and writes nothing", async () => {
   });
 });
 
+test("install --dry-run auto asks for agent mode when ambiguous", async () => {
+  await withTempProject(async (directory) => {
+    const before = await snapshotTree(directory);
+    const result = await capture(["install", "--dry-run"], directory);
+    const after = await snapshotTree(directory);
+
+    assert.equal(result.exitCode, 0);
+    assert.deepEqual(after, before);
+    assert.match(result.stdout, /"status": "ambiguous"/);
+    assert.match(result.stdout, /Codex only, Claude only, or both/);
+  });
+});
+
+test("install --apply auto blocks before writing when agent mode is ambiguous", async () => {
+  await withTempProject(async (directory) => {
+    const before = await snapshotTree(directory);
+    const result = await capture(["install", "--apply", "--yes"], directory);
+    const after = await snapshotTree(directory);
+
+    assert.equal(result.exitCode, 1);
+    assert.deepEqual(after, before);
+    assert.match(result.stdout, /"status": "blocked"/);
+    assert.match(result.stdout, /--agent-mode codex-only/);
+  });
+});
+
 test("install --apply --yes installs new project governance", async () => {
   await withTempProject(async (directory) => {
-    const result = await capture(["install", "--apply", "--yes"], directory);
+    const result = await capture(["install", "--apply", "--yes", "--agent-mode", "dual-agent"], directory);
     const readme = await readFile(path.join(directory, "README.md"), "utf8");
     const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
 
@@ -107,9 +133,76 @@ test("install --apply --yes installs new project governance", async () => {
   });
 });
 
+test("install --apply supports codex-only mode", async () => {
+  await withTempProject(async (directory) => {
+    const result = await capture(["install", "--apply", "--yes", "--agent-mode", "codex-only"], directory);
+    const files = await snapshotTree(directory);
+    const config = await readFile(path.join(directory, "fuckia.config.yaml"), "utf8");
+    const workflow = await readFile(path.join(directory, ".github", "workflows", "generated-skills.yml"), "utf8");
+    const contractWorkflow = await readFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "utf8");
+    const codexSkill = await readFile(
+      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      "utf8"
+    );
+
+    assert.equal(result.exitCode, 0);
+    assert.match(config, /agent_mode: codex-only/);
+    assert.match(workflow, /agent_mode=/);
+    assert.match(contractWorkflow, /codex-only/);
+    assert.match(contractWorkflow, /Unsupported agent_mode/);
+    assert.match(codexSkill, /target: codex/);
+    assert.equal(files.includes("AGENTS.md"), true);
+    assert.equal(files.includes("CLAUDE.md"), false);
+    assert.equal(files.some((file) => file.startsWith(".claude/")), false);
+  });
+});
+
+test("install --apply supports claude-only mode", async () => {
+  await withTempProject(async (directory) => {
+    const result = await capture(["install", "--apply", "--yes", "--agent-mode", "claude-only"], directory);
+    const files = await snapshotTree(directory);
+    const config = await readFile(path.join(directory, "fuckia.config.yaml"), "utf8");
+    const claudeSkill = await readFile(
+      path.join(directory, ".claude", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      "utf8"
+    );
+
+    assert.equal(result.exitCode, 0);
+    assert.match(config, /agent_mode: claude-only/);
+    assert.match(claudeSkill, /target: claude/);
+    assert.equal(files.includes("CLAUDE.md"), true);
+    assert.equal(files.includes("AGENTS.md"), false);
+    assert.equal(files.some((file) => file.startsWith(".agents/")), false);
+  });
+});
+
+test("install --apply supports guard-only profile", async () => {
+  await withTempProject(async (directory) => {
+    const result = await capture(
+      ["install", "--apply", "--yes", "--agent-mode", "codex-only", "--profile", "guard-only"],
+      directory
+    );
+    const files = await snapshotTree(directory);
+    const skill = await readFile(
+      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      "utf8"
+    );
+
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /"installProfile": "guard-only"/);
+    assert.match(skill, /target: codex/);
+    assert.equal(files.includes(".agents/skills/adversarial-implementer-guard/SKILL.md"), true);
+    assert.equal(files.includes("AGENTS.md"), false);
+    assert.equal(files.includes("README.md"), false);
+    assert.equal(files.includes("fuckia.config.yaml"), false);
+    assert.equal(files.some((file) => file.startsWith(".github/")), false);
+    assert.equal(files.some((file) => file.startsWith(".claude/")), false);
+  });
+});
+
 test("init --apply installs governance files and generated skills", async () => {
   await withTempProject(async (directory) => {
-    const result = await capture(["init", "--apply"], directory);
+    const result = await capture(["init", "--apply", "--agent-mode", "dual-agent"], directory);
     const readme = await readFile(path.join(directory, "README.md"), "utf8");
     const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
     const claude = await readFile(path.join(directory, "CLAUDE.md"), "utf8");
@@ -188,6 +281,7 @@ test("migrate --plan writes only a migration plan", async () => {
       ["docs/fuckia/migration-plan.md"]
     );
     assert.match(plan, /Existing Governance Inventory/);
+    assert.match(plan, /agent mode: `codex-only`/);
     assert.match(plan, /AGENTS.md/);
   });
 });
@@ -196,7 +290,7 @@ test("migrate --apply requires migration plan", async () => {
   await withTempProject(async (directory) => {
     await createMinimalProject(directory);
     const before = await snapshotTree(directory);
-    const result = await capture(["migrate", "--apply"], directory);
+    const result = await capture(["migrate", "--apply", "--agent-mode", "dual-agent"], directory);
     const after = await snapshotTree(directory);
 
     assert.equal(result.exitCode, 1);
@@ -757,7 +851,7 @@ test("linear apply writes a failure receipt after partial issue creation", async
 
 test("strict apply enables strict mode after init install", async () => {
   await withTempProject(async (directory) => {
-    await capture(["init", "--apply"], directory);
+    await capture(["init", "--apply", "--agent-mode", "dual-agent"], directory);
     const before = await checkStrictMode(directory);
     const result = await applyStrictMode(directory);
     const after = await checkStrictMode(directory);
@@ -775,7 +869,7 @@ test("strict apply enables strict mode after init install", async () => {
 
 test("strict apply is idempotent on an already strict project", async () => {
   await withTempProject(async (directory) => {
-    await capture(["init", "--apply"], directory);
+    await capture(["init", "--apply", "--agent-mode", "dual-agent"], directory);
     await applyStrictMode(directory);
     const result = await applyStrictMode(directory);
 

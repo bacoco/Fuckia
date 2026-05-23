@@ -13,7 +13,7 @@ Use this skill before saying work is done.
 Simple rule:
 
 ```text
-Done = real workflow verified + required checks passed + required independent review completed + evidence written down.
+Done = real workflow verified + required checks passed + required independent review or human approval completed + evidence written down.
 ```
 
 ## Status Words
@@ -22,7 +22,8 @@ Use these words exactly:
 
 - `Implemented`: code or docs were changed.
 - `Verified`: required checks and the real workflow were tested.
-- `Ready for independent review`: verification passed, but another AI or human still needs to review.
+- `Ready for human validation`: verification passed, but no independent reviewer is available.
+- `Ready for independent review`: verification passed, but another AI still needs to review.
 - `Blocked`: a required check, workflow, permission, or independent review is missing.
 - `Done`: verification passed and every required review or merge gate is complete.
 
@@ -36,7 +37,7 @@ Done requires evidence for:
 - Linear or GitHub receipt when remote setup changed;
 - end-of-work checkpoint.
 
-For risky work, Done also requires a completed independent AI or human review.
+For risky work, Done also requires a completed independent AI review or human approval.
 
 ## Not Enough
 
@@ -48,7 +49,9 @@ These are not enough by themselves:
 - generated file presence;
 - a local command that bypasses the product path.
 
-Independent review required but missing is not Done.
+Independent review or human approval required but missing is not Done.
+
+An author AI self-check is useful evidence, but it is not independent review.
 
 ## Verification Receipt
 
@@ -61,4 +64,18 @@ Record:
 - residual blockers;
 - next step.
 
-If external review is required but missing, report `Ready for independent review` or `Blocked: independent review required`.
+If no second AI is available, give the human this validation card:
+
+- changed files:
+- real workflow or command checked:
+- expected result:
+- risk the human is accepting:
+- exact approval sentence:
+
+The exact approval sentence must be:
+
+```text
+Approved after human validation.
+```
+
+If external review is required but missing, report `Ready for independent review`, `Ready for human validation`, or `Blocked: independent review required`.

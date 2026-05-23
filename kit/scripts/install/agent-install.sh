@@ -4,16 +4,19 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  agent-install.sh --target <repo> --dry-run
-  agent-install.sh --target <repo> --apply --yes
+  agent-install.sh --target <repo> --dry-run [--agent-mode auto|codex-only|claude-only|dual-agent] [--profile full|guard-only]
+  agent-install.sh --target <repo> --apply --yes --agent-mode <codex-only|claude-only|dual-agent> [--profile full|guard-only]
 
 Installs Fuckia governance files without Node.js or npm.
+Use --profile guard-only to install only the Adversarial Progressive Disclosure Guard skill.
 EOF
 }
 
 mode=""
 target=""
 yes="false"
+agent_mode="auto"
+install_profile="full"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -32,6 +35,14 @@ while [ "$#" -gt 0 ]; do
     --yes)
       yes="true"
       shift
+      ;;
+    --agent-mode)
+      agent_mode="${2:-}"
+      shift 2
+      ;;
+    --profile)
+      install_profile="${2:-}"
+      shift 2
       ;;
     --help|-h)
       usage
@@ -55,15 +66,94 @@ if [ "$mode" = "apply" ] && [ "$yes" != "true" ]; then
   exit 1
 fi
 
+case "$agent_mode" in
+  auto|codex-only|claude-only|dual-agent)
+    ;;
+  *)
+    echo "Unknown agent mode: $agent_mode" >&2
+    usage >&2
+    exit 1
+    ;;
+esac
+
+case "$install_profile" in
+  full|guard-only)
+    ;;
+  *)
+    echo "Unknown install profile: $install_profile" >&2
+    usage >&2
+    exit 1
+    ;;
+esac
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fuckia_dir="$(cd "$script_dir/../../.." && pwd)"
 target_dir="$(cd "$target" && pwd)"
 
 template_dir="$fuckia_dir/kit/templates"
 skills_dir="$fuckia_dir/kit/generated-skills"
+runtime_dir="$(mktemp -d)"
+trap 'rm -rf "$runtime_dir"' EXIT
 
 if [ ! -d "$template_dir" ] || [ ! -d "$skills_dir" ]; then
   echo "Fuckia templates or generated skills are missing." >&2
+  exit 1
+fi
+
+codex_markers=()
+claude_markers=()
+for marker in AGENTS.md .agents .agents/skills; do
+  if [ -e "$target_dir/$marker" ]; then
+    codex_markers+=("$marker")
+  fi
+done
+for marker in CLAUDE.md .claude .claude/skills; do
+  if [ -e "$target_dir/$marker" ]; then
+    claude_markers+=("$marker")
+  fi
+done
+
+resolved_agent_mode="$agent_mode"
+agent_mode_status="resolved"
+agent_mode_reason="Explicit agent mode selected."
+agent_mode_question=""
+
+if [ "$agent_mode" = "auto" ]; then
+  if [ "${#codex_markers[@]}" -gt 0 ] && [ "${#claude_markers[@]}" -eq 0 ]; then
+    resolved_agent_mode="codex-only"
+    agent_mode_reason="Detected Codex markers only."
+  elif [ "${#claude_markers[@]}" -gt 0 ] && [ "${#codex_markers[@]}" -eq 0 ]; then
+    resolved_agent_mode="claude-only"
+    agent_mode_reason="Detected Claude markers only."
+  else
+    resolved_agent_mode=""
+    agent_mode_status="ambiguous"
+    if [ "${#codex_markers[@]}" -gt 0 ] && [ "${#claude_markers[@]}" -gt 0 ]; then
+      agent_mode_reason="Detected both Codex and Claude markers."
+    else
+      agent_mode_reason="No Codex or Claude markers detected."
+    fi
+    agent_mode_question="Install Fuckia for Codex only, Claude only, or both?"
+  fi
+fi
+
+if [ "$agent_mode_status" = "ambiguous" ]; then
+  echo "Fuckia Agent Install"
+  echo "===================="
+  echo "mode: $mode"
+  echo "agent_mode: ambiguous"
+  echo "reason: $agent_mode_reason"
+  echo "question: $agent_mode_question"
+  echo "target: $target_dir"
+  echo
+  echo "next:"
+  echo "- rerun with --agent-mode codex-only"
+  echo "- rerun with --agent-mode claude-only"
+  echo "- rerun with --agent-mode dual-agent"
+  if [ "$mode" = "dry-run" ]; then
+    echo "writes: none"
+    exit 0
+  fi
   exit 1
 fi
 
@@ -81,47 +171,75 @@ add_template() {
   add_file "$template_dir/$1" "$2" "${3:-required}"
 }
 
-add_template "agents/README.md" ".agents/README.md"
-add_template "agents/skills/README.md" ".agents/skills/README.md"
-add_template "claude/README.md" ".claude/README.md"
-add_template "claude/skills/README.md" ".claude/skills/README.md"
-add_template "project/AGENTS.md" "AGENTS.md"
-add_template "project/CLAUDE.md" "CLAUDE.md"
-add_template "project/fuckia.config.yaml" "fuckia.config.yaml"
-add_template "project/root-readme.md" "README.md" "optional"
-add_template "github/README.md" ".github/README.md"
-add_template "github/pull_request_template.md" ".github/PULL_REQUEST_TEMPLATE.md"
-add_template "github/workflows/README.md" ".github/workflows/README.md"
-add_template "github/workflows/collab-contract.yml" ".github/workflows/collab-contract.yml"
-add_template "github/workflows/generated-skills.yml" ".github/workflows/generated-skills.yml"
-add_template "github/workflows/pr-scope.yml" ".github/workflows/pr-scope.yml"
-add_template "docs/README.md" "docs/README.md"
-add_template "docs/fuckia/README.md" "docs/fuckia/README.md"
-add_template "docs/fuckia/archive/README.md" "docs/fuckia/archive/README.md"
-add_template "docs/fuckia/end-of-work-checkpoint.md" "docs/fuckia/end-of-work-checkpoint.md"
-add_template "docs/fuckia/linear/README.md" "docs/fuckia/linear/README.md"
-add_template "docs/fuckia/linear/templates/README.md" "docs/fuckia/linear/templates/README.md"
-add_template "docs/fuckia/merge-proposals/README.md" "docs/fuckia/merge-proposals/README.md"
-add_template "linear/templates/spec.md" "docs/fuckia/linear/templates/spec.md"
-add_template "linear/templates/plan.md" "docs/fuckia/linear/templates/plan.md"
-add_template "linear/templates/plan-review.md" "docs/fuckia/linear/templates/plan-review.md"
-add_template "linear/templates/implement.md" "docs/fuckia/linear/templates/implement.md"
-add_template "linear/templates/code-review.md" "docs/fuckia/linear/templates/code-review.md"
-add_template "linear/templates/verify.md" "docs/fuckia/linear/templates/verify.md"
+include_codex() {
+  [ "$resolved_agent_mode" = "codex-only" ] || [ "$resolved_agent_mode" = "dual-agent" ]
+}
 
-for skill_file in "$skills_dir"/claude-*.md; do
-  [ -f "$skill_file" ] || continue
-  skill_name="$(basename "$skill_file" .md)"
-  skill_name="${skill_name#claude-}"
-  add_file "$skill_file" ".claude/skills/$skill_name/SKILL.md"
-done
+include_claude() {
+  [ "$resolved_agent_mode" = "claude-only" ] || [ "$resolved_agent_mode" = "dual-agent" ]
+}
 
-for skill_file in "$skills_dir"/codex-*.md; do
-  [ -f "$skill_file" ] || continue
-  skill_name="$(basename "$skill_file" .md)"
-  skill_name="${skill_name#codex-}"
-  add_file "$skill_file" ".agents/skills/$skill_name/SKILL.md"
-done
+sed "s/__AGENT_MODE__/$resolved_agent_mode/g" "$template_dir/project/fuckia.config.yaml" > "$runtime_dir/fuckia.config.yaml"
+
+if [ "$install_profile" = "full" ] && include_codex; then
+  add_template "agents/README.md" ".agents/README.md"
+  add_template "agents/skills/README.md" ".agents/skills/README.md"
+  add_template "project/AGENTS.md" "AGENTS.md"
+fi
+
+if [ "$install_profile" = "full" ] && include_claude; then
+  add_template "claude/README.md" ".claude/README.md"
+  add_template "claude/skills/README.md" ".claude/skills/README.md"
+  add_template "project/CLAUDE.md" "CLAUDE.md"
+fi
+
+if [ "$install_profile" = "full" ]; then
+  add_file "$runtime_dir/fuckia.config.yaml" "fuckia.config.yaml"
+  add_template "project/root-readme.md" "README.md" "optional"
+  add_template "github/README.md" ".github/README.md"
+  add_template "github/pull_request_template.md" ".github/PULL_REQUEST_TEMPLATE.md"
+  add_template "github/workflows/README.md" ".github/workflows/README.md"
+  add_template "github/workflows/collab-contract.yml" ".github/workflows/collab-contract.yml"
+  add_template "github/workflows/generated-skills.yml" ".github/workflows/generated-skills.yml"
+  add_template "github/workflows/pr-scope.yml" ".github/workflows/pr-scope.yml"
+  add_template "docs/README.md" "docs/README.md"
+  add_template "docs/fuckia/README.md" "docs/fuckia/README.md"
+  add_template "docs/fuckia/archive/README.md" "docs/fuckia/archive/README.md"
+  add_template "docs/fuckia/end-of-work-checkpoint.md" "docs/fuckia/end-of-work-checkpoint.md"
+  add_template "docs/fuckia/linear/README.md" "docs/fuckia/linear/README.md"
+  add_template "docs/fuckia/linear/templates/README.md" "docs/fuckia/linear/templates/README.md"
+  add_template "docs/fuckia/merge-proposals/README.md" "docs/fuckia/merge-proposals/README.md"
+  add_template "linear/templates/spec.md" "docs/fuckia/linear/templates/spec.md"
+  add_template "linear/templates/plan.md" "docs/fuckia/linear/templates/plan.md"
+  add_template "linear/templates/plan-review.md" "docs/fuckia/linear/templates/plan-review.md"
+  add_template "linear/templates/implement.md" "docs/fuckia/linear/templates/implement.md"
+  add_template "linear/templates/code-review.md" "docs/fuckia/linear/templates/code-review.md"
+  add_template "linear/templates/verify.md" "docs/fuckia/linear/templates/verify.md"
+fi
+
+if include_claude; then
+  for skill_file in "$skills_dir"/claude-*.md; do
+    [ -f "$skill_file" ] || continue
+    skill_name="$(basename "$skill_file" .md)"
+    skill_name="${skill_name#claude-}"
+    if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "adversarial-implementer-guard" ]; then
+      continue
+    fi
+    add_file "$skill_file" ".claude/skills/$skill_name/SKILL.md"
+  done
+fi
+
+if include_codex; then
+  for skill_file in "$skills_dir"/codex-*.md; do
+    [ -f "$skill_file" ] || continue
+    skill_name="$(basename "$skill_file" .md)"
+    skill_name="${skill_name#codex-}"
+    if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "adversarial-implementer-guard" ]; then
+      continue
+    fi
+    add_file "$skill_file" ".agents/skills/$skill_name/SKILL.md"
+  done
+fi
 
 is_existing_project="false"
 for signal in AGENTS.md CLAUDE.md .agents .claude .github/workflows docs/fuckia fuckia.config.yaml; do
@@ -169,6 +287,9 @@ done
 echo "Fuckia Agent Install"
 echo "===================="
 echo "mode: $mode"
+echo "agent_mode: $resolved_agent_mode"
+echo "agent_mode_reason: $agent_mode_reason"
+echo "install_profile: $install_profile"
 echo "target: $target_dir"
 echo "target_kind: $([ "$is_existing_project" = "true" ] && echo "existing" || echo "new")"
 echo
@@ -207,6 +328,12 @@ if [ "$mode" = "dry-run" ]; then
   exit 0
 fi
 
+if [ "$install_profile" = "guard-only" ] && [ "${#proposal_files[@]}" -gt 0 ]; then
+  echo "Blocked: guard-only install will not overwrite or create merge proposals for existing skill files." >&2
+  print_list "blocked_existing_files:" "${preserve_files[@]+"${preserve_files[@]}"}" >&2
+  exit 1
+fi
+
 for proposal_file in "${proposal_files[@]+"${proposal_files[@]}"}"; do
   if [ -e "$target_dir/$proposal_file" ]; then
     echo "Blocked: merge proposal already exists: $proposal_file" >&2
@@ -214,12 +341,13 @@ for proposal_file in "${proposal_files[@]+"${proposal_files[@]}"}"; do
   fi
 done
 
-if [ "$is_existing_project" = "true" ] && [ ! -e "$target_dir/docs/fuckia/migration-plan.md" ]; then
+if [ "$install_profile" = "full" ] && [ "$is_existing_project" = "true" ] && [ ! -e "$target_dir/docs/fuckia/migration-plan.md" ]; then
   mkdir -p "$target_dir/docs/fuckia"
   cat > "$target_dir/docs/fuckia/migration-plan.md" <<EOF
 # Fuckia Migration Plan
 
 Target: \`$target_dir\`
+Agent mode: \`$resolved_agent_mode\`
 
 Existing governance files are preserved. Proposed Fuckia content for existing files is written under \`docs/fuckia/merge-proposals/\`.
 

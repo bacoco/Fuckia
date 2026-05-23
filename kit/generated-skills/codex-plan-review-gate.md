@@ -6,7 +6,7 @@ description: Use before risky implementation to require independent review of th
 <!--
 GENERATED FILE - DO NOT EDIT DIRECTLY
 source: kit/skills-src/shared/plan-review-gate.skill.md
-source_hash: 7d2ba44a031ff7277b2b6da7c217e3f8df031c942348bf402eb014cd5b2f3073
+source_hash: e2773e1ce274a8fb107f830e7e69c685c6dfccf4977954e5bfc53fa4ab47d122
 generated_by: fuckia generate-skills
 target: codex
 -->
@@ -52,6 +52,22 @@ Review must come from:
 - the other AI agent;
 - a separate review context with no implementation ownership.
 
+If only one AI agent is available, the author AI may create a self-check, but it must label it `self-check, not independent review`.
+
+The human fallback is a short validation card:
+
+- plan summary:
+- files that will change:
+- real workflow or command to inspect:
+- risk the human is accepting:
+- exact approval sentence:
+
+The exact approval sentence must be:
+
+```text
+Approved after human validation.
+```
+
 ## Block Rule
 
-If no independent review exists, do not implement. Ask for review.
+If no independent review or human approval exists, do not implement. Ask for review or human validation.

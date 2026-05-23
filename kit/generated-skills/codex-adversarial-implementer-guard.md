@@ -1,12 +1,12 @@
 ---
 name: adversarial-implementer-guard
-description: Use when writing or reviewing specs, plans, implementation prompts, architecture reviews, UX critiques, handoff docs, code reviews, or install/migration instructions that another developer or AI agent will execute.
+description: Use before finalizing specs, plans, implementation prompts, architecture reviews, UX critiques, handoff docs, code reviews, install/migration instructions, or after substantial code changes. Forces ambiguity removal, progressive disclosure across docs, specs, plans, code, APIs, prompts, tests, reviews, and verification, plus regression proof from a low-context implementer perspective.
 ---
 
 <!--
 GENERATED FILE - DO NOT EDIT DIRECTLY
 source: kit/skills-src/shared/adversarial-implementer-guard.skill.md
-source_hash: 10dd4bdda6d55686ec7257aa0128bbf67dd20fb8b080644ceb0d5e786d01987c
+source_hash: f85b8d5ab1889148486f5e3485ce071b4106eed1a1eda9d955f5891955baf903
 generated_by: fuckia generate-skills
 target: codex
 -->
@@ -21,9 +21,22 @@ target: codex
 - Do not run parallel agents on the same files.
 - Do not mark a risky Codex implementation as reviewed by the same Codex context.
 
-Use this skill before finalizing work that another human, Claude, Codex, or third reviewer will execute.
+Use this skill before finalizing work that another human, Claude, Codex, or third reviewer will execute, and after substantial code changes before polish or "done".
 
 Assume the next implementer is low-context, literal, rushed, and able to satisfy the words while damaging the product.
+
+A substantial code change is one that touches more than 3 files, changes a public route or API contract, introduces a store/pipeline/state machine, or modifies behavior other modules depend on.
+
+## Known/Unknown Pass
+
+Classify the handoff or diff before adding instructions:
+
+- **Known knowns:** explicit requirements, existing behavior, named files, routes, callbacks, contracts, tests, constraints, and sources already covered.
+- **Known unknowns:** decisions still required before implementation; convert them into phase gates, required decisions, or explicit deferrals.
+- **Unknown knowns:** assumptions hidden by "already done", "simple", "wire", "support", "MVP", "later", or "for now"; convert them into hard constraints or acceptance criteria.
+- **Unknown unknowns:** failure modes the implementer is unlikely to check; convert them into regression proof, non-goals, monitoring/logging, or follow-up.
+
+Bias toward uncertainty. If an item could fit multiple quadrants, classify it as unknown rather than known.
 
 ## Preserve Existing Behavior
 
@@ -34,6 +47,22 @@ List the behavior that must remain true:
 - routes, stores, hooks, queues, pipelines, and state machines that must not be replaced;
 - external contracts such as GitHub checks, Linear issue states, APIs, or generated skill metadata;
 - verification commands and real user paths that prove the old behavior still works.
+
+## Enforce Progressive Disclosure Everywhere
+
+Progressive disclosure applies to implementation, not only documentation.
+
+- Docs/specs/plans: use an index or top-level plan that points to phase, decision, domain, or implementation files when the topic is broad.
+- Code: expose a narrow entry point first, then split orchestration, domain logic, IO, state, persistence, rendering, prompt construction, and validation by responsibility.
+- New code files should normally stay under roughly 200 lines; split or justify larger files, and do not hide unrelated responsibilities in a large `utils`, `service`, `manager`, or `handler`.
+- Runtime flows: fetch or compute summaries/lists first, then expand details only when the real path needs them. Do not bulk-load full catalogs, doctrines, corpora, graph payloads, fixture sets, or prompt context by default.
+- APIs/search/discovery: expose summary/list endpoints first and detail endpoints only on explicit demand.
+- UI work: implement the smallest real workflow surface first, then reveal advanced controls or secondary panels only after the main path works.
+- Prompts/agents: select targeted domains or capabilities before injecting detailed doctrine.
+- Tests/verification: start with narrow contract checks and the shortest real workflow, then broaden only according to risk. State what was checked and what remains unverified.
+- Reviews: read root context first, then expand only into files that evidence a risk.
+
+A solution that works by dumping all knowledge, all domains, all tests, all UI, or all doctrine into one large artifact is a failed implementation unless explicitly requested.
 
 ## Red-Team The Wording
 
@@ -91,6 +120,42 @@ Require:
 - verification receipt;
 - archived evidence for the next agent.
 
+## Single-Agent Fallback
+
+When only one AI agent is available, do not pretend the post-code check is independent review.
+
+Use this rule:
+
+- the author AI may run an adversarial `self-check`;
+- the author AI must label it `self-check, not independent review`;
+- risky work still needs either human approval, another AI/session review, or an explicit `Ready for human validation` status;
+- the human validation request must be short enough to act on in one message.
+
+Human validation card:
+
+- changed files:
+- real workflow or command to inspect:
+- expected result:
+- risk the human is accepting:
+- exact approval sentence:
+
+The exact approval sentence must be:
+
+```text
+Approved after human validation.
+```
+
+## Post-Code Check
+
+When code has changed, inspect the actual diff and answer:
+
+- Did the change expose a Known/Unknown mismatch?
+- Did it create a parallel engine, pipeline, store, router, hook, prompt path, state machine, persistence contract, or UI workflow instead of extending the existing one?
+- Did any existing public route, callback, endpoint, storage key, or runtime flow stop being used?
+- Did the code preserve progressive disclosure by keeping entry points thin, responsibilities split, and summary/detail expansion explicit?
+- Do tests or verification exercise the real product path instead of isolated helper existence?
+- Are skipped or blocked verification steps explicitly reported?
+
 ## Review Mode
 
 When reviewing a PR, actively look for:
@@ -101,11 +166,17 @@ When reviewing a PR, actively look for:
 - tests that assert existence without exercising the real workflow;
 - skipped tests that hide regressions;
 - implementation that passes local checks while bypassing the product path.
+- over-broad files or prompts that load whole catalogs, doctrines, folders, test corpora, or UI surfaces instead of targeted summaries and details;
+- new files exceeding roughly 200 lines without a split or explicit justification.
 
 ## Output
 
 Add a section named `Adversarial implementer pass` with:
 
+- known knowns;
+- known unknowns;
+- unknown knowns;
+- unknown unknowns;
 - bad implementation path;
 - guardrail added;
 - existing behavior that must be preserved;

@@ -11,6 +11,8 @@ export interface SkillGenerationOptions {
   targetRootDir?: string;
   mode: SkillGenerationMode;
   outputKind?: "examples" | "install";
+  targets?: SkillTarget[];
+  skillNames?: string[];
 }
 
 export interface SkillGenerationOutput {
@@ -52,7 +54,9 @@ export async function generateSharedSkills(options: SkillGenerationOptions): Pro
 
   const generatedFiles = await buildGeneratedSkillFiles({
     sourceRootDir,
-    outputKind: options.outputKind ?? "examples"
+    outputKind: options.outputKind ?? "examples",
+    targets: options.targets,
+    skillNames: options.skillNames
   });
   const outputs: SkillGenerationOutput[] = [];
 
@@ -93,13 +97,24 @@ export async function generateSharedSkills(options: SkillGenerationOptions): Pro
 export async function buildGeneratedSkillFiles(options: {
   sourceRootDir: string;
   outputKind: "examples" | "install";
+  targets?: SkillTarget[];
+  skillNames?: string[];
 }): Promise<GeneratedSkillFile[]> {
   const sourceDir = path.join(options.sourceRootDir, "kit", "skills-src", "shared");
   const sources = await readSharedSkillSources(options.sourceRootDir, sourceDir);
+  const selectedSkillNames = options.skillNames ? new Set(options.skillNames) : null;
   const files: GeneratedSkillFile[] = [];
 
   for (const source of sources) {
+    if (selectedSkillNames && !selectedSkillNames.has(source.name)) {
+      continue;
+    }
+
     for (const target of source.targets) {
+      if (options.targets && !options.targets.includes(target)) {
+        continue;
+      }
+
       files.push({
         target,
         source: source.relativePath,

@@ -1,11 +1,15 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileExists } from "../fs/readTree";
+import type { ResolvedAgentMode } from "./agentMode";
+import type { InstallProfile } from "./installProfile";
 import { buildInstallFiles, type InitApplyFile } from "./applyInit";
 
 export interface MigrateApplyOptions {
   packageRoot: string;
   targetRoot: string;
+  agentMode: ResolvedAgentMode;
+  installProfile?: InstallProfile;
 }
 
 export interface MigrateApplyResult {

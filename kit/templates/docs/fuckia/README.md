@@ -1,13 +1,25 @@
 # Fuckia
 
-This repository uses Fuckia governance for Claude Code and Codex collaboration.
+This repository uses Fuckia governance.
+
+Agent mode is recorded in `fuckia.config.yaml`.
 
 ## Agent Entrypoints
 
-- Codex reads `AGENTS.md`.
-- Claude Code reads `CLAUDE.md`.
-- Codex skills live in `.agents/skills/`.
-- Claude skills live in `.claude/skills/`.
+- Codex reads `AGENTS.md` when `codex-only` or `dual-agent` is enabled.
+- Claude Code reads `CLAUDE.md` when `claude-only` or `dual-agent` is enabled.
+- Codex skills live in `.agents/skills/` when Codex is enabled.
+- Claude skills live in `.claude/skills/` when Claude is enabled.
+
+## Core Guard
+
+The central rule is adversarial progressive disclosure:
+
+- preserve working routes, stores, callbacks, pipelines, and workflows;
+- convert vague implementation language into explicit `MUST` / `MUST NOT` constraints;
+- split code by responsibility instead of creating broad catch-all files;
+- expose summaries before details in APIs, prompts, retrieval, tests, and verification;
+- verify the real workflow before Done.
 
 ## Required Workflow
 
@@ -16,9 +28,20 @@ This repository uses Fuckia governance for Claude Code and Codex collaboration.
 3. Use plan-review before risky implementation.
 4. Implement only inside approved scope.
 5. Use code review by a different agent or human for risky work.
-6. Verify the real workflow before Done.
-7. Archive receipts in GitHub or `docs/fuckia/`.
-8. End with the checkpoint format in `docs/fuckia/end-of-work-checkpoint.md`.
+6. In single-agent mode, label author review as self-check and ask the human to approve the validation card.
+7. Verify the real workflow before Done.
+8. Archive receipts in GitHub or `docs/fuckia/`.
+9. End with the checkpoint format in `docs/fuckia/end-of-work-checkpoint.md`.
+
+## Human Validation Card
+
+Use this when no independent AI reviewer is available:
+
+- changed files:
+- real workflow or command to inspect:
+- expected result:
+- risk the human is accepting:
+- exact approval sentence: `Approved after human validation.`
 
 ## Installed Mode
 

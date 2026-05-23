@@ -10,6 +10,8 @@ https://github.com/bacoco/Fuckia/blob/main/INSTALL.md
 
 Claude-specific rules:
 
+- default to `claude-only` when the repository has no Codex markers and the human did not ask for dual-agent;
+- use `--profile guard-only` when the human asks for only the Adversarial Progressive Disclosure Guard skill;
 - use Claude planning tools for task tracking when the install has more than one step;
 - do not use Claude subagents on overlapping files;
 - do not copy `INSTALL.md` into the target repository;

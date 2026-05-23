@@ -20,18 +20,19 @@ Fixes:
 
 Author AI:
 
-Validator AI:
+Validator AI or human reviewer:
 
 GitHub reviewer account or platform blocker:
 
-- [ ] Validator AI is different from Author AI when independent review is required.
+- [ ] Validator is different from Author AI, or human approval is recorded when independent review is required.
 - [ ] GitHub account identity is used only as transport, not as proof of AI independence.
 - [ ] GitHub platform gate is recorded separately from AI review validity.
 
 ## Plan Review
 
-- [ ] Plan reviewed by another agent or human.
-- [ ] Risky work does not use self-review.
+- [ ] Plan reviewed by another agent or human when risky.
+- [ ] Author AI self-check is labelled as self-check, not independent review.
+- [ ] Single-agent fallback includes the human validation card when no other reviewer is available.
 
 ## Safety
 
