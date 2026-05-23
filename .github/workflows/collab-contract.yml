@@ -48,4 +48,4 @@ jobs:
           grep -q "GitHub reviewer account or platform blocker:" pr-body.md
           grep -q "## Plan Review" pr-body.md
           grep -q "## Real Workflow Verification" pr-body.md
-          grep -q "## Adversarial Implementer Pass" pr-body.md
+          grep -q "## PDG Pass" pr-body.md

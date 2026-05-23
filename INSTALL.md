@@ -17,6 +17,14 @@ The stable skill slug is `progressive-disclosure-guard`.
 
 Use `guard-only` when the human only wants the PDG and does not want the full Claude/Codex collaboration kit.
 
+For standalone PDG installation, prefer the dedicated repository:
+
+```text
+https://github.com/bacoco/progressive-disclosure-guard
+```
+
+Fuckia keeps a pinned vendored copy for full-kit installation and `guard-only` compatibility.
+
 Use explicit human wording when available:
 
 - "only the guard", "only the skill", or "PDG - Progressive Disclosure Guard" -> `guard-only`
@@ -25,13 +33,13 @@ Use explicit human wording when available:
 Prompt for Codex:
 
 ```text
-Install only Fuckia's PDG - Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install PDG - Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/progressive-disclosure-guard/blob/main/INSTALL.md`, start with audit only, report the exact files you will write, and ask before writing.
 ```
 
 Prompt for Claude Code:
 
 ```text
-Install only Fuckia's PDG - Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install PDG - Progressive Disclosure Guard here for Claude Code. Read `https://github.com/bacoco/progressive-disclosure-guard/blob/main/INSTALL.md`, start with audit only, report the exact files you will write, and ask before writing.
 ```
 
 In `guard-only`, install only these files:

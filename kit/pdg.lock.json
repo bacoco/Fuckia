@@ -1,0 +1,19 @@
+{
+  "name": "PDG - Progressive Disclosure Guard",
+  "repository": "https://github.com/bacoco/progressive-disclosure-guard.git",
+  "commit": "80fa1418d15101bd5d1056ed5c13e87d054af8b0",
+  "files": [
+    {
+      "source": "kit/skills-src/shared/progressive-disclosure-guard.skill.md",
+      "target": "kit/skills-src/shared/progressive-disclosure-guard.skill.md"
+    },
+    {
+      "source": "kit/generated-skills/codex-progressive-disclosure-guard.md",
+      "target": "kit/generated-skills/codex-progressive-disclosure-guard.md"
+    },
+    {
+      "source": "kit/generated-skills/claude-progressive-disclosure-guard.md",
+      "target": "kit/generated-skills/claude-progressive-disclosure-guard.md"
+    }
+  ]
+}

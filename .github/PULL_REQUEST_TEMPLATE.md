@@ -62,7 +62,7 @@ Commands and workflow tested:
 
 ```
 
-## Adversarial Implementer Pass
+## PDG Pass
 
 - Bad implementation path:
 - Guardrail added:

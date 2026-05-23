@@ -16,6 +16,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && node kit/scripts/build/create-cli-wrapper.mjs",
     "prepare": "npm run build",
+    "check:pdg": "node kit/scripts/sync-pdg-from-repo.mjs --check",
+    "sync:pdg": "node kit/scripts/sync-pdg-from-repo.mjs --write",
     "check:skills": "npm run build && node dist/cli.js generate-skills --check",
     "generate-skills": "npm run build && node dist/cli.js generate-skills --write --examples",
     "test": "npm run build && node --test dist/tests/*.test.js",

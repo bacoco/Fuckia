@@ -150,7 +150,7 @@ Default is `auto`.
 
 ## Non-Goals
 
-- Do not split `progressive-disclosure-guard` into a separate repository now.
+- Keep Fuckia's `progressive-disclosure-guard` copy pinned to the standalone PDG repository.
 - Do not create separate hand-maintained Claude and Codex skill sources.
 - Do not remove generated skill previews from `kit/generated-skills/`.
 - Do not require Node.js for normal agent-led installation.

@@ -18,6 +18,8 @@ That guard is useful before any Claude/Codex collaboration. You can install only
 
 The readable name is **PDG - Progressive Disclosure Guard**. The skill slug is `progressive-disclosure-guard`.
 
+PDG now has its own minimal repository: `https://github.com/bacoco/progressive-disclosure-guard`. Fuckia vendors a pinned copy so the full collaboration kit can still install it with the rest of the governance files.
+
 ## What It Prevents
 
 AI coding agents often fail by adding too much, too early:
@@ -91,13 +93,13 @@ Use this when you want the progressive disclosure discipline without GitHub work
 Codex prompt:
 
 ```text
-Install only Fuckia's PDG - Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install PDG - Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/progressive-disclosure-guard/blob/main/INSTALL.md`, start with audit only, report the exact files you will write, and ask before writing.
 ```
 
 Claude Code prompt:
 
 ```text
-Install only Fuckia's PDG - Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install PDG - Progressive Disclosure Guard here for Claude Code. Read `https://github.com/bacoco/progressive-disclosure-guard/blob/main/INSTALL.md`, start with audit only, report the exact files you will write, and ask before writing.
 ```
 
 Guard-only writes only the selected skill file:
@@ -161,6 +163,7 @@ Technical detail starts in `kit/vibe-coding/README.md`.
 ```bash
 npm install
 npm test
+npm run check:pdg
 npm run test:e2e
 node dist/cli.js doctor --self --strict
 ```
