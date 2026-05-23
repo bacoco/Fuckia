@@ -210,7 +210,6 @@ test("init --apply installs governance files and generated skills", async () => 
       path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
       "utf8"
     );
-    const githubReadme = await readFile(path.join(directory, ".github", "README.md"), "utf8");
     const claudeSkill = await readFile(
       path.join(directory, ".claude", "skills", "adversarial-implementer-guard", "SKILL.md"),
       "utf8"
@@ -229,7 +228,7 @@ test("init --apply installs governance files and generated skills", async () => 
     assert.match(claude, /Claude Code must follow Fuckia governance/);
     assert.match(codexSkill, /target: codex/);
     assert.match(claudeSkill, /target: claude/);
-    assert.match(githubReadme, /GitHub Templates/);
+    assert.equal((await snapshotTree(directory)).includes(".github/README.md"), false);
     assert.match(workflow, /Fuckia Collaboration Contract/);
     assert.match(checkpoint, /Current state:/);
     assert.match(linearTemplate, /Adversarial Implementer Pass/);

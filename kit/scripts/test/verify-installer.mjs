@@ -71,7 +71,6 @@ withTempDirectory("fuckia-shell-empty-", (directory) => {
   assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
   assertFile(directory, "CLAUDE.md", "Claude Code must follow Fuckia governance");
   assertFile(directory, "README.md", "Fuckia governance is installed");
-  assertFile(directory, ".github/README.md", "GitHub Templates");
   assertFile(directory, ".github/workflows/collab-contract.yml", "Fuckia Collaboration Contract");
   assertFile(directory, ".agents/skills/evidence-language-guard/SKILL.md", "target: codex");
   assertFile(directory, ".claude/skills/evidence-language-guard/SKILL.md", "target: claude");
@@ -138,7 +137,6 @@ withTempDirectory("fuckia-empty-", (directory) => {
 
   assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
   assertFile(directory, "CLAUDE.md", "Claude Code must follow Fuckia governance");
-  assertFile(directory, ".github/README.md", "GitHub Templates");
   assertFile(directory, ".github/workflows/collab-contract.yml", "Fuckia Collaboration Contract");
   assertFile(directory, ".agents/skills/adversarial-implementer-guard/SKILL.md", "target: codex");
   assertFile(directory, ".claude/skills/adversarial-implementer-guard/SKILL.md", "target: claude");

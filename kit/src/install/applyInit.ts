@@ -41,7 +41,6 @@ const templateFiles: Array<{ templatePath: string; outputPath: string; scope: Te
   { templatePath: "project/AGENTS.md", outputPath: "AGENTS.md", scope: "codex" },
   { templatePath: "project/CLAUDE.md", outputPath: "CLAUDE.md", scope: "claude" },
   { templatePath: "project/fuckia.config.yaml", outputPath: "fuckia.config.yaml", scope: "common" },
-  { templatePath: "github/README.md", outputPath: ".github/README.md", scope: "common" },
   { templatePath: "github/pull_request_template.md", outputPath: ".github/PULL_REQUEST_TEMPLATE.md", scope: "common" },
   { templatePath: "github/workflows/collab-contract.yml", outputPath: ".github/workflows/collab-contract.yml", scope: "common" },
   { templatePath: "github/workflows/generated-skills.yml", outputPath: ".github/workflows/generated-skills.yml", scope: "common" },

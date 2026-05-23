@@ -1,8 +1,10 @@
-# GitHub Templates
+# GitHub Template Sources
 
-GitHub templates installed into target repositories.
+Internal source templates for GitHub pull request and workflow files.
 
-Files:
+This README documents the template source directory only. It is not installed into target repositories.
+
+Installed files:
 
 - `pull_request_template.md`
 - `workflows/collab-contract.yml`

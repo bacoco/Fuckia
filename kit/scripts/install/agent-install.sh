@@ -196,7 +196,6 @@ fi
 if [ "$install_profile" = "full" ]; then
   add_file "$runtime_dir/fuckia.config.yaml" "fuckia.config.yaml"
   add_template "project/root-readme.md" "README.md" "optional"
-  add_template "github/README.md" ".github/README.md"
   add_template "github/pull_request_template.md" ".github/PULL_REQUEST_TEMPLATE.md"
   add_template "github/workflows/README.md" ".github/workflows/README.md"
   add_template "github/workflows/collab-contract.yml" ".github/workflows/collab-contract.yml"

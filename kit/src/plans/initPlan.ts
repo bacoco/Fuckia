@@ -60,7 +60,6 @@ export async function buildInitPlan(
         { path: "CLAUDE.md", source: "template", purpose: "Claude entry rules." }
       ] : []),
       ...(installProfile === "full" ? [
-        { path: ".github/README.md", source: "template", purpose: "GitHub directory map." },
         { path: ".github/PULL_REQUEST_TEMPLATE.md", source: "template", purpose: "PR collaboration contract." },
         { path: ".github/workflows/collab-contract.yml", source: "template", purpose: "Collaboration gate checks." },
         { path: ".github/workflows/generated-skills.yml", source: "template", purpose: "Generated skill drift checks." },

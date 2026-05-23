@@ -21,7 +21,6 @@ The command creates:
 - `README.md` when the target repository has no README;
 - `.agents/skills/...`;
 - `.claude/skills/...`;
-- `.github/README.md`;
 - `.github/PULL_REQUEST_TEMPLATE.md`;
 - `.github/workflows/...`;
 - `fuckia.config.yaml`;

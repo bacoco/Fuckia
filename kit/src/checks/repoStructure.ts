@@ -11,6 +11,7 @@ export interface StructureFinding {
 }
 
 const ignoredDirectories = new Set([".git", "node_modules", "dist"]);
+const readmeOptionalDirectories = new Set([".github"]);
 
 export async function checkRepositoryStructure(rootDir: string): Promise<StructureFinding[]> {
   const findings: StructureFinding[] = [];
@@ -24,6 +25,9 @@ export async function checkRepositoryStructure(rootDir: string): Promise<Structu
   for (const directory of directories) {
     const relativePath = normalizePath(path.relative(rootDir, directory)) || ".";
     if (relativePath === ".") {
+      continue;
+    }
+    if (readmeOptionalDirectories.has(relativePath)) {
       continue;
     }
 
