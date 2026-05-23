@@ -8,7 +8,7 @@ Usage:
   agent-install.sh --target <repo> --apply --yes --agent-mode <codex-only|claude-only|dual-agent> [--profile full|guard-only]
 
 Installs Fuckia governance files without Node.js or npm.
-Use --profile guard-only to install only the Adversarial Progressive Disclosure Guard skill.
+Use --profile guard-only to install only the PDG - Progressive Disclosure Guard skill.
 EOF
 }
 
@@ -221,7 +221,7 @@ if include_claude; then
     [ -f "$skill_file" ] || continue
     skill_name="$(basename "$skill_file" .md)"
     skill_name="${skill_name#claude-}"
-    if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "adversarial-implementer-guard" ]; then
+    if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "progressive-disclosure-guard" ]; then
       continue
     fi
     add_file "$skill_file" ".claude/skills/$skill_name/SKILL.md"
@@ -233,7 +233,7 @@ if include_codex; then
     [ -f "$skill_file" ] || continue
     skill_name="$(basename "$skill_file" .md)"
     skill_name="${skill_name#codex-}"
-    if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "adversarial-implementer-guard" ]; then
+    if [ "$install_profile" = "guard-only" ] && [ "$skill_name" != "progressive-disclosure-guard" ]; then
       continue
     fi
     add_file "$skill_file" ".agents/skills/$skill_name/SKILL.md"

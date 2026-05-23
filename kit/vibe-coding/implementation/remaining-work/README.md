@@ -36,7 +36,7 @@ Self-improvement from public issues is secondary.
    - Require pull requests for rule, skill, template, and validator changes.
    - Keep this secondary to the Claude/Codex collaboration goal.
 
-## Adversarial Implementer Pass
+## PDG Pass
 
 - Bad implementation path: treat package publishing as required before the agent prompt can work.
 - Guardrail added: the agent prompt uses the GitHub repository directly; package publishing is a later distribution channel.

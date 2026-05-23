@@ -150,13 +150,13 @@ Default is `auto`.
 
 ## Non-Goals
 
-- Do not split `adversarial-implementer-guard` into a separate repository now.
+- Do not split `progressive-disclosure-guard` into a separate repository now.
 - Do not create separate hand-maintained Claude and Codex skill sources.
 - Do not remove generated skill previews from `kit/generated-skills/`.
 - Do not require Node.js for normal agent-led installation.
 - Do not treat missing Claude/Codex credentials as repository-mode proof.
 
-## Adversarial implementer pass
+## PDG pass
 
 - Known knowns: Fuckia currently has one shared skill source and generated Claude/Codex outputs; existing dual-agent install behavior must keep working.
 - Known unknowns: exact `fuckia.config.yaml` schema for `agentMode` must be chosen during implementation.

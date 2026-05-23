@@ -97,7 +97,7 @@ For each project:
 - PR cannot be marked ready for risky UI work without verification receipt.
 - Linear issue contains enough context for a low-context agent to start safely.
 
-## Adversarial implementer pass
+## PDG pass
 
 - Bad implementation path: "roll out everything everywhere immediately."
 - Guardrail added: phased rollout with pilot and warning mode.

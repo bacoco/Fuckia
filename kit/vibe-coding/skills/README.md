@@ -21,7 +21,7 @@ Claude-only and Codex-only skills are tool adapters. They must not weaken the un
 
 Implemented source:
 
-- `../../kit/skills-src/shared/adversarial-implementer-guard.skill.md`
+- `../../kit/skills-src/shared/progressive-disclosure-guard.skill.md`
 
 Generated examples:
 

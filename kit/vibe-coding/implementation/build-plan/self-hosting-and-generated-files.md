@@ -76,7 +76,7 @@ After the generator exists:
 - manual edits to generated outputs must fail validation;
 - source files remain the editable contract.
 
-## Adversarial Implementer Pass
+## PDG Pass
 
 - Bad implementation path: "self-hosted" means the tool rewrites its own repo automatically.
 - Guardrail added: self-check is read-only unless an explicit apply command is used.

@@ -49,7 +49,7 @@ const requiredPrHeadings = [
   "## AI Identity",
   "## Plan Review",
   "## Real Workflow Verification",
-  "## Adversarial Implementer Pass"
+  "## PDG Pass"
 ];
 
 const requiredPrChecklistLines = [
@@ -60,7 +60,7 @@ const requiredPrChecklistLines = [
 ];
 
 const requiredSkillNames = [
-  "adversarial-implementer-guard",
+  "progressive-disclosure-guard",
   "cross-agent-handoff",
   "delegated-review-and-merge",
   "destructive-change-guard",

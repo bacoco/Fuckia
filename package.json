@@ -2,7 +2,7 @@
   "name": "fuckia",
   "version": "0.1.0",
   "private": false,
-  "description": "Claude and Codex collaboration guardrails for GitHub and Linear projects.",
+  "description": "PDG progressive disclosure guardrails for AI coding agents, with optional Claude and Codex collaboration.",
   "type": "commonjs",
   "bin": {
     "fuckia": "./dist/cli.js"

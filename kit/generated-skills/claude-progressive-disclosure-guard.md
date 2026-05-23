@@ -1,17 +1,17 @@
 ---
-name: adversarial-implementer-guard
+name: progressive-disclosure-guard
 description: Use before finalizing specs, plans, implementation prompts, architecture reviews, UX critiques, handoff docs, code reviews, install/migration instructions, or after substantial code changes. Forces ambiguity removal, progressive disclosure across docs, specs, plans, code, APIs, prompts, tests, reviews, and verification, plus regression proof from a low-context implementer perspective.
 ---
 
 <!--
 GENERATED FILE - DO NOT EDIT DIRECTLY
-source: kit/skills-src/shared/adversarial-implementer-guard.skill.md
-source_hash: f85b8d5ab1889148486f5e3485ce071b4106eed1a1eda9d955f5891955baf903
+source: kit/skills-src/shared/progressive-disclosure-guard.skill.md
+source_hash: 24990d5767df45412d9477592a6441777bcfb63ab8c536f26659ec0a4fd96f57
 generated_by: fuckia generate-skills
 target: claude
 -->
 
-# Adversarial Implementer Guard
+# PDG - Progressive Disclosure Guard
 
 ## Claude Mechanics
 
@@ -125,7 +125,7 @@ When only one AI agent is available, do not pretend the post-code check is indep
 
 Use this rule:
 
-- the author AI may run an adversarial `self-check`;
+- the author AI may run a `PDG self-check`;
 - the author AI must label it `self-check, not independent review`;
 - risky work still needs either human approval, another AI/session review, or an explicit `Ready for human validation` status;
 - the human validation request must be short enough to act on in one message.
@@ -170,7 +170,7 @@ When reviewing a PR, actively look for:
 
 ## Output
 
-Add a section named `Adversarial implementer pass` with:
+Add a section named `PDG pass` with:
 
 - known knowns;
 - known unknowns;

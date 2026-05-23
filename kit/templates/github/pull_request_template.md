@@ -43,7 +43,7 @@ Commands and workflow tested:
 - [ ] Generated skills were not edited by hand.
 - [ ] Verification receipt is included for product-visible behavior.
 
-## Adversarial Implementer Pass
+## PDG Pass
 
 - Bad implementation path:
 - Guardrail added:

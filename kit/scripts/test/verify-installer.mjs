@@ -97,7 +97,7 @@ withTempDirectory("fuckia-shell-guard-only-", (directory) => {
     repoRoot
   );
 
-  assertFile(directory, ".agents/skills/adversarial-implementer-guard/SKILL.md", "target: codex");
+  assertFile(directory, ".agents/skills/progressive-disclosure-guard/SKILL.md", "target: codex");
 
   for (const forbidden of ["AGENTS.md", "README.md", "fuckia.config.yaml", ".github", ".claude"]) {
     if (existsSync(path.join(directory, forbidden))) {
@@ -138,8 +138,8 @@ withTempDirectory("fuckia-empty-", (directory) => {
   assertFile(directory, "AGENTS.md", "Codex must follow Fuckia governance");
   assertFile(directory, "CLAUDE.md", "Claude Code must follow Fuckia governance");
   assertFile(directory, ".github/workflows/collab-contract.yml", "Fuckia Collaboration Contract");
-  assertFile(directory, ".agents/skills/adversarial-implementer-guard/SKILL.md", "target: codex");
-  assertFile(directory, ".claude/skills/adversarial-implementer-guard/SKILL.md", "target: claude");
+  assertFile(directory, ".agents/skills/progressive-disclosure-guard/SKILL.md", "target: codex");
+  assertFile(directory, ".claude/skills/progressive-disclosure-guard/SKILL.md", "target: claude");
 });
 
 withTempDirectory("fuckia-existing-", (directory) => {
@@ -157,8 +157,8 @@ withTempDirectory("fuckia-existing-", (directory) => {
 
   assertFile(directory, "docs/fuckia/migration-plan.md", "Existing Governance Inventory");
   assertFile(directory, "docs/fuckia/merge-proposals/AGENTS.md.md", "Merge Proposal: AGENTS.md");
-  assertFile(directory, ".agents/skills/adversarial-implementer-guard/SKILL.md", "target: codex");
-  assertFile(directory, ".claude/skills/adversarial-implementer-guard/SKILL.md", "target: claude");
+  assertFile(directory, ".agents/skills/progressive-disclosure-guard/SKILL.md", "target: codex");
+  assertFile(directory, ".claude/skills/progressive-disclosure-guard/SKILL.md", "target: claude");
 });
 
 withTempDirectory("fuckia-pack-", (directory) => {

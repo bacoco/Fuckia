@@ -21,7 +21,7 @@ Before merge, an improvement PR must have:
 - a linked issue or failure report;
 - explicit acceptance criteria;
 - verification commands;
-- adversarial implementer pass;
+- PDG pass;
 - review by a human or independent agent that did not implement the change.
 
 ## Forbidden AI Work

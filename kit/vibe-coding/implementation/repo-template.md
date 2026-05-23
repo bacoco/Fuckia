@@ -113,7 +113,7 @@ bash "$FUCKIA_DIR/kit/scripts/install/agent-install.sh" --target "$target_dir" -
 
 `--apply` is limited to governance files unless the user explicitly authorizes a broader change.
 
-## Adversarial implementer pass
+## PDG pass
 
 - Bad implementation path: "template repo" means a pile of Markdown only.
 - Guardrail added: template must include installable rules, generated skill outputs, scripts, and CI gates.

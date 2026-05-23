@@ -26,7 +26,7 @@ export function formatHelp(): string {
     "Safety rule:",
     "  Install and migration commands write only when an explicit --apply flag is used.",
     "  Auto agent mode asks for Codex-only, Claude-only, or dual-agent when repo markers are ambiguous.",
-    "  Use --profile guard-only to install only the Adversarial Progressive Disclosure Guard skill.",
+    "  Use --profile guard-only to install only the PDG - Progressive Disclosure Guard skill.",
     "  GitHub remote apply requires an explicit --apply --yes command.",
     "  Linear remote apply requires an explicit --apply --yes command.",
     "  Skill generation writes only generated skills when --write --examples or --write --install is used.",

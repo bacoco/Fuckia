@@ -1,25 +1,19 @@
 ---
-name: adversarial-implementer-guard
+name: progressive-disclosure-guard
 description: Use before finalizing specs, plans, implementation prompts, architecture reviews, UX critiques, handoff docs, code reviews, install/migration instructions, or after substantial code changes. Forces ambiguity removal, progressive disclosure across docs, specs, plans, code, APIs, prompts, tests, reviews, and verification, plus regression proof from a low-context implementer perspective.
+targets:
+  - claude
+  - codex
+constitution:
+  - progressive-disclosure-before-detail
+  - evidence-before-claim
+  - source-of-truth-before-memory
+  - preserve-working-systems
+  - separated-authority
+  - real-verification-before-done
 ---
 
-<!--
-GENERATED FILE - DO NOT EDIT DIRECTLY
-source: kit/skills-src/shared/adversarial-implementer-guard.skill.md
-source_hash: f85b8d5ab1889148486f5e3485ce071b4106eed1a1eda9d955f5891955baf903
-generated_by: fuckia generate-skills
-target: codex
--->
-
-# Adversarial Implementer Guard
-
-## Codex Mechanics
-
-- Use `rg` for repository inventory.
-- Use `apply_patch` for manual file edits.
-- Use Codex subagents only when file ownership is disjoint.
-- Do not run parallel agents on the same files.
-- Do not mark a risky Codex implementation as reviewed by the same Codex context.
+# PDG - Progressive Disclosure Guard
 
 Use this skill before finalizing work that another human, Claude, Codex, or third reviewer will execute, and after substantial code changes before polish or "done".
 
@@ -126,7 +120,7 @@ When only one AI agent is available, do not pretend the post-code check is indep
 
 Use this rule:
 
-- the author AI may run an adversarial `self-check`;
+- the author AI may run a `PDG self-check`;
 - the author AI must label it `self-check, not independent review`;
 - risky work still needs either human approval, another AI/session review, or an explicit `Ready for human validation` status;
 - the human validation request must be short enough to act on in one message.
@@ -171,7 +165,7 @@ When reviewing a PR, actively look for:
 
 ## Output
 
-Add a section named `Adversarial implementer pass` with:
+Add a section named `PDG pass` with:
 
 - known knowns;
 - known unknowns;

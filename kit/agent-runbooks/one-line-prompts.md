@@ -19,8 +19,8 @@ Install Fuckia here for Claude and Codex.
 Skill-only prompts:
 
 ```text
-Install only Fuckia's Adversarial Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
-Install only Fuckia's Adversarial Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install only Fuckia's PDG - Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install only Fuckia's PDG - Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
 ```
 
 The agent follows the remote procedure. It does not copy the procedure file into the target repository.

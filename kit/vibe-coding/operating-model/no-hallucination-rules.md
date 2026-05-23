@@ -95,7 +95,7 @@ Follow-up issue:
 
 Bypasses must be logged in Linear and visible in the PR.
 
-## Adversarial implementer pass
+## PDG pass
 
 - Bad implementation path: "architecture spec says Linear supports X, so code against X."
 - Guardrail added: all product/API claims must be verified before coding.

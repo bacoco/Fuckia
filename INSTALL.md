@@ -11,33 +11,33 @@ Normal installation does not require Node.js or npm.
 Fuckia has two install profiles:
 
 - `full`: install the governance kit, selected agent entrypoints, skills, docs, GitHub templates, and Linear templates.
-- `guard-only`: install only the **Adversarial Progressive Disclosure Guard** skill.
+- `guard-only`: install only the **PDG - Progressive Disclosure Guard** skill.
 
-The stable skill slug is `adversarial-implementer-guard`.
+The stable skill slug is `progressive-disclosure-guard`.
 
-Use `guard-only` when the human only wants the progressive disclosure/adversarial guard and does not want the full Claude/Codex collaboration kit.
+Use `guard-only` when the human only wants the PDG and does not want the full Claude/Codex collaboration kit.
 
 Use explicit human wording when available:
 
-- "only the guard", "only the skill", or "Adversarial Progressive Disclosure Guard" -> `guard-only`
+- "only the guard", "only the skill", or "PDG - Progressive Disclosure Guard" -> `guard-only`
 - "Fuckia", "full kit", "collaboration", "GitHub", or "Linear" -> `full`
 
 Prompt for Codex:
 
 ```text
-Install only Fuckia's Adversarial Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install only Fuckia's PDG - Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
 ```
 
 Prompt for Claude Code:
 
 ```text
-Install only Fuckia's Adversarial Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install only Fuckia's PDG - Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
 ```
 
 In `guard-only`, install only these files:
 
-- Codex: `.agents/skills/adversarial-implementer-guard/SKILL.md`
-- Claude: `.claude/skills/adversarial-implementer-guard/SKILL.md`
+- Codex: `.agents/skills/progressive-disclosure-guard/SKILL.md`
+- Claude: `.claude/skills/progressive-disclosure-guard/SKILL.md`
 
 Do not install `AGENTS.md`, `CLAUDE.md`, `fuckia.config.yaml`, GitHub workflows, Linear templates, or `docs/fuckia` in `guard-only`.
 
@@ -288,20 +288,20 @@ For skill-only install, verify only the selected skill:
 cd "$target_dir"
 case "<codex-only|claude-only|dual-agent>" in
   codex-only)
-    test -f .agents/skills/adversarial-implementer-guard/SKILL.md
+    test -f .agents/skills/progressive-disclosure-guard/SKILL.md
     test ! -e AGENTS.md
     test ! -e CLAUDE.md
     test ! -e fuckia.config.yaml
     ;;
   claude-only)
-    test -f .claude/skills/adversarial-implementer-guard/SKILL.md
+    test -f .claude/skills/progressive-disclosure-guard/SKILL.md
     test ! -e AGENTS.md
     test ! -e CLAUDE.md
     test ! -e fuckia.config.yaml
     ;;
   dual-agent)
-    test -f .agents/skills/adversarial-implementer-guard/SKILL.md
-    test -f .claude/skills/adversarial-implementer-guard/SKILL.md
+    test -f .agents/skills/progressive-disclosure-guard/SKILL.md
+    test -f .claude/skills/progressive-disclosure-guard/SKILL.md
     test ! -e AGENTS.md
     test ! -e CLAUDE.md
     test ! -e fuckia.config.yaml

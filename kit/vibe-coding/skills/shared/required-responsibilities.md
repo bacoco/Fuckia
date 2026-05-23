@@ -5,7 +5,7 @@ The initial v1 skills are listed in `../catalog/shared-v1.md`.
 Responsibility groups:
 
 - Linear coordination;
-- adversarial implementer guard;
+- PDG;
 - GitHub PR contract;
 - plan-review gate;
 - archive janitor;

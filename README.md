@@ -2,7 +2,7 @@
 
 **Progressive disclosure for AI coding agents.**
 
-Fuckia's main product is the **Adversarial Progressive Disclosure Guard**: a skill for Codex and Claude Code that stops AI agents from turning a change into one giant plan, one giant file, one vague refactor, or one fake verification.
+Fuckia's main product is the **PDG - Progressive Disclosure Guard**: a skill for Codex and Claude Code that stops AI agents from turning a change into one giant plan, one giant file, one vague refactor, or one fake verification.
 
 It forces the agent to reveal work in layers:
 
@@ -16,7 +16,7 @@ It forces the agent to reveal work in layers:
 
 That guard is useful before any Claude/Codex collaboration. You can install only the guard and ignore the rest of Fuckia.
 
-The readable name is **Adversarial Progressive Disclosure Guard**. The stable skill slug remains `adversarial-implementer-guard` so existing installs keep working.
+The readable name is **PDG - Progressive Disclosure Guard**. The skill slug is `progressive-disclosure-guard`.
 
 ## What It Prevents
 
@@ -50,7 +50,7 @@ The point is simple: the agent must earn the next layer of detail. It cannot loa
 
 ## The Core Skill
 
-The guard makes the agent run an adversarial pass before important handoffs and after substantial code changes.
+The guard makes the agent run a PDG pass before important handoffs and after substantial code changes.
 
 It asks:
 
@@ -91,19 +91,19 @@ Use this when you want the progressive disclosure discipline without GitHub work
 Codex prompt:
 
 ```text
-Install only Fuckia's Adversarial Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install only Fuckia's PDG - Progressive Disclosure Guard here for Codex. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
 ```
 
 Claude Code prompt:
 
 ```text
-Install only Fuckia's Adversarial Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
+Install only Fuckia's PDG - Progressive Disclosure Guard here for Claude. Read `https://github.com/bacoco/Fuckia/blob/main/INSTALL.md`, start with audit only, and ask before writing files.
 ```
 
 Guard-only writes only the selected skill file:
 
-- Codex: `.agents/skills/adversarial-implementer-guard/SKILL.md`
-- Claude Code: `.claude/skills/adversarial-implementer-guard/SKILL.md`
+- Codex: `.agents/skills/progressive-disclosure-guard/SKILL.md`
+- Claude Code: `.claude/skills/progressive-disclosure-guard/SKILL.md`
 - Dual agent: both skill files
 
 It does not install `AGENTS.md`, `CLAUDE.md`, GitHub workflows, Linear templates, `docs/fuckia`, or `fuckia.config.yaml`.
@@ -144,7 +144,7 @@ That keeps single-agent work simple without pretending self-review is independen
 
 Working now:
 
-- guard-only install for the Adversarial Progressive Disclosure Guard;
+- guard-only install for the PDG - Progressive Disclosure Guard;
 - Codex-only, Claude-only, and dual-agent installation modes;
 - agent-first install through `INSTALL.md`;
 - install and migration audit;

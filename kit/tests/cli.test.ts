@@ -141,7 +141,7 @@ test("install --apply supports codex-only mode", async () => {
     const workflow = await readFile(path.join(directory, ".github", "workflows", "generated-skills.yml"), "utf8");
     const contractWorkflow = await readFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "utf8");
     const codexSkill = await readFile(
-      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      path.join(directory, ".agents", "skills", "progressive-disclosure-guard", "SKILL.md"),
       "utf8"
     );
 
@@ -163,7 +163,7 @@ test("install --apply supports claude-only mode", async () => {
     const files = await snapshotTree(directory);
     const config = await readFile(path.join(directory, "fuckia.config.yaml"), "utf8");
     const claudeSkill = await readFile(
-      path.join(directory, ".claude", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      path.join(directory, ".claude", "skills", "progressive-disclosure-guard", "SKILL.md"),
       "utf8"
     );
 
@@ -184,14 +184,14 @@ test("install --apply supports guard-only profile", async () => {
     );
     const files = await snapshotTree(directory);
     const skill = await readFile(
-      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      path.join(directory, ".agents", "skills", "progressive-disclosure-guard", "SKILL.md"),
       "utf8"
     );
 
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /"installProfile": "guard-only"/);
     assert.match(skill, /target: codex/);
-    assert.equal(files.includes(".agents/skills/adversarial-implementer-guard/SKILL.md"), true);
+    assert.equal(files.includes(".agents/skills/progressive-disclosure-guard/SKILL.md"), true);
     assert.equal(files.includes("AGENTS.md"), false);
     assert.equal(files.includes("README.md"), false);
     assert.equal(files.includes("fuckia.config.yaml"), false);
@@ -207,11 +207,11 @@ test("init --apply installs governance files and generated skills", async () => 
     const agents = await readFile(path.join(directory, "AGENTS.md"), "utf8");
     const claude = await readFile(path.join(directory, "CLAUDE.md"), "utf8");
     const codexSkill = await readFile(
-      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      path.join(directory, ".agents", "skills", "progressive-disclosure-guard", "SKILL.md"),
       "utf8"
     );
     const claudeSkill = await readFile(
-      path.join(directory, ".claude", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      path.join(directory, ".claude", "skills", "progressive-disclosure-guard", "SKILL.md"),
       "utf8"
     );
     const workflow = await readFile(path.join(directory, ".github", "workflows", "collab-contract.yml"), "utf8");
@@ -231,7 +231,7 @@ test("init --apply installs governance files and generated skills", async () => 
     assert.equal((await snapshotTree(directory)).includes(".github/README.md"), false);
     assert.match(workflow, /Fuckia Collaboration Contract/);
     assert.match(checkpoint, /Current state:/);
-    assert.match(linearTemplate, /Adversarial Implementer Pass/);
+    assert.match(linearTemplate, /PDG Pass/);
   });
 });
 
@@ -310,7 +310,7 @@ test("migrate --apply preserves conflicts and writes merge proposals", async () 
       "utf8"
     );
     const codexSkill = await readFile(
-      path.join(directory, ".agents", "skills", "adversarial-implementer-guard", "SKILL.md"),
+      path.join(directory, ".agents", "skills", "progressive-disclosure-guard", "SKILL.md"),
       "utf8"
     );
 

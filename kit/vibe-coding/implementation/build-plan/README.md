@@ -10,7 +10,7 @@ Read order:
 4. `non-goals.md`
 5. `verification.md`
 6. `self-hosting-and-generated-files.md`
-7. `adversarial-pass.md`
+7. `pdg-pass.md`
 
 ## Decision
 

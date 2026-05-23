@@ -64,7 +64,7 @@ These are starting points only. The implementer must re-check current docs durin
 - Evidence Language Guard: `kit/vibe-coding/constitution/evidence-language-guard.md`
 - Agent Law Propagation: `kit/vibe-coding/constitution/agent-law-propagation.md`
 
-## Adversarial implementer pass
+## PDG pass
 
 - Bad implementation path: "links in this file are proof enough."
 - Guardrail added: links are starting points; implementer must verify current docs and record decisions.

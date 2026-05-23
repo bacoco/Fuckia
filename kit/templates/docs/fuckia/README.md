@@ -13,7 +13,7 @@ Agent mode is recorded in `fuckia.config.yaml`.
 
 ## Core Guard
 
-The central rule is adversarial progressive disclosure:
+The central rule is PDG progressive disclosure:
 
 - preserve working routes, stores, callbacks, pipelines, and workflows;
 - convert vague implementation language into explicit `MUST` / `MUST NOT` constraints;

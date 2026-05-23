@@ -1,7 +1,7 @@
 export type InstallProfile = "full" | "guard-only";
 
-export const guardSkillName = "adversarial-implementer-guard";
-export const guardDisplayName = "Adversarial Progressive Disclosure Guard";
+export const guardSkillName = "progressive-disclosure-guard";
+export const guardDisplayName = "PDG - Progressive Disclosure Guard";
 
 export function parseInstallProfile(value: string | undefined): InstallProfile | null {
   if (value === undefined || value === "") {

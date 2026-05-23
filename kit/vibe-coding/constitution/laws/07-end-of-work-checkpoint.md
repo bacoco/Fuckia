@@ -44,7 +44,7 @@ Remaining:
 Next:
 ```
 
-## Adversarial Implementer Pass
+## PDG Pass
 
 - Bad implementation path: an agent finishes with only a success sentence and leaves missing context.
 - Guardrail added: every meaningful work session requires a six-field checkpoint.

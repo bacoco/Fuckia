@@ -28,7 +28,7 @@ jobs:
               ;;
           esac
 
-          for skill in adversarial-implementer-guard cross-agent-handoff delegated-review-and-merge destructive-change-guard end-of-work-checkpoint evidence-language-guard plan-review-gate platform-permission-gate real-verification-gate source-of-truth-gate; do
+          for skill in progressive-disclosure-guard cross-agent-handoff delegated-review-and-merge destructive-change-guard end-of-work-checkpoint evidence-language-guard plan-review-gate platform-permission-gate real-verification-gate source-of-truth-gate; do
             for target_dir in $target_dirs; do
               test -f "$target_dir/$skill/SKILL.md"
             done

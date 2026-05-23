@@ -4,7 +4,7 @@ Shared skills are generated for Claude and Codex from one neutral source.
 
 Current shared skills:
 
-1. `adversarial-implementer-guard`
+1. `progressive-disclosure-guard`
 2. `cross-agent-handoff`
 3. `delegated-review-and-merge`
 4. `destructive-change-guard`
