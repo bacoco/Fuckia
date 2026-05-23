@@ -1,18 +1,92 @@
 # Fuckia
 
-**AI coding agents move fast. Fuckia keeps them inside the product contract.**
+**Progressive disclosure for AI coding agents.**
 
-Fuckia is a governance kit for teams using Codex, Claude Code, or both. Its core product is the **Adversarial Progressive Disclosure Guard**: a skill that forces an AI agent to preserve working behavior, remove ambiguity, avoid parallel implementations, and verify the real workflow before calling work done.
+Fuckia's main product is the **Adversarial Progressive Disclosure Guard**: a skill for Codex and Claude Code that stops AI agents from turning a change into one giant plan, one giant file, one vague refactor, or one fake verification.
 
-The Claude/Codex collaboration layer is optional. The guard is useful even when you have only one agent.
+It forces the agent to reveal work in layers:
+
+1. what is known and unknown;
+2. what existing behavior must survive;
+3. which docs, specs, plans, files, routes, stores, and tests are in scope;
+4. the smallest useful implementation step;
+5. code split by responsibility instead of dumped into broad files;
+6. narrow tests first, then real workflow verification;
+7. a clear receipt of what was checked and what still is not proven.
+
+That guard is useful before any Claude/Codex collaboration. You can install only the guard and ignore the rest of Fuckia.
 
 The readable name is **Adversarial Progressive Disclosure Guard**. The stable skill slug remains `adversarial-implementer-guard` so existing installs keep working.
 
-## Install The Part You Need
+## What It Prevents
 
-### 1. Guard Only
+AI coding agents often fail by adding too much, too early:
 
-Use this when you want the core discipline without GitHub workflows, Linear templates, or dual-agent coordination.
+- a spec that hides decisions in a wall of text;
+- a plan that says "refactor" without naming what must stay working;
+- a code change that creates a parallel pipeline beside the real one;
+- a new helper, store, route, or prompt that bypasses the existing product path;
+- tests that prove a helper exists but not that the user workflow still works;
+- a final answer that says "verified" without showing the real verification path.
+
+Fuckia makes those shortcuts explicit and blocks them before they become regressions.
+
+## Progressive Disclosure Everywhere
+
+Progressive disclosure is not only a documentation rule. Fuckia applies it to the whole agent workflow.
+
+| Surface | What the guard forces |
+| --- | --- |
+| Docs | Start with a clear index, then link to focused detail files. |
+| Specs | Separate known facts, open decisions, non-goals, and acceptance criteria. |
+| Plans | Name allowed files, forbidden files, preserved behavior, and verification gates. |
+| Code | Keep entry points thin and split orchestration, domain logic, IO, state, prompts, and validation. |
+| Files | Avoid broad "utils", "service", or "manager" dumps when a smaller responsibility exists. |
+| APIs and prompts | Fetch or inject summaries first, then expand details only when needed. |
+| Tests | Start with the smallest contract check, then prove the real workflow. |
+| Verification | Report the actual command, route, or user path checked, plus what remains unverified. |
+
+The point is simple: the agent must earn the next layer of detail. It cannot load, rewrite, or claim everything at once.
+
+## The Core Skill
+
+The guard makes the agent run an adversarial pass before important handoffs and after substantial code changes.
+
+It asks:
+
+- What could a rushed implementer misread and still claim they followed?
+- Which existing behavior, callback, route, store, pipeline, workflow, or generated file must be preserved?
+- Did this change create a parallel implementation instead of extending the real one?
+- Are vague words like "refactor", "simplify", "wire", "reuse", or "clean up" constrained by `MUST` and `MUST NOT` language?
+- Do tests and verification exercise the real product entry path?
+
+Then it turns ambiguity into constraints:
+
+- `MUST preserve ...`
+- `MUST call/use ...`
+- `MUST NOT replace ...`
+- `MUST NOT create a parallel engine/pipeline/store/router ...`
+- `MUST NOT remove working code unless the replacement is wired and verified end-to-end ...`
+
+## Optional: Claude + Codex Collaboration
+
+Full Fuckia adds a collaboration layer around the guard for teams that use Codex, Claude Code, or both.
+
+It can install:
+
+- `AGENTS.md` for Codex;
+- `CLAUDE.md` for Claude Code;
+- generated Claude and Codex skills from shared sources;
+- GitHub pull request templates and CI contract checks;
+- Linear templates for spec, plan, review, implementation, and verification;
+- destructive-change and PR-scope guards;
+- archived receipts for future agents.
+
+This is useful when Claude and Codex work on the same repository, or when one agent writes and another reviews. But it is optional. The progressive disclosure guard is the first product.
+
+## Install Only The Guard
+
+Use this when you want the progressive disclosure discipline without GitHub workflows, Linear templates, or dual-agent coordination.
 
 Codex prompt:
 
@@ -34,9 +108,9 @@ Guard-only writes only the selected skill file:
 
 It does not install `AGENTS.md`, `CLAUDE.md`, GitHub workflows, Linear templates, `docs/fuckia`, or `fuckia.config.yaml`.
 
-### 2. Full Fuckia
+## Install Full Fuckia
 
-Use this when you want the complete governance layer for Codex-only, Claude-only, or Claude+Codex repositories.
+Use this when you want the full governance kit for Codex-only, Claude-only, or Claude+Codex repositories.
 
 Default prompt:
 
@@ -54,98 +128,25 @@ Install Fuckia here for Claude and Codex.
 
 Normal installation does not require Node.js or npm. The agent reads `INSTALL.md`, audits first, reports the exact files it wants to create or preserve, and waits for approval before writing.
 
-## Why This Exists
-
-Claude and Codex do not automatically share a source of truth. Without a control layer, AI agents can:
-
-- work from stale chat context;
-- create a second implementation beside the real one;
-- delete working code during a vague refactor;
-- pass isolated tests while the real product path is broken;
-- rename callbacks or props until old flows silently stop firing;
-- review their own risky work as if it were independent validation;
-- mark Done without proving the user workflow still works.
-
-Fuckia prevents the common failure mode: the agent followed the words, but broke the product.
-
-## The Guard
-
-The Adversarial Progressive Disclosure Guard treats progressive disclosure as a correctness rule, not a writing style.
-
-It applies to:
-
-- docs, specs, plans, prompts, reviews, and handoffs;
-- code structure, APIs, stores, routes, callbacks, pipelines, and persistence;
-- tests, verification, regression checks, and final reporting.
-
-It makes the agent state:
-
-- what behavior already works and must be preserved;
-- what files, routes, callbacks, stores, and contracts are in scope;
-- what must not be replaced by a parallel implementation;
-- what vague words such as "refactor", "simplify", "wire", "reuse", or "clean up" could let a bad implementer break;
-- what real workflow proves the change is done.
-
-Then it turns the answers into hard constraints:
-
-- `MUST preserve ...`
-- `MUST call/use ...`
-- `MUST NOT replace ...`
-- `MUST NOT create a parallel engine/pipeline/store/router ...`
-- `MUST NOT remove working code unless the replacement is wired and verified end-to-end ...`
-
-This is often more important than the Claude+Codex pairing itself. Multi-agent collaboration is one use case. Adversarial progressive disclosure is the core discipline.
-
-## Full Fuckia
-
-Full Fuckia adds the collaboration and repository layer around the guard:
-
-- `AGENTS.md` for Codex;
-- `CLAUDE.md` for Claude Code;
-- generated Claude and Codex skills from shared sources;
-- GitHub pull request templates and CI contract checks;
-- Linear templates for spec, plan, plan review, implementation, code review, and verification;
-- destructive-change and PR-scope guards;
-- archived receipts for future agents;
-- install modes for `codex-only`, `claude-only`, and `dual-agent`.
-
-It does not replace GitHub, Linear, Claude, or Codex. It gives them one operating contract.
-
-## Agent Modes
-
-Fuckia installs only the agent surface you need:
-
-- `codex-only`: `AGENTS.md` and `.agents/skills/...`
-- `claude-only`: `CLAUDE.md` and `.claude/skills/...`
-- `dual-agent`: both surfaces for Claude+Codex collaboration
-
-If existing repo markers make the mode obvious, the installer uses that mode. If both marker families exist or neither exists, the agent asks:
-
-```text
-Should I install Fuckia for Codex only, Claude only, or both?
-```
-
-Missing Claude or Codex credentials do not decide the mode by themselves. The human chooses the intended operating model.
-
 ## Single-Agent Validation
 
 Fuckia never lets an AI present its own self-check as independent review.
 
-If there is no second AI reviewer, the agent must give the human a short validation card with the real workflow, the expected result, and the files to inspect. The human closes the validation with:
+If there is no second AI reviewer, the agent gives the human a short validation card with the real workflow, expected result, files to inspect, and risk being accepted. The human closes validation with:
 
 ```text
 Approved after human validation.
 ```
 
-That keeps the workflow simple without pretending that self-review is independent verification.
+That keeps single-agent work simple without pretending self-review is independent verification.
 
 ## Current Status
 
 Working now:
 
-- agent-first install through `INSTALL.md`;
 - guard-only install for the Adversarial Progressive Disclosure Guard;
 - Codex-only, Claude-only, and dual-agent installation modes;
+- agent-first install through `INSTALL.md`;
 - install and migration audit;
 - write-mode installer;
 - generated Claude and Codex skills;
