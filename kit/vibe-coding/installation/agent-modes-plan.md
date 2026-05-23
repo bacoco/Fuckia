@@ -168,7 +168,7 @@ Default is `auto`.
 - Forbidden implementation shortcuts: no parallel skill sources, no hardcoded Codex-only default, no writes before dry-run report and human approval.
 - Regression proof required: dry-run/apply tests for all three modes plus generated-skill drift check.
 
-## Prompt a donner au dev
+## Prompt To Give The Developer
 
 ```text
 Implement Fuckia agent install modes from `kit/vibe-coding/installation/agent-modes-plan.md`.
